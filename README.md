@@ -101,7 +101,6 @@ City Roulette는 이러한 과정을 반대로 구성하여,
 
 ### Deployment
 
-- Vercel
 - Render
 - AWS
 
