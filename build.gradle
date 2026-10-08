@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'org.springframework.boot' version '3.5.16'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.cityroulette'
+version = '0.0.1-SNAPSHOT'
+description = 'City Roulette - 부산 공공데이터 기반 즉흥 여행 추천 서비스'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // MySQL 서버 없이 기본 애플리케이션 테스트를 실행하기 위한 테스트 전용 DB
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Buildship resolves dependencies on each machine; do not store local JAR paths.
+eclipse {
+    project {
+        natures 'org.eclipse.buildship.core.gradleprojectnature'
+        buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
+    }
+    classpath {
+        defaultOutputDir = file('bin/default')
+        containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
+        file.whenMerged { classpath ->
+            classpath.entries.removeAll { it.kind == 'lib' }
+        }
+    }
+}

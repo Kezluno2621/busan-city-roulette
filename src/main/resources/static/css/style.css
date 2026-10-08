@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    color: #25313c;
+    background: #f6f8fa;
+    font-family: sans-serif;
+    line-height: 1.6;
+}
+
+main {
+    max-width: 640px;
+    margin: 48px auto;
+    padding: 24px;
+}
+
+fieldset {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid #c6cdd4;
+    background: white;
+}
+
+input,
+button {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    font: inherit;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<main>
+    <h1 th:text="${title}">City Roulette</h1>
+    <p>부산 공공데이터 기반 즉흥 여행 추천 서비스</p>
+
+    <section aria-labelledby="trip-conditions">
+        <h2 id="trip-conditions">여행 조건</h2>
+        <p id="development-notice">여행 추천 기능은 아직 구현되지 않았습니다. 아래 항목은 화면 골격입니다.</p>
+        <fieldset disabled aria-describedby="development-notice">
+            <legend>여행 조건 입력 (준비 중)</legend>
+            <label for="departure">출발지</label>
+            <input id="departure" name="departure" type="text" placeholder="예: 부산역">
+
+            <label for="available-time">사용 가능 시간</label>
+            <input id="available-time" name="availableTime" type="number" min="1" placeholder="시간 단위">
+
+            <button type="button" disabled>여행 추천하기 (준비 중)</button>
+        </fieldset>
+    </section>
+</main>
+</body>
+</html>

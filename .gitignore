@@ -26,3 +26,36 @@ replay_pid*
 # backup files
 *.bak
 
+# Gradle build output (keep the wrapper in Git)
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local IDE settings
+.idea/
+*.iml
+# Share portable Eclipse metadata; ignore other machine-specific preferences.
+.settings/*
+!.settings/org.eclipse.jdt.core.prefs
+!.settings/org.eclipse.core.resources.prefs
+!.settings/org.eclipse.buildship.core.prefs
+.vscode/
+.metadata/
+bin/
+out/
+*.launch
+
+# Local secrets
+.env
+.env.*
+!.env.example
+src/main/resources/application-local.properties
+src/main/resources/application-local.yml
+src/main/resources/application-local.yaml
+application-local.*
+application-secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
