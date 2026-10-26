@@ -34,7 +34,7 @@ username과 email에는 DB unique 제약을 둡니다. 새 회원의 role은 USE
 | POST /logout | Spring Security가 세션 무효화 후 /로 이동 |
 | GET /my | 인증 필수, 아이디·닉네임·이메일과 여행 기록 준비 안내 |
 
-`/`, `/places`, `/recommend`, `/signup`, `/login`, 정적 리소스와
+`/`, `/places`, `/recommend`, `/recommend/search-location`, `/signup`, `/login`, 정적 리소스와
 `/api/places/**`, `/api/tourism/**`, `/api/transit/**`, `/api/recommendations/**`는 비회원 접근을 허용합니다.
 공개 설정이 미구현 API를 만드는 것은 아닙니다. 미구현 주소는 404입니다.
 `/my`, `/my/**`는 인증이 필요합니다. 비회원은 로그인 화면으로 이동합니다.
@@ -101,7 +101,8 @@ Controller 제어, HTML Form 입출력, Jakarta Validation, JPA DB 처리, Thyme
 - Member Entity는 DB의 회원 정보이고 UserDetails는 Security가 인증에 사용하는 아이디·해시·권한 형태입니다.
   DB 모델을 인증 프레임워크에 직접 결합하지 않고 UserDetailsService에서 변환합니다.
 - permitAll은 비회원도 접근할 수 있다는 뜻이고 authenticated는 로그인한 사용자만 접근할 수 있다는 뜻입니다.
-  두 설정 모두 CSRF와 같은 다른 보안 검사를 끄지는 않습니다.
+  두 설정 모두 CSRF와 같은 다른 보안 검사를 자동으로 끄지는 않습니다. 브라우저 폼에는 CSRF 보호를 유지하고,
+  기존 외부 호출 호환성을 위해 `POST /api/tourism/sync`만 CSRF 검사에서 제외합니다.
 - Controller는 HTTP 입력과 화면, Service는 회원가입 규칙·해시 처리, Repository는 DB 저장·조회에 집중합니다.
   이렇게 나누면 화면을 바꾸거나 규칙을 수정할 때 영향을 줄이고 각 부분을 테스트하기 쉽습니다.
 
@@ -110,8 +111,7 @@ Controller 제어, HTML Form 입출력, Jakarta Validation, JPA DB 처리, Thyme
 
 ## 자동 검증 결과
 
-`./gradlew clean build` 성공, 전체 47건 통과(실패/오류 0):
-기존 애플리케이션 2건, Place 6건, MemberRepository 3건,
-MemberService 6건, MemberController 11건, Security 19건입니다.
+`./gradlew clean test`와 `./gradlew clean build` 성공, 전체 165건 통과(실패/오류/건너뜀 0)했습니다.
+회원가입·로그인·로그아웃·접근 제어와 기존 관광지·추천·대중교통 기능 회귀 테스트를 포함합니다.
 `git diff --check`도 통과했습니다.
 MySQL 계정 없이 기존 H2 test 프로필로 실행했습니다.

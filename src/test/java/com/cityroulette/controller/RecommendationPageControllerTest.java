@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,7 +68,8 @@ class RecommendationPageControllerTest {
                         .param("locationQuery", " 부산역 ")
                         .param("availableMinutes", "240")
                         .param("stayMinutes", "90")
-                        .param("limit", "2"))
+                        .param("limit", "2")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recommend"))
                 .andExpect(model().attribute("locationSearchResults", List.of(busanStation)))
@@ -93,7 +95,8 @@ class RecommendationPageControllerTest {
                         .param("longitude", "128.9680")
                         .param("availableMinutes", "180")
                         .param("stayMinutes", "60")
-                        .param("limit", "1"))
+                        .param("limit", "1")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recommend"))
                 .andExpect(model().attribute("recommendationResponse", response))
@@ -119,7 +122,8 @@ class RecommendationPageControllerTest {
                         .param("longitude", "128.9680")
                         .param("availableMinutes", "120")
                         .param("stayMinutes", "60")
-                        .param("limit", "1"))
+                        .param("limit", "1")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recommend"))
                 .andExpect(model().attribute("recommendationResponse", response))
@@ -137,7 +141,8 @@ class RecommendationPageControllerTest {
                         .param("longitude", "128.9680")
                         .param("availableMinutes", "180")
                         .param("stayMinutes", "60")
-                        .param("limit", "1"))
+                        .param("limit", "1")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recommend"))
                 .andExpect(model().attributeExists("inputError"))
@@ -155,7 +160,8 @@ class RecommendationPageControllerTest {
                         .param("longitude", "not-a-number")
                         .param("availableMinutes", "180")
                         .param("stayMinutes", "60")
-                        .param("limit", "1"))
+                        .param("limit", "1")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recommend"))
                 .andExpect(model().attributeExists("inputError"))
@@ -171,7 +177,8 @@ class RecommendationPageControllerTest {
                         .param("locationQuery", "부산역")
                         .param("availableMinutes", "180")
                         .param("stayMinutes", "60")
-                        .param("limit", "1"))
+                        .param("limit", "1")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recommend"))
                 .andExpect(model().attributeExists("inputError"))
