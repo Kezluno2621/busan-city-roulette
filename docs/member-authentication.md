@@ -16,7 +16,8 @@ Java 17 / Spring Boot 3.5.16의 기존 MVC·JPA 구조를 유지합니다.
 기존 Validation, JPA, Thymeleaf, H2를 재사용하고 Spring Security와 테스트용 security-test만 추가합니다.
 화면의 로그인 정보는 MVC 모델로 제공하므로 Thymeleaf Security extras는 필요하지 않습니다.
 
-`Member`는 `members` 테이블에 id, username, password(hash), email, displayName, role, createdAt을 저장합니다.
+`Member`는 Flyway `V3__create_members_table` migration으로 생성한 `members` 테이블에
+id, username, password(hash), email, displayName, role, createdAt을 저장합니다.
 username과 email에는 DB unique 제약을 둡니다. 새 회원의 role은 USER이며 Role enum에는 USER와 ADMIN만 둡니다.
 비밀번호 확인은 MemberSignupRequest에만 존재하며 DB에 저장하지 않습니다.
 화면에는 password 필드가 없는 MemberProfile을 사용합니다.
