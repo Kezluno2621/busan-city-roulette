@@ -31,3 +31,25 @@ button {
 button:disabled {
     cursor: not-allowed;
 }
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+nav > span {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+a { color: #185a91; }
+.field-error { margin: 0; color: #a51d2d; }
+.logout-form { display: inline; margin: 0; }
+.logout-form button { width: auto; padding: 4px 10px; }
+dd { margin: 0 0 12px; overflow-wrap: anywhere; }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping({"/", "/recommend"})
     public String home(Model model) {
         model.addAttribute("title", "City Roulette");
         return "index";

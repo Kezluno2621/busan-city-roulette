@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main>
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <h1>회원가입</h1>
+    <form th:action="@{/signup}" th:object="${signupRequest}" method="post">
+        <fieldset>
+            <legend>회원 정보</legend>
+            <p th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}" class="field-error" role="alert"></p>
+            <label for="username">아이디</label>
+            <input type="text" th:field="*{username}" autocomplete="username" minlength="4" maxlength="30" required aria-describedby="username-error">
+            <p id="username-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="field-error" role="alert"></p>
+            <label for="password">비밀번호</label>
+            <input type="password" th:field="*{password}" autocomplete="new-password" minlength="8" required aria-describedby="password-error">
+            <p id="password-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="field-error" role="alert"></p>
+            <label for="passwordConfirm">비밀번호 확인</label>
+            <input type="password" th:field="*{passwordConfirm}" autocomplete="new-password" minlength="8" required aria-describedby="passwordConfirm-error">
+            <p id="passwordConfirm-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="field-error" role="alert"></p>
+            <label for="email">이메일</label>
+            <input type="email" th:field="*{email}" autocomplete="email" maxlength="254" required aria-describedby="email-error">
+            <p id="email-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="field-error" role="alert"></p>
+            <label for="displayName">닉네임</label>
+            <input type="text" th:field="*{displayName}" autocomplete="nickname" minlength="2" maxlength="30" required aria-describedby="displayName-error">
+            <p id="displayName-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}" class="field-error" role="alert"></p>
+            <p>아이디는 공백 없이 4~30자, 비밀번호는 8자 이상이며 UTF-8 기준 72바이트 이내로 입력해주세요.</p>
+            <button type="submit">회원가입</button>
+        </fieldset>
+    </form>
+    <p>이미 계정이 있나요? <a th:href="@{/login}">로그인</a></p>
+</main>
+</body>
+</html>

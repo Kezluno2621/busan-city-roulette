@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navigation" aria-label="주 메뉴">
+    <a th:href="@{/}">City Roulette</a>
+    <span th:if="${currentMember == null}">
+        <a th:href="@{/login}">로그인</a>
+        <a th:href="@{/signup}">회원가입</a>
+    </span>
+    <span th:if="${currentMember != null}">
+        <span th:text="${currentMember.displayName + '님'}">회원님</span>
+        <a th:href="@{/my}">내 여행</a>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit">로그아웃</button>
+        </form>
+    </span>
+</nav>
+</body>
+</html>

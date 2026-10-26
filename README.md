@@ -175,9 +175,10 @@ This project is licensed under the MIT License.
 
 ## Development
 
-현재 구현 범위는 **Spring Boot 기본 개발 환경, MySQL 연결 설정과 Place 기본 스키마**입니다.
+현재 구현 범위는 **기본 개발 환경, MySQL/Place 스키마와 회원가입·세션 인증**입니다.
 `GET /`에서 Thymeleaf 홈 화면을 표시하며, 여행 조건 입력과 추천 버튼은 아직 비활성화되어 있습니다.
-외부 API, 추천 로직, 회원 기능은 구현하지 않았습니다.
+외부 API와 추천 로직은 아직 구현하지 않았습니다. 회원가입·세션 로그인·로그아웃과 회원 전용 `/my`를 제공합니다.
+회원 기능 구조와 STS 수동 확인: [회원 인증 안내](docs/member-authentication.md).
 
 ### Requirements
 
@@ -316,6 +317,7 @@ Windows에서는 `gradlew.bat clean build`를 사용합니다.
 외부 ID 저장·조회와 존재 여부, 실내 여부 true/false/NULL 저장, 필수 이름의 NULL 거부를 테스트합니다. 테스트 데이터는 트랜잭션 종료 시 롤백합니다.
 테스트에만 H2 메모리 DB와 `test` 프로필을 사용하므로 MySQL 서버나 비밀번호 없이 실행할 수 있습니다.
 H2는 실행용 JAR에 포함되지 않으며, 이 테스트의 통과가 실제 MySQL 연결 성공을 의미하지는 않습니다.
+회원 테스트는 저장·조회·unique 제약, BCrypt 저장·검증, 중복/입력 오류, 로그인·세션·로그아웃·CSRF·접근 정책을 검증합니다.
 테스트 보고서는 `build/reports/tests/test/index.html`에서 확인할 수 있습니다.
 
 ### 프로젝트 구조
@@ -323,32 +325,32 @@ H2는 실행용 JAR에 포함되지 않으며, 이 테스트의 통과가 실제
 ```text
 src/main/java/com/cityroulette/
 ├── CityRouletteApplication.java
-├── controller/HomeController.java
-├── service/package-info.java
-├── repository/PlaceRepository.java
-├── domain/Place.java
-├── dto/package-info.java
-└── config/package-info.java
+├── controller/ (HomeController, MemberController, MemberModelAdvice)
+├── service/ (MemberService, CustomUserDetailsService, RegistrationException)
+├── repository/ (PlaceRepository, MemberRepository)
+├── domain/ (Place, Member, Role)
+├── dto/member/ (MemberSignupRequest, MemberProfile)
+└── config/SecurityConfig.java
 
 src/main/resources/
 ├── application.properties
-├── templates/index.html
+├── templates/ (index.html, signup.html, login.html, my/index.html, fragments/navigation.html)
 └── static/
     ├── css/style.css
     └── js/main.js
 ```
 
 - `controller`: HTTP 요청을 받아 화면을 연결합니다.
-- `service`: 향후 여행 추천 등의 비즈니스 로직을 담당합니다.
+- `service`: 회원가입 검증·비밀번호 해시 처리와 인증용 회원 조회를 담당합니다.
 - `repository`: DB 저장·조회 작업을 담당합니다.
-- `domain`: DB 테이블에 대응하는 Entity를 둡니다. 현재는 장소의 기본 정보인 Place만 정의합니다.
-- `dto`: 향후 화면/API와 주고받는 데이터를 담습니다.
-- `config`: 향후 외부 API 등 설정을 둡니다.
+- `domain`: DB 테이블에 대응하는 Entity를 둡니다. Place와 회원 정보 Member, Role을 정의합니다.
+- `dto`: 가입 입력과 비밀번호를 제외한 화면용 회원 정보를 담습니다.
+- `config`: Spring Security 접근 정책과 PasswordEncoder를 구성합니다.
 
 사용하지 않는 패키지는 `package-info.java`에 역할만 설명했습니다.
 현재 HomeController는 화면만 반환하며, 기능 개발 시 Controller → Service → Repository로 책임을 나눕니다.
-Trip/Recommendation, 외부 API 데이터 저장, 샘플 데이터, 별도 예외 처리 클래스는 아직 만들지 않았습니다.
-오류 응답은 Spring Boot 기본 처리를 사용합니다.
+Trip/Recommendation, 외부 API 데이터 저장, 샘플 데이터는 아직 만들지 않았습니다.
+회원가입 오류는 해당 Form 필드에 표시하며, 그 외 오류 응답은 Spring Boot 기본 처리를 사용합니다.
 
 ### Dependencies
 
@@ -356,13 +358,13 @@ Trip/Recommendation, 외부 API 데이터 저장, 샘플 데이터, 별도 예�
 - Thymeleaf: 서버에서 HTML 화면 렌더링
 - Spring Data JPA: Entity와 Repository를 통한 DB 접근
 - MySQL Driver: MySQL 연결
-- Validation: 향후 입력 DTO 검증을 위한 기본 의존성
+- Validation: 회원가입 입력 DTO 검증
 - Spring Boot Test / JUnit Platform Launcher: 기본 테스트 실행
 - H2: 테스트 전용 메모리 DB
 
 - Spring Boot DevTools: 개발 실행 시 재시작 지원 (`developmentOnly`, 배포 JAR에서 제외)
 
-Lombok, Spring Security는 추가하지 않았습니다.
+Spring Security로 세션 인증과 CSRF 보호를 제공하며 spring-security-test로 인증 흐름을 검증합니다. Lombok은 사용하지 않습니다.
 
 ### 다음 GitHub Issue 제안
 
@@ -460,7 +462,7 @@ DevTools는 컴파일된 클래스 변경을 감지하므로 Java 파일 수정 
 별도 터미널의 `./gradlew classes`로 컴파일합니다.
 
 
-### 구성 검증 결과
+### 초기 환경 구성 검증 결과 (회원 기능 추가 이전)
 
 - `./gradlew tasks`, `./gradlew eclipse`, `./gradlew clean build` 성공.
 - 기존 테스트 8건 통과(실패/오류 0).
