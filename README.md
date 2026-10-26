@@ -123,6 +123,8 @@ City Roulette는 이러한 과정을 반대로 구성하여,
 
 관광정보 데이터 소스와 Place 매핑 조사: [Tourism API Research](docs/tourism-api-research.md)
 
+대중교통 경로 API 선정과 추천 설계: [Public Transport API Research](docs/public-transport-api-research.md)
+
 ---
 
 ## 🗓 Milestones
@@ -207,7 +209,7 @@ COLLATE utf8mb4_unicode_ci;
 이미 같은 이름의 DB가 있다면 이 명령은 기존 DB의 설정을 변경하지 않습니다.
 다른 DB 이름을 사용하려면 위 SQL의 이름과 `DB_NAME`을 함께 변경하세요.
 애플리케이션용 계정에는 해당 개발 DB의 조회·추가·수정·삭제 권한과,
-`ddl-auto=update`가 테이블을 준비하는 데 필요한 CREATE·ALTER·INDEX 권한이 필요합니다.
+Flyway가 스키마 migration을 적용하는 데 필요한 CREATE·ALTER·INDEX 권한이 필요합니다.
 실제 계정명과 비밀번호는 로컬에서만 관리합니다.
 
 | 환경변수 | 기본값 | 설명 |
@@ -217,6 +219,9 @@ COLLATE utf8mb4_unicode_ci;
 | `DB_NAME` | `cityroulette` | 이미 준비된 개발 DB 이름 |
 | `DB_USERNAME` | 없음, 필수 | 본인의 DB 계정 |
 | `DB_PASSWORD` | 없음, 필수 | 본인의 DB 비밀번호 |
+| `TOUR_API_KEY` | 없음, API 호출 시 필수 | 한국관광공사 KorService2 발급키 |
+| `ODSAY_API_KEY` | 없음, 추천 실행 시 필수 | ODsay 대중교통 Server API 키 |
+| `KAKAO_REST_API_KEY` | 없음, 출발지 검색 시 필수 | Kakao Developers 애플리케이션 REST API 키 |
 
 `.env.example`은 환경변수 목록을 보여주는 참고 파일입니다.
 **Spring Boot는 `.env`를 자동으로 읽지 않습니다.** STS 실행 설정의 Environment에 입력하거나,
@@ -228,9 +233,18 @@ JDBC URL에는 `connectionTimeZone=Asia/Seoul&characterEncoding=UTF-8`을 사용
 `connectionTimeZone`은 Connector/J의 시간 변환 기준이며 MySQL 서버 시간대 자체를 변경하지 않습니다.
 `characterEncoding=UTF-8`과 DB의 `utf8mb4`로 한글 등을 저장할 수 있도록 구성했습니다.
 
-개발용 `spring.jpa.hibernate.ddl-auto=update`는 Entity를 기준으로 없는 테이블을 만들고 필요한 스키마 변경을 시도합니다.
-기존 테이블을 매번 삭제하는 설정은 아니지만, 모든 변경을 안전하게 처리하는 마이그레이션 도구는 아닙니다.
-현재는 개인 개발 DB에 사용하고, 중요한 데이터가 생기면 백업과 명시적인 스키마 변경 방식을 검토하세요.
+Flyway가 `db/migration`의 버전 SQL을 순서대로 적용하고,
+`spring.jpa.hibernate.ddl-auto=validate`는 Entity와 실제 스키마가 맞는지 확인만 합니다.
+기존 개발 DB는 baseline 버전 1로 등록한 뒤 `external_id` UNIQUE migration부터 적용합니다.
+적용 전에 아래 중복 확인 SQL의 결과가 없는지 확인하세요. 중복이 있으면 데이터를 자동 삭제하지 않고 migration이 실패합니다.
+
+```sql
+SELECT external_id, COUNT(*) AS duplicate_count
+FROM places
+WHERE external_id IS NOT NULL
+GROUP BY external_id
+HAVING COUNT(*) > 1;
+```
 `spring.jpa.open-in-view=false`는 화면 렌더링 중 DB 접근을 막습니다.
 애플리케이션 시작에는 MySQL 연결이 필요하며, 홈 화면 자체는 Repository를 호출하지 않습니다.
 
@@ -260,7 +274,8 @@ Hibernate가 실행한 SQL을 확인할 수 있습니다. 파라미터 값 상�
 문자열 컬럼 길이는 JPA 기본값 255입니다. 좌표는 위치 표현에 사용할 부동소수점 값으로 저장합니다.
 `name`의 NULL 제약과 빈 문자열 검증은 다릅니다. 향후 입력 DTO를 만들 때 빈 이름 등의 검증을 추가합니다.
 `PlaceRepository extends JpaRepository<Place, Long>`이 기본 저장·조회·삭제 메서드를 제공합니다.
-아직 Place용 Service, Controller, 관계 매핑은 없습니다.
+관광지 동기화는 `externalId`로 기존 데이터를 찾아 API 관리 필드만 갱신하며, 수동으로 관리하는
+`indoor` 값은 유지합니다.
 
 ### Run
 
@@ -268,10 +283,55 @@ Hibernate가 실행한 SQL을 확인할 수 있습니다. 파라미터 값 상�
 2. STS에서 `File > Import > Gradle > Existing Gradle Project`로 저장소를 가져옵니다.
    Gradle Wrapper를 선택하고 프로젝트 JDK 및 Gradle JVM을 JDK 17로 설정합니다. 이미 Import했다면 기존 프로젝트를 사용합니다.
 3. `Run > Run Configurations > Spring Boot App`에서 `CityRouletteApplication` 실행 구성을 선택하거나 만들고,
-   `Environment` 탭에 위 MySQL 환경변수를 설정합니다. 이 실행 설정은 개인 workspace에만 보관합니다.
+   `Environment` 탭에 위 MySQL 환경변수와 `TOUR_API_KEY`, `ODSAY_API_KEY`,
+   `KAKAO_REST_API_KEY`를 설정합니다. 이 실행 설정은 개인 workspace에만 보관합니다.
 4. `CityRouletteApplication`을 `Run As > Spring Boot App`으로 실행합니다.
 5. Console에서 아래 연결 확인 항목을 확인합니다.
 6. 브라우저에서 `http://localhost:8080`에 접속해 기존 홈 화면을 확인합니다.
+
+부산 관광지 API 연동은 애플리케이션 실행 후 아래 주소에서 확인합니다. `page`는 1 이상,
+`size`는 호출량 보호를 위해 1~100만 허용합니다.
+
+```text
+http://localhost:8080/api/tourism/places?page=1&size=10
+```
+
+정상 응답에서는 부산 관광지 DTO 목록이 JSON으로 표시됩니다. 실제 키를 README, `.env`,
+`application.properties` 또는 Git에 저장하지 마세요.
+
+API의 한 페이지를 MySQL에 동기화하려면 POST 요청을 사용합니다. 다음 페이지를 자동으로
+호출하지 않으며, 같은 요청을 반복하면 `externalId`가 같은 기존 행을 갱신합니다.
+
+```text
+POST http://localhost:8080/api/tourism/sync?page=1&size=10
+GET  http://localhost:8080/api/places?page=1&size=20
+```
+
+브라우저 주소창은 GET 요청만 보내므로 동기화 POST는 Postman을 사용하거나 Windows PowerShell에서
+다음과 같이 실행합니다.
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://localhost:8080/api/tourism/sync?page=1&size=10"
+```
+
+동기화 응답의 `requested`, `inserted`, `updated`, `skipped`로 처리 결과를 확인할 수 있습니다.
+MySQL에서는 다음 쿼리로 저장 결과를 확인한 뒤 같은 POST를 다시 호출하여 행 수가 두 배로
+증가하지 않는지 확인합니다.
+
+```sql
+USE cityroulette;
+
+SELECT id, external_id, name, category, address, latitude, longitude, indoor
+FROM places
+ORDER BY id;
+
+SELECT COUNT(*) FROM places;
+```
+
+같은 PowerShell 명령을 한 번 더 실행한 뒤 `SELECT COUNT(*) FROM places;`를 다시 조회합니다.
+동일한 `externalId`는 UPDATE되므로 행 수가 단순히 두 배가 되어서는 안 됩니다.
 
 터미널에서는 동일한 환경변수를 설정한 뒤 실행합니다.
 

@@ -1,0 +1,44 @@
+{
+  "result": {
+    "searchType": 0,
+    "path": [
+      {
+        "pathType": 2,
+        "info": {
+          "totalTime": 82,
+          "totalWalk": 1182,
+          "payment": 1550,
+          "busTransitCount": 1,
+          "subwayTransitCount": 0,
+          "firstStartStation": "아미초등학교",
+          "lastEndStation": "용호동경동아파트",
+          "unusedField": "ignored"
+        }
+      },
+      {
+        "pathType": 3,
+        "info": {
+          "totalTime": 61,
+          "totalWalk": 1710,
+          "payment": 2100,
+          "busTransitCount": 1,
+          "subwayTransitCount": 1,
+          "firstStartStation": "부산대학병원(토성역)",
+          "lastEndStation": "용호동경동아파트"
+        }
+      },
+      {
+        "pathType": 2,
+        "info": {
+          "totalTime": 82,
+          "totalWalk": 900,
+          "payment": 1550,
+          "busTransitCount": 1,
+          "subwayTransitCount": 0,
+          "firstStartStation": "토성역",
+          "lastEndStation": "용호동경동아파트"
+        }
+      }
+    ]
+  }
+}

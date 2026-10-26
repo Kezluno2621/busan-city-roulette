@@ -1,5 +1,14 @@
 # Tourism API Research
 
+## 실제 API 호출 검증
+
+- `areaBasedList2` 호출에 성공했으며 응답의 `resultCode`는 `0000`, `resultMsg`는 `OK`였다.
+- `lDongRegnCd=26`, `contentTypeId=12`로 부산 관광지가 정상 필터링되었다.
+- 호출 당시 `totalCount`는 351건이었다. 이 값은 관광 데이터 갱신에 따라 달라질 수 있다.
+- `contentid`, `title`, `addr1`, `mapx`, `mapy`, 대표 이미지 필드를 정상 수신했다.
+- 구형 `areacode`, `sigungucode`, `cat1~3` 필드는 빈 값이었고, 신규 `lDong`/`lcls` 코드 필드는 정상 수신했다.
+- 대표 이미지 데이터는 API에서 받을 수 있지만 현재 `Place` Entity에는 반영하지 않는다.
+
 ## 1. 조사 목적
 
 - 조사일: 2026-10-07
@@ -85,7 +94,7 @@ https://apis.data.go.kr/B551011/KorService2/ldongCode2?serviceKey={SERVICE_KEY}&
 
 공공데이터포털 로그인 → 해당 서비스의 활용신청 → 목적·사용 기능 입력 → 개발계정 승인 상태와 키 확인 순서이다. 신청매뉴얼은 개발 자동승인 후 약 **10~30분**, 운영 심의는 약 **1~3일**을 안내한다. 이는 2025-05-30 신청매뉴얼의 안내값이며 현재 실제 처리시간은 **확인 필요**, 즉시 사용 보장은 아니다. [신청매뉴얼](https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=FILE_000000003603931&fileDetailSn=1)
 
-향후 키는 예를 들어 `TOUR_API_SERVICE_KEY` 환경변수로 받는다. 이번에는 설정을 추가하지 않는다. URL 조립 시 키를 한 번만 인코딩하고, 포털의 Encoding/Decoding 키와 클라이언트의 자동 인코딩을 중복 적용하지 않는다. 전체 요청 URL을 로그에 남겨 키를 노출하지 않는다.
+구현에서는 키를 `TOUR_API_KEY` 환경변수로 받는다. URL 조립 시 인코딩된 키는 먼저 한 번 디코딩한 뒤 RestClient가 한 번만 인코딩하게 하여 `%`가 중복 인코딩되지 않도록 한다. 전체 요청 URL을 로그에 남기지 않아 키 노출을 막는다.
 
 ## 5. 주요 응답 필드
 

@@ -8,23 +8,20 @@
     <script th:src="@{/js/main.js}" defer></script>
 </head>
 <body>
-<main>
-    <h1 th:text="${title}">City Roulette</h1>
-    <p>부산 공공데이터 기반 즉흥 여행 추천 서비스</p>
+<main class="home-page">
+    <section class="hero home-hero">
+        <p class="eyebrow">BUSAN RANDOM TRIP</p>
+        <h1 th:text="${title}">City Roulette</h1>
+        <p>시간과 출발지만 정하면, 대중교통으로 다녀올 수 있는 부산 여행지를 골라드려요.</p>
+        <div class="hero-actions">
+            <a class="primary-button" th:href="@{/recommend}">🎲 룰렛 돌리기</a>
+        </div>
+    </section>
 
-    <section aria-labelledby="trip-conditions">
-        <h2 id="trip-conditions">여행 조건</h2>
-        <p id="development-notice">여행 추천 기능은 아직 구현되지 않았습니다. 아래 항목은 화면 골격입니다.</p>
-        <fieldset disabled aria-describedby="development-notice">
-            <legend>여행 조건 입력 (준비 중)</legend>
-            <label for="departure">출발지</label>
-            <input id="departure" name="departure" type="text" placeholder="예: 부산역">
-
-            <label for="available-time">사용 가능 시간</label>
-            <input id="available-time" name="availableTime" type="number" min="1" placeholder="시간 단위">
-
-            <button type="button" disabled>여행 추천하기 (준비 중)</button>
-        </fieldset>
+    <section class="feature-grid" aria-label="추천 과정">
+        <article><strong>01</strong><h2>가까운 후보</h2><p>출발 좌표에서 가까운 관광지를 먼저 찾습니다.</p></article>
+        <article><strong>02</strong><h2>대중교통 확인</h2><p>실제 이동시간으로 방문 가능한 장소를 확인합니다.</p></article>
+        <article><strong>03</strong><h2>랜덤 추천</h2><p>시간 조건을 통과한 장소 중 하나를 골라드립니다.</p></article>
     </section>
 </main>
 </body>

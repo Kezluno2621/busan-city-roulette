@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">City Roulette 추천</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">City Roulette</a>
+</header>
+
+<main class="recommend-page">
+    <section class="hero compact-hero" aria-labelledby="recommend-title">
+        <p class="eyebrow">BUSAN RANDOM TRIP</p>
+        <h1 id="recommend-title">어디로 떠나볼까요?</h1>
+        <p>출발 위치와 시간을 알려주면 대중교통으로 다녀올 수 있는 부산 여행지를 골라드려요.</p>
+    </section>
+
+    <section class="panel form-panel" aria-labelledby="condition-title">
+        <div class="section-heading">
+            <div>
+                <p class="step-label">STEP 1</p>
+                <h2 id="condition-title">추천 조건 입력</h2>
+            </div>
+            <span class="callout">추천 실행 시 대중교통 경로를 조회합니다.</span>
+        </div>
+
+        <p class="form-error" role="alert" th:if="${inputError}" th:text="${inputError}">
+            입력값을 확인해주세요.
+        </p>
+
+        <form class="recommend-form" th:action="@{/recommend}" method="post" data-recommend-form>
+            <div class="location-search">
+                <label for="location-query">출발지</label>
+                <div class="search-control">
+                    <input id="location-query" name="locationQuery" type="search" maxlength="100"
+                           placeholder="예: 부산역, 동아대학교 승학캠퍼스"
+                           autocomplete="off" th:value="${locationQuery}">
+                    <button class="secondary-button search-button" type="submit"
+                            th:formaction="@{/recommend/search-location}"
+                            formnovalidate data-search-button>검색</button>
+                </div>
+            </div>
+            <input name="departureName" type="hidden" th:value="${departureName}" data-departure-name>
+            <input name="latitude" type="hidden" th:value="${latitude}" data-departure-latitude>
+            <input name="longitude" type="hidden" th:value="${longitude}" data-departure-longitude>
+
+            <p class="form-error location-error" role="alert"
+               th:if="${locationSearchError}" th:text="${locationSearchError}">
+                출발지를 찾지 못했습니다.
+            </p>
+
+            <div class="location-results" th:if="${locationSearchResults != null and !locationSearchResults.isEmpty()}">
+                <p class="result-count">검색 결과 <strong th:text="${locationSearchResults.size()}">0</strong>곳</p>
+                <label class="location-option" th:each="location : ${locationSearchResults}">
+                    <input type="radio" name="selectedLocation" th:value="${location.id}"
+                           th:attr="data-location-name=${location.name},data-latitude=${location.latitude},data-longitude=${location.longitude}"
+                           th:checked="${departureName == location.name}">
+                    <span class="location-option-copy">
+                        <strong th:text="${location.name}">부산역</strong>
+                        <small th:text="${location.address}">부산광역시 동구 중앙대로 206</small>
+                        <em th:if="${location.category != null and !location.category.isBlank()}"
+                            th:text="${location.category}">교통,수송 &gt; 기차역</em>
+                    </span>
+                </label>
+            </div>
+
+            <div class="selected-location" data-selected-location
+                 th:classappend="${departureName == null or departureName.isBlank()} ? ' is-empty'">
+                <span>선택한 출발지</span>
+                <strong data-selected-location-name
+                        th:text="${departureName == null or departureName.isBlank() ? '검색 결과에서 선택해주세요' : departureName}">
+                    검색 결과에서 선택해주세요
+                </strong>
+            </div>
+            <p class="field-help">부산 지역의 장소만 검색합니다. 선택한 장소의 좌표로 대중교통 이동시간을 계산합니다.</p>
+
+            <div class="field-row three-columns">
+                <label>
+                    <span>사용 가능 시간</span>
+                    <select name="availableMinutes" required>
+                        <option value="120" th:selected="${availableMinutes.toString() == '120'}">2시간</option>
+                        <option value="180" th:selected="${availableMinutes.toString() == '180'}">3시간</option>
+                        <option value="240" th:selected="${availableMinutes.toString() == '240'}">4시간</option>
+                        <option value="300" th:selected="${availableMinutes.toString() == '300'}">5시간</option>
+                        <option value="360" th:selected="${availableMinutes.toString() == '360'}">6시간</option>
+                    </select>
+                </label>
+                <label>
+                    <span>예상 체류시간</span>
+                    <select name="stayMinutes" required>
+                        <option value="30" th:selected="${stayMinutes.toString() == '30'}">30분</option>
+                        <option value="60" th:selected="${stayMinutes.toString() == '60'}">60분</option>
+                        <option value="90" th:selected="${stayMinutes.toString() == '90'}">90분</option>
+                        <option value="120" th:selected="${stayMinutes.toString() == '120'}">120분</option>
+                    </select>
+                </label>
+                <label>
+                    <span>후보 탐색 수</span>
+                    <select name="limit" required>
+                        <option value="1" th:selected="${limit.toString() == '1'}">1개</option>
+                        <option value="2" th:selected="${limit.toString() == '2'}">2개</option>
+                        <option value="3" th:selected="${limit.toString() == '3'}">3개</option>
+                    </select>
+                </label>
+            </div>
+            <p class="field-help">후보 수가 많을수록 추천 폭은 넓어지지만 대중교통 조회 횟수가 증가합니다.</p>
+
+            <button class="primary-button" type="submit" data-submit-button>🎲 룰렛 돌리기</button>
+        </form>
+    </section>
+
+    <section class="panel result-panel" aria-labelledby="result-title"
+             th:if="${recommendationResponse != null}">
+        <p class="step-label">STEP 2</p>
+
+        <div th:if="${recommendationResponse.recommended}">
+            <p class="result-kicker">시간 안에 다녀올 수 있는 장소예요</p>
+            <h2 id="result-title" class="place-name"
+                th:text="${recommendationResponse.recommendation.name}">감천문화마을</h2>
+            <p class="place-meta">
+                <span th:text="${recommendationResponse.recommendation.category}">관광지</span>
+                <span aria-hidden="true">·</span>
+                <span th:text="${recommendationResponse.recommendation.address}">부산광역시</span>
+            </p>
+
+            <div class="time-highlights">
+                <div>
+                    <span>대중교통 편도</span>
+                    <strong><b th:text="${recommendationResponse.recommendation.oneWayTransitMinutes}">35</b>분</strong>
+                </div>
+                <div>
+                    <span>전체 예상</span>
+                    <strong><b th:text="${recommendationResponse.recommendation.estimatedRequiredMinutes}">130</b>분</strong>
+                </div>
+                <div>
+                    <span>사용 가능</span>
+                    <strong><b th:text="${recommendationResponse.recommendation.availableMinutes}">180</b>분</strong>
+                </div>
+            </div>
+
+            <dl class="result-details">
+                <div><dt>직선거리</dt><dd><span th:text="${#numbers.formatDecimal(recommendationResponse.recommendation.distanceKm, 1, 2)}">4.3</span> km</dd></div>
+                <div><dt>예상 왕복 이동</dt><dd><span th:text="${recommendationResponse.recommendation.estimatedRoundTripMinutes}">70</span>분</dd></div>
+                <div><dt>체류시간</dt><dd><span th:text="${recommendationResponse.recommendation.stayMinutes}">60</span>분</dd></div>
+                <div><dt>교통비</dt><dd><span th:text="${recommendationResponse.recommendation.payment}">1550</span>원</dd></div>
+                <div><dt>첫 승차 지점</dt><dd th:text="${recommendationResponse.recommendation.firstStartStation}">출발 정류장</dd></div>
+                <div><dt>최종 하차 지점</dt><dd th:text="${recommendationResponse.recommendation.lastEndStation}">도착 정류장</dd></div>
+                <div><dt>버스 환승</dt><dd><span th:text="${recommendationResponse.recommendation.busTransitCount}">1</span>회</dd></div>
+                <div><dt>지하철 환승</dt><dd><span th:text="${recommendationResponse.recommendation.subwayTransitCount}">0</span>회</dd></div>
+            </dl>
+        </div>
+
+        <div class="empty-result" th:unless="${recommendationResponse.recommended}">
+            <div class="empty-icon" aria-hidden="true">🧭</div>
+            <h2 id="result-title">조건에 맞는 관광지를 찾지 못했어요.</h2>
+            <p th:text="${recommendationResponse.message}">주어진 시간 안에 방문 가능한 관광지를 찾지 못했습니다.</p>
+            <p>사용 가능 시간을 늘리거나 다른 출발지에서 다시 시도해보세요.</p>
+            <a class="secondary-button" href="#condition-title">다시 조건 입력하기</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

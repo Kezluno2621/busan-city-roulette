@@ -24,7 +24,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.flywaydb:flyway-core'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'org.flywaydb:flyway-mysql'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -39,19 +41,4 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-// Buildship resolves dependencies on each machine; do not store local JAR paths.
-eclipse {
-    project {
-        natures 'org.eclipse.buildship.core.gradleprojectnature'
-        buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
-    }
-    classpath {
-        defaultOutputDir = file('bin/default')
-        containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
-        file.whenMerged { classpath ->
-            classpath.entries.removeAll { it.kind == 'lib' }
-        }
-    }
 }

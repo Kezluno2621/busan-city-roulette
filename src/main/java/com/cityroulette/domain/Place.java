@@ -6,9 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "places")
+@Table(
+        name = "places",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_places_external_id",
+                columnNames = "external_id"))
 public class Place {
 
     @Id
@@ -44,6 +49,15 @@ public class Place {
         this.latitude = latitude;
         this.longitude = longitude;
         this.indoor = indoor;
+    }
+
+    public void updateFromApi(String name, String category, String address,
+                              Double latitude, Double longitude) {
+        this.name = name;
+        this.category = category;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Long getId() {

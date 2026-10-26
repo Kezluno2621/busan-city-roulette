@@ -63,6 +63,20 @@ class PlaceRepositoryTests {
         assertThat(placeRepository.existsByExternalId("missing-id")).isFalse();
     }
 
+    @Test
+    void rejectsDuplicateExternalId() {
+        placeRepository.saveAndFlush(new Place(
+                "duplicate-id", "첫 번째 장소", "관광지", "부산광역시",
+                35.1, 129.1, null));
+
+        Place duplicate = new Place(
+                "duplicate-id", "두 번째 장소", "관광지", "부산광역시",
+                35.2, 129.2, null);
+
+        assertThatThrownBy(() -> placeRepository.saveAndFlush(duplicate))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     @NullSource

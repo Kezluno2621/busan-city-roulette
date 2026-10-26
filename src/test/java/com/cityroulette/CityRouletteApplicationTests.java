@@ -33,6 +33,8 @@ class CityRouletteApplicationTests {
                 .andExpect(view().name("index"))
                 .andExpect(model().attribute("title", "City Roulette"))
                 .andExpect(content().string(containsString("<h1>City Roulette</h1>")))
-                .andExpect(content().string(containsString("여행 추천 기능은 아직 구현되지 않았습니다.")));
+                .andExpect(content().string(containsString("대중교통으로 다녀올 수 있는 부산 여행지")))
+                .andExpect(content().string(containsString("href=\"/recommend\"")))
+                .andExpect(content().string(containsString("룰렛 돌리기")));
     }
 }
