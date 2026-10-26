@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main>
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <h1>로그인</h1>
+    <p th:if="${param.error != null}" class="field-error" role="alert">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+    <form th:action="@{/login}" method="post">
+        <fieldset>
+            <legend>계정 로그인</legend>
+            <label for="username">아이디</label>
+            <input id="username" name="username" type="text" autocomplete="username" required>
+            <label for="password">비밀번호</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <button type="submit">로그인</button>
+        </fieldset>
+    </form>
+    <p>계정이 없나요? <a th:href="@{/signup}">회원가입</a></p>
+</main>
+</body>
+</html>

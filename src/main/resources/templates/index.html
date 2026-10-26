@@ -9,6 +9,7 @@
 </head>
 <body>
 <main class="home-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
     <section class="hero home-hero">
         <p class="eyebrow">BUSAN RANDOM TRIP</p>
         <h1 th:text="${title}">City Roulette</h1>

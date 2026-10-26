@@ -25,11 +25,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.flywaydb:flyway-core'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'org.flywaydb:flyway-mysql'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // MySQL 서버 없이 기본 애플리케이션 테스트를 실행하기 위한 테스트 전용 DB
     testRuntimeOnly 'com.h2database:h2'

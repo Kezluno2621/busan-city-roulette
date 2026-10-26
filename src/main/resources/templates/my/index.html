@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 여행 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main>
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <h1>내 여행 기록</h1>
+    <p>로그인 사용자만 접근할 수 있는 페이지입니다.</p>
+    <dl>
+        <dt>아이디</dt><dd th:text="${member.username}"></dd>
+        <dt>닉네임</dt><dd th:text="${member.displayName}"></dd>
+        <dt>이메일</dt><dd th:text="${member.email}"></dd>
+    </dl>
+    <p>여행 기록 저장 기능은 다음 Issue에서 구현할 예정입니다.</p>
+</main>
+</body>
+</html>
