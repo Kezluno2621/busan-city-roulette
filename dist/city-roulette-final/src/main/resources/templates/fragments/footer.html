@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer class="site-footer" th:fragment="footer">
+    <div>
+        <strong>City Roulette</strong>
+        <p>부산 공공데이터로 발견하는 나만의 즉흥 여행</p>
+    </div>
+    <nav aria-label="하단 메뉴">
+        <a th:href="@{/places}">여행지 찾기</a>
+        <a th:href="@{/recommend}">추천·룰렛</a>
+        <a th:if="${currentMember != null}" th:href="@{/my}">내 여행</a>
+    </nav>
+</footer>
+</body>
+</html>

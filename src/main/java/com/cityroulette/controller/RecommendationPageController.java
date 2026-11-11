@@ -4,6 +4,7 @@ import com.cityroulette.dto.location.LocationSearchResultDto;
 import com.cityroulette.dto.recommendation.RecommendationResponse;
 import com.cityroulette.service.KakaoLocalApiException;
 import com.cityroulette.service.LocationSearchService;
+import com.cityroulette.service.OdsayApiException;
 import com.cityroulette.service.RecommendationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -103,9 +104,14 @@ public class RecommendationPageController {
             return "recommend";
         }
 
-        RecommendationResponse response = recommendationService.recommend(
-                latitude, longitude, availableMinutes, stayMinutes, limit);
-        model.addAttribute("recommendationResponse", response);
+        try {
+            RecommendationResponse response = recommendationService.recommend(
+                    latitude, longitude, availableMinutes, stayMinutes, limit);
+            model.addAttribute("recommendationResponse", response);
+        } catch (OdsayApiException exception) {
+            model.addAttribute("inputError",
+                    "대중교통 경로 조회를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.");
+        }
         return "recommend";
     }
 

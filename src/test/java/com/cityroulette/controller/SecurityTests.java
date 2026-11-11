@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import static com.cityroulette.support.MemberTestData.PASSWORD;
 import static com.cityroulette.support.MemberTestData.signup;
@@ -39,16 +40,28 @@ class SecurityTests {
     private MemberService memberService;
 
     @ParameterizedTest
-    @ValueSource(strings = {"/", "/recommend", "/login", "/signup", "/css/style.css", "/js/main.js"})
+    @ValueSource(strings = {"/", "/recommend", "/login", "/signup", "/places", "/css/style.css", "/js/main.js"})
     void guestCanAccessPublicPagesAndResources(String path) throws Exception {
         mockMvc.perform(get(path)).andExpect(status().isOk());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/places", "/api/places/test", "/api/tourism/test",
+    @ValueSource(strings = {"/api/tourism/test",
             "/api/transit/test", "/api/recommendations/test"})
     void unimplementedPublicEndpointsReturnNotFoundRatherThanAuthenticationError(String path) throws Exception {
         mockMvc.perform(get(path)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void publicPlaceApiRejectsInvalidIdWithoutRequiringAuthentication() throws Exception {
+        mockMvc.perform(get("/api/places/not-a-number"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void devApiStatusEndpointIsAbsentOutsideLocalOrDevProfile() throws Exception {
+        mockMvc.perform(get("/dev/api-status")).andExpect(status().isNotFound());
     }
 
     @ParameterizedTest

@@ -1,6 +1,7 @@
 package com.cityroulette.controller;
 
-import com.cityroulette.domain.Place;
+import com.cityroulette.dto.place.PlacePageResponse;
+import com.cityroulette.dto.place.PlaceResponse;
 import com.cityroulette.service.PlaceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +33,20 @@ class PlaceControllerTest {
 
     @Test
     void returnsOnePageOfDatabasePlaces() throws Exception {
-        when(placeService.getPlaces(2, 5)).thenReturn(List.of(new Place(
-                "1997221", "감천문화마을", "관광지", "부산광역시 사하구",
-                35.09, 129.01, true)));
+        PlaceResponse place = new PlaceResponse(
+                1L, "감천문화마을", "관광지", "부산광역시 사하구", "사하구",
+                35.09, 129.01, null, "KOR_SERVICE", "1997221", true, null, null, null);
+        when(placeService.searchPlaces(null, null, null, 2, 5))
+                .thenReturn(new PlacePageResponse(List.of(place), 2, 5, 1, 1, false, true));
 
         mockMvc.perform(get("/api/places").param("page", "2").param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].externalId").value("1997221"))
-                .andExpect(jsonPath("$[0].indoor").value(true));
+                .andExpect(jsonPath("$.content[0].externalId").value("1997221"))
+                .andExpect(jsonPath("$.content[0].indoor").value(true))
+                .andExpect(jsonPath("$.page").value(2))
+                .andExpect(jsonPath("$.size").value(5));
 
-        verify(placeService).getPlaces(2, 5);
+        verify(placeService).searchPlaces(null, null, null, 2, 5);
     }
 
     @Test

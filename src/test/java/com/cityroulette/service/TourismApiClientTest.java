@@ -1,6 +1,7 @@
 package com.cityroulette.service;
 
 import com.cityroulette.dto.tourism.TourismApiResponse;
+import com.cityroulette.dto.tourism.TourismRegionApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -80,5 +81,25 @@ class TourismApiClientTest {
         assertThatThrownBy(() -> clientWithoutKey.getBusanTouristPlaces(1, 10))
                 .isInstanceOf(TourismApiException.class)
                 .hasMessage("TOUR_API_KEY 환경변수가 설정되지 않았습니다.");
+    }
+
+    @Test
+    void requestsAndParsesLegalDongRegions() throws Exception {
+        String responseBody = new ClassPathResource("tourism/ldong-code-sample.json")
+                .getContentAsString(StandardCharsets.UTF_8);
+        server.expect(request -> {
+                    assertThat(request.getURI().getPath()).isEqualTo("/KorService2/ldongCode2");
+                    assertThat(request.getURI().getRawQuery()).contains("numOfRows=100", "pageNo=1");
+                }).andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        TourismRegionApiResponse result = client.getLegalDongRegions();
+
+        assertThat(result.response().body().items().item())
+                .anySatisfy(region -> {
+                    assertThat(region.lDongRegnCd()).isEqualTo("26");
+                    assertThat(region.lDongRegnNm()).isEqualTo("부산광역시");
+                });
+        server.verify();
     }
 }

@@ -44,3 +44,10 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register('verifyDevelopmentData', JavaExec) {
+	group = 'verification'
+	description = 'Reads development database statistics without running Flyway or writing data.'
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.cityroulette.tools.ReadOnlyDataVerificationMain'
+}

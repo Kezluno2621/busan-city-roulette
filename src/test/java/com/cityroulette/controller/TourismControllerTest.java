@@ -2,8 +2,11 @@ package com.cityroulette.controller;
 
 import com.cityroulette.dto.tourism.TourismPlaceDto;
 import com.cityroulette.dto.tourism.TourismSyncResult;
+import com.cityroulette.dto.member.MemberProfile;
+import com.cityroulette.service.MemberService;
 import com.cityroulette.service.TourismImportService;
 import com.cityroulette.service.TourismService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,6 +22,9 @@ import java.util.List;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -38,6 +44,15 @@ class TourismControllerTest {
 
     @MockitoBean
     private TourismImportService tourismImportService;
+
+    @MockitoBean
+    private MemberService memberService;
+
+    @BeforeEach
+    void setUpMemberProfile() {
+        when(memberService.getProfile(anyString()))
+                .thenReturn(new MemberProfile("test-user", "테스트 사용자", "test@example.com"));
+    }
 
     @Test
     void usesDefaultPagination() throws Exception {
@@ -87,7 +102,8 @@ class TourismControllerTest {
         when(tourismImportService.syncBusanTouristPlaces(2, 20))
                 .thenReturn(new TourismSyncResult(20, 15, 3, 2));
 
-        mockMvc.perform(post("/api/tourism/sync").param("page", "2").param("size", "20"))
+        mockMvc.perform(post("/api/tourism/sync").param("page", "2").param("size", "20")
+                        .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.requested").value(20))
                 .andExpect(jsonPath("$.inserted").value(15))
@@ -99,8 +115,23 @@ class TourismControllerTest {
 
     @Test
     void rejectsInvalidSyncPagination() throws Exception {
-        mockMvc.perform(post("/api/tourism/sync").param("page", "0"))
+        mockMvc.perform(post("/api/tourism/sync").param("page", "0")
+                        .with(user("admin").roles("ADMIN")).with(csrf()))
                 .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(tourismImportService);
+    }
+
+    @Test
+    void synchronizationRequiresAdminAndCsrf() throws Exception {
+        mockMvc.perform(post("/api/tourism/sync").with(csrf()))
+                .andExpect(status().is3xxRedirection());
+        mockMvc.perform(post("/api/tourism/sync")
+                        .with(user("member").roles("USER")).with(csrf()))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/api/tourism/sync")
+                        .with(user("admin").roles("ADMIN")))
+                .andExpect(status().isForbidden());
 
         verifyNoInteractions(tourismImportService);
     }

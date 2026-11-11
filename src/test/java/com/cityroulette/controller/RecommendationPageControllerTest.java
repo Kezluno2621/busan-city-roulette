@@ -4,6 +4,7 @@ import com.cityroulette.dto.location.LocationSearchResultDto;
 import com.cityroulette.dto.recommendation.RecommendationDto;
 import com.cityroulette.dto.recommendation.RecommendationResponse;
 import com.cityroulette.service.LocationSearchService;
+import com.cityroulette.service.OdsayApiException;
 import com.cityroulette.service.RecommendationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,14 @@ class RecommendationPageControllerTest {
                 .andExpect(model().attribute("limit", 1))
                 .andExpect(content().string(containsString("어디로 떠나볼까요?")))
                 .andExpect(content().string(containsString("부산역, 동아대학교 승학캠퍼스")))
-                .andExpect(content().string(containsString("룰렛 돌리기")));
+                .andExpect(content().string(containsString("룰렛 돌리기")))
+                .andExpect(content().string(containsString("내 조건으로 장소 추천")))
+                .andExpect(content().string(containsString("data-personalized-recommend-form")))
+                .andExpect(content().string(containsString("recommendation-engine.js")))
+                .andExpect(content().string(containsString("City Roulette 즉흥 코스")))
+                .andExpect(content().string(containsString("data-course-form")))
+                .andExpect(content().string(containsString("course-roulette.js")))
+                .andExpect(content().string(containsString("코스를 저장하려면 로그인이 필요합니다.")));
 
         verifyNoInteractions(recommendationService);
         verifyNoInteractions(locationSearchService);
@@ -134,6 +142,29 @@ class RecommendationPageControllerTest {
     }
 
     @Test
+    void rendersSafeMessageWhenTransitProviderIsUnavailable() throws Exception {
+        when(recommendationService.recommend(35.1160, 128.9680, 180, 60, 1))
+                .thenThrow(new OdsayApiException("ODSAY_API_KEY 환경변수가 설정되지 않았습니다."));
+
+        mockMvc.perform(post("/recommend")
+                        .param("departureName", "부산역")
+                        .param("latitude", "35.1160")
+                        .param("longitude", "128.9680")
+                        .param("availableMinutes", "180")
+                        .param("stayMinutes", "60")
+                        .param("limit", "1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("recommend"))
+                .andExpect(model().attribute("inputError",
+                        "대중교통 경로 조회를 사용할 수 없습니다. 잠시 후 다시 시도해주세요."))
+                .andExpect(content().string(containsString("대중교통 경로 조회를 사용할 수 없습니다.")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("ODSAY_API_KEY"))));
+
+        verify(recommendationService).recommend(35.1160, 128.9680, 180, 60, 1);
+    }
+
+    @Test
     void rendersInputErrorForInvalidLatitudeWithoutCallingService() throws Exception {
         mockMvc.perform(post("/recommend")
                         .param("departureName", "잘못된 위치")
@@ -192,7 +223,7 @@ class RecommendationPageControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("href=\"/recommend\"")))
-                .andExpect(content().string(containsString("룰렛 돌리기")));
+                .andExpect(content().string(containsString("추천 시작하기")));
     }
 
     private RecommendationDto recommendation() {

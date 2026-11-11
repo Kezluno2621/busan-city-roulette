@@ -3,6 +3,10 @@ package com.cityroulette.service;
 import com.cityroulette.dto.location.KakaoPlaceDocument;
 import com.cityroulette.dto.location.KakaoPlaceSearchResponse;
 import com.cityroulette.dto.location.LocationSearchResultDto;
+import com.cityroulette.domain.Place;
+import com.cityroulette.repository.PlaceRepository;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,7 +19,8 @@ import static org.mockito.Mockito.when;
 class LocationSearchServiceTest {
 
     private final KakaoLocalApiClient client = mock(KakaoLocalApiClient.class);
-    private final LocationSearchService service = new LocationSearchService(client);
+    private final PlaceRepository places = mock(PlaceRepository.class);
+    private final LocationSearchService service = new LocationSearchService(client, places, false);
 
     @Test
     void mapsKakaoCoordinatesAndPrefersRoadAddress() {
@@ -40,5 +45,21 @@ class LocationSearchServiceTest {
                         "102", "잘못된 장소", "", "부산", "", "not-a-number", "35.1"))));
 
         assertThat(service.search("잘못된 장소")).isEmpty();
+    }
+
+    @Test
+    void demoLocalOnlyModeSearchesSavedPlacesWithoutCallingKakao() {
+        Place place = new Place("부산역 주변 명소", "관광지", "부산광역시 동구", 35.1151, 129.0414, false);
+        when(places.search(org.mockito.ArgumentMatchers.isNull(), org.mockito.ArgumentMatchers.isNull(),
+                org.mockito.ArgumentMatchers.eq("부산역"), org.mockito.ArgumentMatchers.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(place)));
+        LocationSearchService local = new LocationSearchService(client, places, true);
+
+        assertThat(local.search(" 부산역 ")).singleElement().satisfies(result -> {
+            assertThat(result.name()).isEqualTo("부산역 주변 명소");
+            assertThat(result.latitude()).isEqualTo(35.1151);
+            assertThat(result.longitude()).isEqualTo(129.0414);
+        });
+        org.mockito.Mockito.verifyNoInteractions(client);
     }
 }

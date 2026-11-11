@@ -7,33 +7,83 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<main>
+<main class="auth-page">
     <nav th:replace="~{fragments/navigation :: navigation}"></nav>
-    <h1>회원가입</h1>
-    <form th:action="@{/signup}" th:object="${signupRequest}" method="post">
-        <fieldset>
-            <legend>회원 정보</legend>
-            <p th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}" class="field-error" role="alert"></p>
-            <label for="username">아이디</label>
-            <input type="text" th:field="*{username}" autocomplete="username" minlength="4" maxlength="30" required aria-describedby="username-error">
-            <p id="username-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="field-error" role="alert"></p>
-            <label for="password">비밀번호</label>
-            <input type="password" th:field="*{password}" autocomplete="new-password" minlength="8" required aria-describedby="password-error">
-            <p id="password-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="field-error" role="alert"></p>
-            <label for="passwordConfirm">비밀번호 확인</label>
-            <input type="password" th:field="*{passwordConfirm}" autocomplete="new-password" minlength="8" required aria-describedby="passwordConfirm-error">
-            <p id="passwordConfirm-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="field-error" role="alert"></p>
-            <label for="email">이메일</label>
-            <input type="email" th:field="*{email}" autocomplete="email" maxlength="254" required aria-describedby="email-error">
-            <p id="email-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="field-error" role="alert"></p>
-            <label for="displayName">닉네임</label>
-            <input type="text" th:field="*{displayName}" autocomplete="nickname" minlength="2" maxlength="30" required aria-describedby="displayName-error">
-            <p id="displayName-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}" class="field-error" role="alert"></p>
-            <p>아이디는 공백 없이 4~30자, 비밀번호는 8자 이상이며 UTF-8 기준 72바이트 이내로 입력해주세요.</p>
-            <button type="submit">회원가입</button>
-        </fieldset>
-    </form>
-    <p>이미 계정이 있나요? <a th:href="@{/login}">로그인</a></p>
+
+    <section class="auth-container" aria-labelledby="signup-title">
+        <header class="auth-header">
+            <p class="eyebrow">BUSAN RANDOM TRIP</p>
+            <h1 id="signup-title">회원가입</h1>
+            <p>City Roulette에서<br>나만의 여행 기록을 시작해보세요.</p>
+        </header>
+
+        <div class="auth-card">
+            <form class="auth-form" th:action="@{/signup}" th:object="${signupRequest}" method="post">
+                <fieldset class="auth-fields">
+                    <legend class="visually-hidden">회원 정보</legend>
+                    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+                        <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">회원가입 오류</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="username">아이디</label>
+                        <input class="form-input" type="text" th:field="*{username}"
+                               autocomplete="username" minlength="4" maxlength="30" required
+                               aria-describedby="username-help username-error"
+                               th:attr="aria-invalid=${#fields.hasErrors('username')}">
+                        <p id="username-help" class="form-help">공백 없이 4~30자로 입력해주세요.</p>
+                        <p id="username-error" th:if="${#fields.hasErrors('username')}"
+                           th:errors="*{username}" class="form-error-message" role="alert"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">비밀번호</label>
+                        <input class="form-input" type="password" th:field="*{password}"
+                               autocomplete="new-password" minlength="8" required
+                               aria-describedby="password-help password-error"
+                               th:attr="aria-invalid=${#fields.hasErrors('password')}">
+                        <p id="password-help" class="form-help">8자 이상, UTF-8 기준 72바이트 이내로 입력해주세요.</p>
+                        <p id="password-error" th:if="${#fields.hasErrors('password')}"
+                           th:errors="*{password}" class="form-error-message" role="alert"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="passwordConfirm">비밀번호 확인</label>
+                        <input class="form-input" type="password" th:field="*{passwordConfirm}"
+                               autocomplete="new-password" minlength="8" required
+                               aria-describedby="passwordConfirm-error"
+                               th:attr="aria-invalid=${#fields.hasErrors('passwordConfirm')}">
+                        <p id="passwordConfirm-error" th:if="${#fields.hasErrors('passwordConfirm')}"
+                           th:errors="*{passwordConfirm}" class="form-error-message" role="alert"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">이메일</label>
+                        <input class="form-input" type="email" th:field="*{email}"
+                               autocomplete="email" maxlength="254" required
+                               aria-describedby="email-error"
+                               th:attr="aria-invalid=${#fields.hasErrors('email')}">
+                        <p id="email-error" th:if="${#fields.hasErrors('email')}"
+                           th:errors="*{email}" class="form-error-message" role="alert"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="displayName">닉네임</label>
+                        <input class="form-input" type="text" th:field="*{displayName}"
+                               autocomplete="nickname" minlength="2" maxlength="30" required
+                               aria-describedby="displayName-error"
+                               th:attr="aria-invalid=${#fields.hasErrors('displayName')}">
+                        <p id="displayName-error" th:if="${#fields.hasErrors('displayName')}"
+                           th:errors="*{displayName}" class="form-error-message" role="alert"></p>
+                    </div>
+
+                    <button class="primary-button auth-submit" type="submit">회원가입</button>
+                </fieldset>
+            </form>
+        </div>
+
+        <p class="auth-footer">이미 계정이 있나요? <a th:href="@{/login}">로그인</a></p>
+    </section>
 </main>
 </body>
 </html>

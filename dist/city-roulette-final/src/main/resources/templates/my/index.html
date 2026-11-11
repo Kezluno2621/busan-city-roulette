@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 여행 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="my-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+
+    <header class="my-header">
+        <p class="eyebrow">MY CITY ROULETTE</p>
+        <h1>안녕하세요, <span th:text="${member.displayName}">여행자</span>님</h1>
+        <p>회원 정보와 나의 부산 여행 공간을 확인하세요.</p>
+    </header>
+
+    <section class="profile-card" aria-labelledby="profile-title">
+        <div class="section-heading profile-heading">
+            <div>
+                <p class="step-label">PROFILE</p>
+                <h2 id="profile-title">회원 정보</h2>
+            </div>
+            <span class="profile-badge">MEMBER</span>
+        </div>
+        <dl class="profile-details">
+            <div><dt>아이디</dt><dd th:text="${member.username}">username</dd></div>
+            <div><dt>닉네임</dt><dd th:text="${member.displayName}">여행자</dd></div>
+            <div><dt>이메일</dt><dd th:text="${member.email}">user@example.com</dd></div>
+        </dl>
+    </section>
+
+    <section class="trip-empty-card" aria-labelledby="trip-title">
+        <div class="empty-icon" aria-hidden="true">🧭</div>
+        <h2 id="trip-title">내 여행 기록</h2>
+        <p>저장한 여행을 확인하거나 새로운 부산 여행의 기억을 남겨보세요.</p>
+        <div class="my-trip-actions">
+            <a class="secondary-button" th:href="@{/my/trips}">여행 기록 보기</a>
+            <a class="primary-button" th:href="@{/my/trips/new}">새 여행 기록</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

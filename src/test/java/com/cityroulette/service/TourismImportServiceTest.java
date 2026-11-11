@@ -4,6 +4,7 @@ import com.cityroulette.domain.Place;
 import com.cityroulette.dto.tourism.TourismPlaceDto;
 import com.cityroulette.dto.tourism.TourismSyncResult;
 import com.cityroulette.repository.PlaceRepository;
+import com.cityroulette.repository.PlaceSourceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -30,6 +31,9 @@ class TourismImportServiceTest {
     @Autowired
     private PlaceRepository placeRepository;
 
+    @Autowired
+    private PlaceSourceRepository placeSourceRepository;
+
     @MockitoBean
     private TourismService tourismService;
 
@@ -44,6 +48,7 @@ class TourismImportServiceTest {
         assertThat(saved.getName()).isEqualTo("부산 감천문화마을");
         assertThat(saved.getIndoor()).isNull();
         assertThat(result).isEqualTo(new TourismSyncResult(1, 1, 0, 0));
+        assertThat(placeSourceRepository.existsByProviderAndExternalId("TOUR_API", "1997221")).isTrue();
         verify(tourismService).getBusanTouristPlaces(1, 10);
     }
 
@@ -119,6 +124,20 @@ class TourismImportServiceTest {
 
         assertThat(result).isEqualTo(new TourismSyncResult(3, 1, 1, 1));
         assertThat(placeRepository.count()).isEqualTo(2);
+    }
+
+    @Test
+    void skipsNonBusanItemEvenWhenItHasRequiredFields() {
+        TourismPlaceDto seoul = new TourismPlaceDto(
+                "3000000", "12", "서울 장소", "서울특별시", "", "126.9", "37.5",
+                "", "", "", "11", "", "VE", "VE01", "VE010100",
+                "", "", "", "");
+        when(tourismService.getBusanTouristPlaces(1, 10)).thenReturn(List.of(seoul));
+
+        TourismSyncResult result = importService.syncBusanTouristPlaces(1, 10);
+
+        assertThat(result).isEqualTo(new TourismSyncResult(1, 0, 0, 1));
+        assertThat(placeRepository.count()).isZero();
     }
 
     private TourismPlaceDto dto(String contentId, String title, String mapx, String mapy) {

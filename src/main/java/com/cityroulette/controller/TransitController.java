@@ -22,7 +22,7 @@ public class TransitController {
         this.transitService = transitService;
     }
 
-    @GetMapping("/routes")
+    @GetMapping(value = "/routes", params = {"sx", "sy", "ex", "ey", "!originPlaceId"})
     public List<TransitRouteDto> getRoutes(
             @RequestParam(name = "sx") double startLongitude,
             @RequestParam(name = "sy") double startLatitude,

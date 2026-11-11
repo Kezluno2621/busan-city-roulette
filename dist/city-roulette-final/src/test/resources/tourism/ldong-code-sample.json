@@ -1,0 +1,12 @@
+{
+  "response": {
+    "header": { "resultCode": "0000", "resultMsg": "OK" },
+    "body": {
+      "items": { "item": [
+        { "code": "11", "name": "서울특별시", "rnum": 1 },
+        { "code": "26", "name": "부산광역시", "rnum": 2 }
+      ] },
+      "numOfRows": 100, "pageNo": 1, "totalCount": 17
+    }
+  }
+}

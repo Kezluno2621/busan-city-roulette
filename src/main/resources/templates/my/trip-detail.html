@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tripRecord.title + ' - City Roulette'}">여행 기록 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="my-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+
+    <header class="page-heading trip-detail-heading">
+        <div>
+            <p class="eyebrow">TRIP RECORD</p>
+            <h1 th:text="${tripRecord.title}">부산 바다 여행</h1>
+            <p><span th:text="${tripRecord.placeName}">감천문화마을</span>
+                <span th:if="${tripRecord.placeAddress != null}"> · <span th:text="${tripRecord.placeAddress}">부산광역시</span></span>
+            </p>
+        </div>
+        <a class="secondary-button" th:href="@{/my/trips}">목록으로</a>
+    </header>
+
+    <article class="trip-detail-card">
+        <dl class="trip-detail-list">
+            <div><dt>방문일</dt><dd th:text="${tripRecord.visitDate}">2026-10-26</dd></div>
+            <div><dt>작성일</dt><dd th:text="${tripRecord.createdAt}">2026-10-26</dd></div>
+            <div th:if="${tripRecord.placeAddress != null}"><dt>주소</dt><dd th:text="${tripRecord.placeAddress}">부산광역시</dd></div>
+        </dl>
+
+        <section class="trip-memo" aria-labelledby="memo-title">
+            <h2 id="memo-title">여행 메모</h2>
+            <p th:if="${tripRecord.memo != null}" th:text="${tripRecord.memo}">여행 메모</p>
+            <p th:unless="${tripRecord.memo != null}" class="muted-copy">작성한 메모가 없습니다.</p>
+        </section>
+
+        <section class="attachment-card" th:if="${tripRecord.hasAttachment()}" aria-labelledby="attachment-title">
+            <div>
+                <p class="step-label">ATTACHMENT</p>
+                <h2 id="attachment-title" th:text="${tripRecord.originalFileName}">busan.jpg</h2>
+                <p><span th:text="${tripRecord.fileContentType}">image/jpeg</span>
+                    · <span th:text="${tripRecord.fileSize}">1024</span> bytes</p>
+            </div>
+            <a class="primary-button" th:href="@{/my/trips/{id}/attachment(id=${tripRecord.id})}">사진 다운로드</a>
+        </section>
+
+        <section class="attachment-card attachment-empty" th:unless="${tripRecord.hasAttachment()}">
+            <div>
+                <p class="step-label">ATTACHMENT</p>
+                <h2>첨부한 사진이 없습니다.</h2>
+            </div>
+        </section>
+    </article>
+</main>
+</body>
+</html>

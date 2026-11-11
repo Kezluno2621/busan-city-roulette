@@ -1,538 +1,188 @@
-# 🎲 City Roulette
-
-> 부산의 대중교통과 공공데이터를 활용하여  
-> 사용자의 현재 상황에 맞는 즉흥 여행 목적지를 추천하는 웹 서비스
-
----
-
-## 📌 Basic Info
-
-### 프로젝트명
-
-**City Roulette**
-
-Repository: `busan-city-roulette`
-
-### 개요
-
-사용자의 출발 위치와 이용 가능한 시간, 날씨 등의 정보를 바탕으로  
-부산에서 현재 방문할 수 있는 여행지를 탐색하고 즉흥적으로 추천하는 웹 서비스입니다.
-
-### 동기
-
-외출하거나 여행을 하고 싶어도 어디를 갈지 쉽게 결정하지 못하거나,
-항상 익숙한 장소만 반복해서 방문하는 경우가 많습니다.
-
-또한 새로운 장소를 찾으려면 관광지 검색, 이동 시간 확인,
-대중교통 검색, 날씨 확인 등을 각각 따로 해야 하는 불편함이 있습니다.
-
-기존 여행 서비스는 대부분 사용자가 목적지를 먼저 정한 뒤
-경로나 주변 정보를 제공하는 방식입니다.
-
-City Roulette는 이러한 과정을 반대로 구성하여,
-**사용자가 목적지를 정하지 않아도 현재 상황을 기반으로
-갈 수 있는 장소를 먼저 추천하는 서비스**를 만드는 것을 목표로 합니다.
-
-### 예상 결과물
-
-사용자가 출발지와 이용 가능한 시간을 입력하면
-부산의 관광지, 날씨, 대중교통 등의 데이터를 분석하여
-현재 방문할 수 있는 목적지를 추천합니다.
-
-최종적으로 다음과 같은 정보를 하나의 웹 화면에서 확인할 수 있도록 구현합니다.
-
-- 추천 목적지
-- 관광지 기본 정보
-- 예상 이동 시간
-- 현재 날씨
-- 추천 이유
-- 간단한 여행 코스
-
----
-
-## ✨ Key Features
-
-### 1. 🎲 즉흥 목적지 추천
-
-사용자의 출발 위치와 이용 가능한 시간을 기반으로
-방문 가능한 장소들을 탐색한 뒤 목적지를 추천합니다.
-
-단순 랜덤 선택이 아니라 이동 가능 여부 등의 조건을 적용한 후
-후보 장소 중 하나를 선택하도록 구현합니다.
-
-### 2. 🚌 대중교통 기반 목적지 필터링
-
-부산의 버스 및 대중교통 데이터를 활용하여
-실제로 이동 가능한 장소를 목적지 후보로 선정합니다.
-
-사용 가능한 시간보다 이동 시간이 오래 걸리는 장소는
-추천 대상에서 제외합니다.
-
-### 3. 🌤 상황 기반 여행 추천
-
-날씨와 관광지 정보를 결합하여
-현재 상황에 적합한 장소를 우선적으로 추천합니다.
-
-예를 들어 비가 오는 경우 실내 관광지를,
-날씨가 좋은 경우 공원이나 해변과 같은 야외 장소를
-추천할 수 있도록 구현합니다.
-
----
-
-## 🛠 Tech Stack
-
-### Frontend
-
-- HTML
-- CSS
-- JavaScript
-- Thymeleaf
-
-### Backend
-
-- Java
-- Spring Boot
-- Spring MVC
-- Spring Data JPA
-
-### Database
-
-- MySQL
-
-### Deployment
-
-- Render
-- AWS
-
-프로젝트 구현 및 배포 단계에서 Spring Boot 애플리케이션의
-배포 환경과 비용, 설정 난이도 등을 비교하여 최종 배포 플랫폼을 결정할 예정입니다.
-
----
-
-## 🗂 Data / API
-
-프로젝트에서는 다음과 같은 공공데이터 및 외부 API 활용을 계획하고 있습니다.
-
-- 부산광역시 버스정보 API
-- 한국관광공사 관광정보 API
-- 기상청 날씨 API
-- 공공데이터포털 Open API
-
-사용할 API는 구현 과정에서 데이터 제공 범위와 사용 가능 여부에 따라
-추가 또는 변경될 수 있습니다.
-
-관광정보 데이터 소스와 Place 매핑 조사: [Tourism API Research](docs/tourism-api-research.md)
-
-대중교통 경로 API 선정과 추천 설계: [Public Transport API Research](docs/public-transport-api-research.md)
-
----
-
-## 🗓 Milestones
-
-### Week 1-4 — 기획 · 설계 · 초기 세팅
-
-- 프로젝트 주제 및 요구사항 정의
-- Git/GitHub 개발 환경 구축
-- GitHub Repository 생성
-- 공공데이터 및 API 조사
-- 주요 화면 구성 설계
-- 데이터 구조 설계
-- Spring Boot 프로젝트 초기 설정
-
-### Week 5-8 — 핵심 기능 구현 · MVP
-
-- 관광지 API 연동
-- 관광지 데이터 조회 기능 구현
-- 목적지 후보 생성 기능 구현
-- 랜덤 목적지 추천 기능 구현
-- 기본 웹 UI 구현
-- MVP 완성
-
-### Week 9-12 — 고도화 · 추가 기능 · 테스트
-
-- 날씨 API 연동
-- 부산 대중교통 데이터 연동
-- 이동 가능 시간 기반 필터링
-- 상황 기반 추천 로직 구현
-- 추천 결과 화면 개선
-- 예외 처리 및 기능 테스트
-
-### Week 13-16 : 최적화, 문서화, 최종 발표
-
-- UI/UX 개선
-- 코드 리팩토링
-- 기능 및 오류 테스트
-- Vercel, Render, AWS 등 배포 환경 비교
-- 최종 배포 환경 선정 및 웹 서비스 배포
-- README 및 프로젝트 문서 작성
-- 최종 발표 준비
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-## Development
-
-현재 구현 범위는 **기본 개발 환경, MySQL/Place 스키마와 회원가입·세션 인증**입니다.
-`GET /`에서 Thymeleaf 홈 화면을 표시하며, 여행 조건 입력과 추천 버튼은 아직 비활성화되어 있습니다.
-외부 API와 추천 로직은 아직 구현하지 않았습니다. 회원가입·세션 로그인·로그아웃과 회원 전용 `/my`를 제공합니다.
-회원 기능 구조와 STS 수동 확인: [회원 인증 안내](docs/member-authentication.md).
-
-### Requirements
-
-- JDK 17 (IDE 실행용 Java와 별도로 프로젝트 JDK 및 Gradle JVM을 17로 설정)
-- Spring Boot 3.5.16
-- Gradle 8.14.3: 저장소의 Wrapper 사용, 별도 Gradle 설치 불필요
-- MySQL 8 이상 및 사용자가 준비한 개발 DB/계정
-- Spring Tool Suite(STS), 또는 IntelliJ IDEA / VS Code
-
-Java와 Gradle 조합은 [Spring Boot 공식 요구사항](https://docs.spring.io/spring-boot/3.5/system-requirements.html)을 기준으로 선택했습니다.
-최초 Import와 빌드에는 Gradle 및 의존성을 다운로드할 인터넷 연결이 필요합니다.
-
-### MySQL 설정
-
-MySQL 서버를 실행하고, 개발 DB(기본 이름 `cityroulette`)와 해당 DB에 접근할 계정을 직접 준비합니다.
-애플리케이션은 DB를 생성하거나 삭제하지 않습니다.
-
-Windows에서는 서비스 앱에서 설치한 MySQL 서비스를 시작하고, MySQL Workbench 또는 MySQL 클라이언트에서
-DB 생성 권한이 있는 계정으로 다음 명령을 최초 한 번 실행합니다.
-
-```sql
-CREATE DATABASE IF NOT EXISTS cityroulette
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
+# City Roulette
+
+부산 공공 관광데이터를 검색하고, 사용자 조건에 맞는 장소를 추천한 뒤 룰렛 방식으로
+1~5개 장소의 즉흥 여행 코스를 만드는 Spring Boot 웹 서비스입니다.
+
+공개 배포 URL은 없습니다. 검증된 로컬 시연 주소는 `http://127.0.0.1:18090/`입니다.
+
+## 프로젝트 목적
+
+여행자는 여러 사이트에서 장소, 지도, 대중교통 정보를 따로 찾아야 하고 목적지를
+결정하는 데에도 많은 시간을 씁니다. City Roulette는 부산 관광 장소를 하나의 DB로
+통합하고, 선호 카테고리와 출발지, 지역, 랜덤성을 이용해 후보를 좁힌 뒤 재미있는 코스로
+제시합니다. 확인되지 않은 이동시간이나 비용은 임의로 만들지 않고 데이터 한계를 화면에
+표시합니다.
+
+## 핵심 기능
+
+- 관광지·음식점·문화시설 검색, 카테고리·구군 필터, 서버 측 페이지네이션
+- 장소 상세, 출처·이미지 이용 정보, Leaflet 지도, 주변 정류장 조회
+- 카테고리·거리·다양성·데이터 품질·검증된 교통 연결성을 이용한 개인화 추천
+- 추천 점수 기반 룰렛, 고정 seed 재현, 역할 그룹 다양성, 1~5개 장소 방문 순서 생성
+- 회원가입·로그인과 CSRF 보호
+- 회원별 코스 저장·수정·삭제, 즐겨찾기, 여행 기록 PNG 업로드·다운로드
+- TourAPI와 부산 공공데이터 수집·정규화·멱등 저장 프로그램
+- 버스 정류장·노선·정차 순서 저장, 직통 및 최대 1회 환승 후보 탐색
+- `demo` 프로필과 Windows PowerShell 로컬 시연 스크립트
+
+## 기술 스택
+
+| 영역 | 기술 |
+| --- | --- |
+| Backend | Java 17, Spring Boot 3.5.16, Spring MVC, Spring Data JPA, Spring Security |
+| Frontend | Thymeleaf, JavaScript, CSS, Leaflet, OpenStreetMap tiles |
+| Database | MySQL 8.0.46, Flyway V1~V12 |
+| Test | JUnit 5, Spring Boot Test, Spring Security Test, H2 Fixture |
+| Build | Gradle Wrapper 8.14.3 |
+
+## 시스템 아키텍처
+
+```mermaid
+flowchart LR
+    U[Browser] --> C[Controller]
+    C --> S[Service]
+    S --> R[Repository]
+    R --> DB[(MySQL)]
+    S --> REC[Recommendation and Course Engine]
+    S --> BUS[Transit Graph Engine]
+    API[Public Tourism and Bus APIs] --> COL[Manual Collectors]
+    COL --> N[Normalize and Validate]
+    N --> DB
+    U --> MAP[Leaflet and OpenStreetMap]
 ```
 
-이미 같은 이름의 DB가 있다면 이 명령은 기존 DB의 설정을 변경하지 않습니다.
-다른 DB 이름을 사용하려면 위 SQL의 이름과 `DB_NAME`을 함께 변경하세요.
-애플리케이션용 계정에는 해당 개발 DB의 조회·추가·수정·삭제 권한과,
-Flyway가 스키마 migration을 적용하는 데 필요한 CREATE·ALTER·INDEX 권한이 필요합니다.
-실제 계정명과 비밀번호는 로컬에서만 관리합니다.
+일반 웹 요청은 Controller → Service → Repository 구조를 따릅니다. 외부 API 수집기는
+웹 서버 시작과 분리된 수동 Runner이며, 기본 설정에서는 자동 실행되지 않습니다.
 
-| 환경변수 | 기본값 | 설명 |
-| --- | --- | --- |
-| `DB_HOST` | `localhost` | MySQL 서버 주소 |
-| `DB_PORT` | `3306` | MySQL 포트 |
-| `DB_NAME` | `cityroulette` | 이미 준비된 개발 DB 이름 |
-| `DB_USERNAME` | 없음, 필수 | 본인의 DB 계정 |
-| `DB_PASSWORD` | 없음, 필수 | 본인의 DB 비밀번호 |
-| `TOUR_API_KEY` | 없음, API 호출 시 필수 | 한국관광공사 KorService2 발급키 |
-| `ODSAY_API_KEY` | 없음, 추천 실행 시 필수 | ODsay 대중교통 Server API 키 |
-| `KAKAO_REST_API_KEY` | 없음, 출발지 검색 시 필수 | Kakao Developers 애플리케이션 REST API 키 |
+## 데이터베이스
 
-`.env.example`은 환경변수 목록을 보여주는 참고 파일입니다.
-**Spring Boot는 `.env`를 자동으로 읽지 않습니다.** STS 실행 설정의 Environment에 입력하거나,
-터미널에서 실행하기 전에 OS 환경변수로 설정하세요. 실제 비밀번호나 API Key를 파일에 작성해 Git에 올리지 마세요.
-`.env`, 개인 IDE 설정, `*.launch`, `application-local.*`는 Git에서 제외합니다.
-공유 가능한 Eclipse 프로젝트 설정과 Java 17/UTF-8 설정은 저장소에 포함합니다.
-
-JDBC URL에는 `connectionTimeZone=Asia/Seoul&characterEncoding=UTF-8`을 사용합니다.
-`connectionTimeZone`은 Connector/J의 시간 변환 기준이며 MySQL 서버 시간대 자체를 변경하지 않습니다.
-`characterEncoding=UTF-8`과 DB의 `utf8mb4`로 한글 등을 저장할 수 있도록 구성했습니다.
-
-Flyway가 `db/migration`의 버전 SQL을 순서대로 적용하고,
-`spring.jpa.hibernate.ddl-auto=validate`는 Entity와 실제 스키마가 맞는지 확인만 합니다.
-기존 개발 DB는 baseline 버전 1로 등록한 뒤 `external_id` UNIQUE migration부터 적용합니다.
-적용 전에 아래 중복 확인 SQL의 결과가 없는지 확인하세요. 중복이 있으면 데이터를 자동 삭제하지 않고 migration이 실패합니다.
-
-```sql
-SELECT external_id, COUNT(*) AS duplicate_count
-FROM places
-WHERE external_id IS NOT NULL
-GROUP BY external_id
-HAVING COUNT(*) > 1;
-```
-`spring.jpa.open-in-view=false`는 화면 렌더링 중 DB 접근을 막습니다.
-애플리케이션 시작에는 MySQL 연결이 필요하며, 홈 화면 자체는 Repository를 호출하지 않습니다.
-
-SQL 로그는 기본적으로 끕니다. 학습할 때만 STS 환경변수에 `SPRING_JPA_SHOW_SQL=true`를 추가하면
-Hibernate가 실행한 SQL을 확인할 수 있습니다. 파라미터 값 상세 로그는 켜지 않습니다.
-
-설정 근거: [Connector/J 시간대](https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-datetime-types-processing.html),
-[문자 인코딩](https://dev.mysql.com/doc/connector-j/en/connector-j-reference-charsets.html),
-[MySQL DB 생성](https://dev.mysql.com/doc/refman/8.4/en/create-database.html),
-[Spring Boot 스키마 초기화](https://docs.spring.io/spring-boot/3.5/how-to/data-initialization.html).
-
-### Place 기본 스키마
-
-`Place`는 `places` 테이블에 대응합니다. 실행 시 JPA가 스키마를 준비하며 실제 관광지 데이터는 넣지 않습니다.
-
-| 필드 | Java 타입 | 의미 / 제약 |
-| --- | --- | --- |
-| `id` | `Long` | 기본키, MySQL AUTO_INCREMENT |
-| `externalId` | `String` | 원천 콘텐츠 ID (`external_id`), NULL 가능 |
-| `name` | `String` | 장소 이름, NULL 불가 |
-| `category` | `String` | 장소 분류, 미확인 시 NULL 가능 |
-| `address` | `String` | 주소, 미확인 시 NULL 가능 |
-| `latitude` | `Double` | 위도, 미확인 시 NULL 가능 |
-| `longitude` | `Double` | 경도, 미확인 시 NULL 가능 |
-| `indoor` | `Boolean` | 실내 true, 실외 false, 미확인 NULL |
-
-문자열 컬럼 길이는 JPA 기본값 255입니다. 좌표는 위치 표현에 사용할 부동소수점 값으로 저장합니다.
-`name`의 NULL 제약과 빈 문자열 검증은 다릅니다. 향후 입력 DTO를 만들 때 빈 이름 등의 검증을 추가합니다.
-`PlaceRepository extends JpaRepository<Place, Long>`이 기본 저장·조회·삭제 메서드를 제공합니다.
-관광지 동기화는 `externalId`로 기존 데이터를 찾아 API 관리 필드만 갱신하며, 수동으로 관리하는
-`indoor` 값은 유지합니다.
-
-### Run
-
-1. MySQL Server를 시작하고 위 SQL로 `cityroulette` DB를 준비합니다.
-2. STS에서 `File > Import > Gradle > Existing Gradle Project`로 저장소를 가져옵니다.
-   Gradle Wrapper를 선택하고 프로젝트 JDK 및 Gradle JVM을 JDK 17로 설정합니다. 이미 Import했다면 기존 프로젝트를 사용합니다.
-3. `Run > Run Configurations > Spring Boot App`에서 `CityRouletteApplication` 실행 구성을 선택하거나 만들고,
-   `Environment` 탭에 위 MySQL 환경변수와 `TOUR_API_KEY`, `ODSAY_API_KEY`,
-   `KAKAO_REST_API_KEY`를 설정합니다. 이 실행 설정은 개인 workspace에만 보관합니다.
-4. `CityRouletteApplication`을 `Run As > Spring Boot App`으로 실행합니다.
-5. Console에서 아래 연결 확인 항목을 확인합니다.
-6. 브라우저에서 `http://localhost:8080`에 접속해 기존 홈 화면을 확인합니다.
-
-부산 관광지 API 연동은 애플리케이션 실행 후 아래 주소에서 확인합니다. `page`는 1 이상,
-`size`는 호출량 보호를 위해 1~100만 허용합니다.
-
-```text
-http://localhost:8080/api/tourism/places?page=1&size=10
+```mermaid
+erDiagram
+    MEMBERS ||--o{ TRIP_RECORDS : owns
+    MEMBERS ||--o{ SAVED_COURSES : owns
+    MEMBERS ||--o{ PLACE_FAVORITES : owns
+    PLACES ||--o{ PLACE_SOURCES : has
+    PLACES ||--o{ PLACE_FAVORITES : selected
+    SAVED_COURSES ||--|{ SAVED_COURSE_PLACES : contains
+    PLACES o|--o{ SAVED_COURSE_PLACES : references
+    BUS_ROUTES ||--|{ BUS_ROUTE_STOPS : orders
+    BUS_STOPS ||--o{ BUS_ROUTE_STOPS : stops
 ```
 
-정상 응답에서는 부산 관광지 DTO 목록이 JSON으로 표시됩니다. 실제 키를 README, `.env`,
-`application.properties` 또는 Git에 저장하지 마세요.
+`places`는 화면과 추천에 사용하는 대표 장소를 저장하고, `place_sources`는 공급자와
+외부 ID, 출처, 라이선스를 보존합니다. `(provider, external_id)`는 유일합니다.
+`import_runs`는 수집 통계를, `place_merge_candidates`는 자동 병합하지 않은 유사 후보를
+기록합니다. 전체 스키마는 `src/main/resources/db/migration`의 V1~V12가 정의합니다.
 
-API의 한 페이지를 MySQL에 동기화하려면 POST 요청을 사용합니다. 다음 페이지를 자동으로
-호출하지 않으며, 같은 요청을 반복하면 `externalId`가 같은 기존 행을 갱신합니다.
+| 검증 데이터 | 건수 |
+| --- | ---: |
+| Place / PlaceSource | 395 / 395 |
+| BusStop / BusRoute / BusRouteStop | 30 / 1 / 20 |
+| 관광 공급자 | 4개 |
+| 동일 공급자·외부 ID 중복 | 0 |
 
-```text
-POST http://localhost:8080/api/tourism/sync?page=1&size=10
-GET  http://localhost:8080/api/places?page=1&size=20
-```
+## 추천 및 룰렛 알고리즘
 
-브라우저 주소창은 GET 요청만 보내므로 동기화 POST는 Postman을 사용하거나 Windows PowerShell에서
-다음과 같이 실행합니다.
+추천 점수의 각 요소는 0~100으로 정규화합니다.
+
+| 요소 | 기본 가중치 |
+| --- | ---: |
+| 선호 카테고리 | 30 |
+| 출발지와의 Haversine 직선거리 | 30 |
+| 후보 카테고리 다양성 | 15 |
+| 주소·설명·이미지 등 데이터 품질 | 15 |
+| 검증 가능한 정적 교통 연결성 | 10 |
+
+교통 데이터를 평가할 수 없으면 교통 가중치를 제외하고 나머지 항목을 재정규화합니다.
+랜덤성은 점수를 변조하지 않고 상위 후보 풀의 범위와 가중 추출 확률에 적용합니다.
+동일한 데이터·요청·`randomSeed`는 같은 결과를 재현합니다.
+
+코스는 비복원 추출로 중복 장소를 막고, 장소를 관광·음식·카페·문화·쇼핑·자연 등
+역할 그룹으로 분류해 다양성을 보정합니다. 최대 5개 장소의 순열을 비교하여 음식점 및
+동일 역할의 연속을 줄이고, 허용 거리 범위 안에서 Haversine 직선거리를 사용해 방문
+순서를 정합니다. 실제 도로 경로나 이동시간 최적화로 해석하면 안 됩니다.
+
+## 공공데이터 공급자
+
+실제 통합 DB에는 다음 4개 공급자가 들어 있습니다.
+
+- 한국관광공사 TourAPI `KorService2`
+- 부산광역시 부산명소정보
+- 부산광역시 부산맛집정보
+- 부산광역시 갈맷길 관광정보
+
+부산푸디투어 응답은 미식 테마 콘텐츠로 확인되어 개별 `Place` 저장에서 제외했습니다.
+부산버스정보시스템은 관광 장소와 분리된 버스 정적 데이터에 사용했습니다.
+
+## 로컬 실행
+
+### 일반 개발 실행
+
+필수 환경변수는 `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`입니다.
+외부 API 기능을 사용할 때만 해당 키를 추가합니다. 키와 비밀번호를 소스나
+`application*.properties`에 저장하지 마세요.
 
 ```powershell
-Invoke-RestMethod `
-  -Method Post `
-  -Uri "http://localhost:8080/api/tourism/sync?page=1&size=10"
+$env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
+.\gradlew.bat bootRun
 ```
 
-동기화 응답의 `requested`, `inserted`, `updated`, `skipped`로 처리 결과를 확인할 수 있습니다.
-MySQL에서는 다음 쿼리로 저장 결과를 확인한 뒤 같은 POST를 다시 호출하여 행 수가 두 배로
-증가하지 않는지 확인합니다.
+### 검증된 발표용 demo 실행
 
-```sql
-USE cityroulette;
+`.runtime-demo`의 시연용 MySQL 복제본이 준비된 Windows PC에서 실행합니다.
 
-SELECT id, external_id, name, category, address, latitude, longitude, indoor
-FROM places
-ORDER BY id;
-
-SELECT COUNT(*) FROM places;
+```powershell
+.\scripts\demo\run-demo.ps1 -Username <demo-db-user>
 ```
 
-같은 PowerShell 명령을 한 번 더 실행한 뒤 `SELECT COUNT(*) FROM places;`를 다시 조회합니다.
-동일한 `externalId`는 UPDATE되므로 행 수가 단순히 두 배가 되어서는 안 됩니다.
+빈 비밀번호를 명시적으로 허용해야 하는 준비된 로컬 복제본에만
+`-AllowEmptyPassword`를 추가합니다. 실행 후 `http://127.0.0.1:18090/`에 접속하고,
+종료는 `Ctrl+C` 후 `Y`입니다. 자세한 절차는
+[`docs/final-demo-guide.md`](docs/final-demo-guide.md)를 참고하세요.
 
-터미널에서는 동일한 환경변수를 설정한 뒤 실행합니다.
+## 테스트 결과
 
-```bash
-./gradlew bootRun
-```
+- Java 17 `gradlew --no-daemon clean build`: 성공
+- JUnit/Spring 테스트: 324개, 실패 0, 오류 0, 건너뜀 0
+- Chromium GUI QA: 검색, 상세, 지도, 추천, 룰렛, 로그인, 코스 저장, 즐겨찾기 확인
+- 반응형: 1440×900, 1024×768, 768×1024, 390×844, 360×800 확인
+- demo MySQL 및 Spring Boot 재시작 후 데이터 보존 확인
+- PNG 업로드·다운로드, 회원 접근 제어, 재시작 후 SHA-256 일치 확인
+- 비식별 데이터 덤프를 새 Flyway V12 DB에 복원해 395/395/30/1/20 확인
 
-Windows에서는 `gradlew.bat bootRun`을 사용합니다.
-DB 연결 오류가 발생하면 서버 실행 여부, DB 이름, 계정 권한, 환경변수를 확인하세요.
+테스트 리포트는 빌드 후 `build/reports/tests/test/index.html`에서 확인할 수 있습니다.
 
-### 실제 MySQL 연결 확인
+## 주요 화면
 
-- Console에 HikariPool의 `Start completed`와 `Started CityRouletteApplication`이 출력되는지 확인합니다.
-- `Access denied`, `Communications link failure`, DDL 실행 오류가 없는지 확인합니다.
-  시작 완료 로그만으로 테이블 생성 성공까지 단정하지 말고 아래 SQL도 실행하세요.
-- MySQL Workbench에서 애플리케이션과 같은 서버·DB에 연결한 뒤 확인합니다.
+| 화면 | 파일 |
+| --- | --- |
+| 관광지 목록 | `docs/qa/screenshots/02-places-desktop.png` |
+| 장소 상세 지도 | `docs/qa/screenshots/03-place-detail-map-desktop.png` |
+| 개인화 추천 | `docs/qa/screenshots/05-personalized-recommendation-desktop.png` |
+| 룰렛 코스 | `docs/qa/screenshots/06-course-roulette-desktop.png` |
+| 저장 코스 | `docs/qa/screenshots/08-saved-course-detail-desktop.png` |
 
-```sql
-SELECT DATABASE(), VERSION();
-SHOW CREATE DATABASE cityroulette;
-USE cityroulette;
-SHOW TABLES LIKE 'places';
-SHOW CREATE TABLE places;
-SELECT COUNT(*) FROM places;
-```
+## 제한사항
 
-`places` 테이블, `id` 기본키와 AUTO_INCREMENT, `name`의 NOT NULL, `external_id`와 `indoor`의 NULL 허용을 확인합니다.
-기존 테이블의 `indoor` NOT NULL 제거는 `ddl-auto=update`만으로 적용되지 않을 수 있으므로 실제 스키마를 확인하세요.
-처음 만든 DB라면 데이터 건수는 0입니다. DB 이름을 바꿨다면 확인 SQL도 맞춰 수정하세요.
-`Unknown database`는 DB 이름/생성 여부, `Access denied`는 계정/비밀번호/권한,
-`Communications link failure`는 서버/호스트/포트를 먼저 확인합니다.
+- 버스 데이터는 부산 100번 노선 1개 중 검증된 20개 정차 구간을 포함한 부분 데이터입니다.
+- 시간표, 방문 소요시간, 입장료, 교통요금, 실제 도보·도로 거리를 계산하지 않습니다.
+- 실시간 버스 도착정보와 부산 전체 노선망은 구현 범위가 아닙니다.
+- Leaflet JavaScript와 OpenStreetMap 지도 타일은 인터넷 연결에 의존합니다.
+- Kakao·ODsay 키가 없으면 해당 외부 기능은 안전한 오류 안내를 표시합니다.
+- 공개 배포 없이 로컬 시연 환경만 검증했습니다.
 
-### Build / Test
+## 문서
 
-```bash
-./gradlew clean build
-```
+- [최종 프로젝트 보고서](docs/final-project-report.md)
+- [발표 시연 가이드](docs/final-demo-guide.md)
+- [최종 시연 검증](docs/phase5-d-final-demo-rehearsal.md)
+- [관광데이터 확대 수집](docs/phase4-c3-tourism-data-scale-up.md)
+- [버스 경로 탐색](docs/phase3-a2-transit-route-planner.md)
+- [추천 엔진](docs/phase3-b-recommendation-engine.md)
+- [룰렛 코스](docs/phase3-c-course-roulette.md)
 
-Windows에서는 `gradlew.bat clean build`를 사용합니다.
-`contextLoads()`와 홈 화면의 HTTP 200, 뷰 이름, Thymeleaf 렌더링을 테스트합니다.
-추가로 Place Entity 인식과 Repository Bean 주입, ID 자동 생성, 저장 후 DB 재조회,
-외부 ID 저장·조회와 존재 여부, 실내 여부 true/false/NULL 저장, 필수 이름의 NULL 거부를 테스트합니다. 테스트 데이터는 트랜잭션 종료 시 롤백합니다.
-테스트에만 H2 메모리 DB와 `test` 프로필을 사용하므로 MySQL 서버나 비밀번호 없이 실행할 수 있습니다.
-H2는 실행용 JAR에 포함되지 않으며, 이 테스트의 통과가 실제 MySQL 연결 성공을 의미하지는 않습니다.
-회원 테스트는 저장·조회·unique 제약, BCrypt 저장·검증, 중복/입력 오류, 로그인·세션·로그아웃·CSRF·접근 정책을 검증합니다.
-테스트 보고서는 `build/reports/tests/test/index.html`에서 확인할 수 있습니다.
+## 라이선스와 출처
 
-### 프로젝트 구조
-
-```text
-src/main/java/com/cityroulette/
-├── CityRouletteApplication.java
-├── controller/ (HomeController, MemberController, MemberModelAdvice)
-├── service/ (MemberService, CustomUserDetailsService, RegistrationException)
-├── repository/ (PlaceRepository, MemberRepository)
-├── domain/ (Place, Member, Role)
-├── dto/member/ (MemberSignupRequest, MemberProfile)
-└── config/SecurityConfig.java
-
-src/main/resources/
-├── application.properties
-├── templates/ (index.html, signup.html, login.html, my/index.html, fragments/navigation.html)
-└── static/
-    ├── css/style.css
-    └── js/main.js
-```
-
-- `controller`: HTTP 요청을 받아 화면을 연결합니다.
-- `service`: 회원가입 검증·비밀번호 해시 처리와 인증용 회원 조회를 담당합니다.
-- `repository`: DB 저장·조회 작업을 담당합니다.
-- `domain`: DB 테이블에 대응하는 Entity를 둡니다. Place와 회원 정보 Member, Role을 정의합니다.
-- `dto`: 가입 입력과 비밀번호를 제외한 화면용 회원 정보를 담습니다.
-- `config`: Spring Security 접근 정책과 PasswordEncoder를 구성합니다.
-
-사용하지 않는 패키지는 `package-info.java`에 역할만 설명했습니다.
-현재 HomeController는 화면만 반환하며, 기능 개발 시 Controller → Service → Repository로 책임을 나눕니다.
-Trip/Recommendation, 외부 API 데이터 저장, 샘플 데이터는 아직 만들지 않았습니다.
-회원가입 오류는 해당 Form 필드에 표시하며, 그 외 오류 응답은 Spring Boot 기본 처리를 사용합니다.
-
-### Dependencies
-
-- Spring Web: Spring MVC와 내장 Tomcat
-- Thymeleaf: 서버에서 HTML 화면 렌더링
-- Spring Data JPA: Entity와 Repository를 통한 DB 접근
-- MySQL Driver: MySQL 연결
-- Validation: 회원가입 입력 DTO 검증
-- Spring Boot Test / JUnit Platform Launcher: 기본 테스트 실행
-- H2: 테스트 전용 메모리 DB
-
-- Spring Boot DevTools: 개발 실행 시 재시작 지원 (`developmentOnly`, 배포 JAR에서 제외)
-
-Spring Security로 세션 인증과 CSRF 보호를 제공하며 spring-security-test로 인증 흐름을 검증합니다. Lombok은 사용하지 않습니다.
-
-### 다음 GitHub Issue 제안
-
-1. 관광정보 API 명세 조사 및 Place 필드 매핑 정의
-2. 관광지 조회 기능을 Controller → Service → Repository로 구현
-3. 여행 조건 DTO와 입력 검증 구현
-4. 목적지 후보 선정 및 기본 추천 기능 구현
-
-
-### Eclipse(STS) / VS Code / Docker code-server
-
-기존 `com.cityroulette` 패키지, `CityRouletteApplication` 및 Gradle 프로젝트 이름
-`city-roulette`을 유지합니다. 저장소 폴더 이름은 `busan-city-roulette`입니다.
-Gradle Groovy DSL의 `build.gradle`을 공통 빌드 설정으로 사용합니다.
-
-```text
-busan-city-roulette/
-├── .settings/
-│   ├── org.eclipse.buildship.core.prefs
-│   ├── org.eclipse.core.resources.prefs
-│   └── org.eclipse.jdt.core.prefs
-├── gradle/wrapper/
-│   ├── gradle-wrapper.jar
-│   └── gradle-wrapper.properties
-├── src/
-│   ├── main/
-│   │   ├── java/com/cityroulette/
-│   │   │   ├── CityRouletteApplication.java
-│   │   │   └── controller/, service/, repository/, domain/, dto/, config/
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       ├── static/css/style.css
-│   │       ├── static/js/main.js
-│   │       └── templates/index.html
-│   └── test/
-│       ├── java/com/cityroulette/
-│       └── resources/application-test.properties
-├── docs/
-├── .classpath
-├── .project
-├── .gitattributes
-├── .gitignore
-├── .env.example
-├── build.gradle
-├── settings.gradle
-├── gradlew
-├── gradlew.bat
-├── LICENSE
-└── README.md
-```
-
-기존 `.git/`, `.github/` 및 문서는 그대로 유지합니다.
-`.gradle/`, `build/`는 Gradle 실행 시 생성되며, `bin/`은 Eclipse 빌드 시 생성될 수 있습니다.
-이 출력/캐시 디렉터리는 Git에서 제외하며 수동 생성할 필요가 없습니다.
-
-**Eclipse(STS)**
-
-1. Buildship이 설치된 Eclipse 또는 STS에서 `File > Import > Gradle > Existing Gradle Project` 선택.
-2. `busan-city-roulette` 루트를 선택하고 Gradle distribution은 **Gradle Wrapper** 사용.
-3. 프로젝트 JRE 및 Gradle JVM에 JDK 17 지정. IDE 자체의 실행 JDK 요구사항은 별도로 충족합니다.
-4. Import 후 `Gradle > Refresh Gradle Project` 실행.
-5. 위 MySQL 환경변수를 Run Configurations에 설정하고 `CityRouletteApplication` 실행.
-   일반 Eclipse는 `Run As > Java Application`, STS는 `Run As > Spring Boot App` 사용.
-
-공유 `.classpath`에는 JavaSE-17과 Buildship 의존성 컨테이너를 사용하며 절대 JAR 경로는 넣지 않습니다.
-소스/의존성 변경은 `build.gradle`에 반영한 뒤 Refresh합니다.
-메타데이터 재생성이 필요한 경우 `./gradlew eclipse`를 사용합니다.
-설정 방식: [Gradle Eclipse 플러그인 공식 문서](https://docs.gradle.org/current/userguide/eclipse_plugin.html).
-
-**VS Code / Docker code-server**
-
-- 프로젝트 루트 폴더를 열고, 컨테이너 내부에도 JDK 17을 설치합니다.
-  `java -version`과 `./gradlew --version`으로 확인합니다.
-- Java 언어 지원 및 Gradle 확장을 사용할 수 있습니다. 확장의 언어 서버 실행용 JDK 요구사항과
-  프로젝트 빌드용 JDK 17은 별개입니다. 설치 경로는 각 환경의 사용자 설정에서 지정합니다.
-  확장 사용 여부와 무관하게 아래 터미널 명령으로 빌드/실행할 수 있습니다.
-- Docker에는 쓰기 가능한 프로젝트 볼륨과 Gradle 캐시를 사용하고 컨테이너 사용자에게 접근 권한을 줍니다.
-- MySQL이 다른 컨테이너라면 같은 Docker 네트워크의 서비스 이름을 `DB_HOST`로 사용합니다.
-  컨테이너의 `localhost`는 해당 컨테이너 자체입니다.
-- MySQL 환경변수는 Docker 환경 설정이나 터미널에서 전달합니다. `.env`는 Spring Boot가 자동 로드하지 않습니다.
-- 웹 화면은 컨테이너의 8080 포트를 게시하거나 code-server 프록시/포트 전달 기능으로 확인합니다.
-  개발 컨테이너를 실행할 때 포트 게시가 필요하면 `-p 127.0.0.1:8080:8080`을 지정합니다.
-
-```bash
-./gradlew tasks
-./gradlew clean build
-# MySQL 서버 및 DB 환경변수 준비 후
-./gradlew bootRun
-# 또는 빌드한 실행 JAR
-java -jar build/libs/city-roulette-0.0.1-SNAPSHOT.jar
-```
-
-Windows에서는 `./gradlew` 대신 `gradlew.bat`을 사용합니다.
-DevTools는 컴파일된 클래스 변경을 감지하므로 Java 파일 수정 후 IDE 자동 빌드 또는
-별도 터미널의 `./gradlew classes`로 컴파일합니다.
-
-
-### 초기 환경 구성 검증 결과 (회원 기능 추가 이전)
-
-- `./gradlew tasks`, `./gradlew eclipse`, `./gradlew clean build` 성공.
-- 기존 테스트 8건 통과(실패/오류 0).
-- 아래 명령으로 테스트 전용 H2를 사용해 실제 서버를 실행하고 `/` 및 `/css/style.css`의 HTTP 200 확인.
-
-```bash
-./gradlew bootTestRun --args='--spring.profiles.active=test --server.port=18080 --server.address=127.0.0.1'
-```
-
-이 명령은 테스트 클래스패스를 사용한 일시적인 실행 확인용이며 MySQL 실행 설정은 변경하지 않습니다.
-실행 JAR에서 H2와 DevTools가 제외되는 것도 확인했습니다.
-Eclipse 메타데이터의 JavaSE-17, Buildship 컨테이너, main/test 소스 및 상대 출력 경로를 검토했습니다.
-실제 MySQL 연결, Eclipse/STS GUI Import 및 Docker code-server GUI 동작은 이 환경에서 검증하지 않았습니다.
+애플리케이션 소스의 라이선스는 저장소의 `LICENSE`를 따릅니다. 관광 데이터와 이미지는
+각 `PlaceSource`에 저장된 공급자, 원본 URL, content/image license 및 attribution을
+따릅니다. 이용 조건이 불명확한 이미지는 화면에서 표시하지 않습니다.

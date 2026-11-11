@@ -54,6 +54,17 @@ class TourismPlaceMapperTest {
         assertThat(place.getAddress()).isNull();
     }
 
+    @Test
+    void rejectsCoordinatesOutsideBusanOrWithOnlyOneAxis() {
+        Place outside = mapper.toPlace(dto("12", "부산광역시", null, "127.0", "37.5"));
+        Place incomplete = mapper.toPlace(dto("12", "부산광역시", null, "129.0", null));
+
+        assertThat(outside.getLatitude()).isNull();
+        assertThat(outside.getLongitude()).isNull();
+        assertThat(incomplete.getLatitude()).isNull();
+        assertThat(incomplete.getLongitude()).isNull();
+    }
+
     @ParameterizedTest
     @CsvSource({
             "12, 관광지",

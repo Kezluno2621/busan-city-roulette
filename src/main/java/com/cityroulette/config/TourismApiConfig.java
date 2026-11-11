@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.client.RestClient;
 
 @Configuration
+@EnableConfigurationProperties(ExternalApiProperties.class)
 public class TourismApiConfig {
 
     @Bean
@@ -20,9 +22,12 @@ public class TourismApiConfig {
     @Bean
     TourismApiClient tourismApiClient(
             @Qualifier("tourismRestClient") RestClient restClient,
-            @Value("${tour.api.service-key:}") String serviceKey,
+            ExternalApiProperties properties,
+            @Value("${tour.api.service-key:}") String legacyServiceKey,
             @Value("${tour.api.mobile-os:ETC}") String mobileOs,
             @Value("${tour.api.mobile-app:CityRoulette}") String mobileApp) {
+        String serviceKey = properties.getTour().isConfigured()
+                ? properties.getTour().getKey() : legacyServiceKey;
         return new TourismApiClient(restClient, serviceKey, mobileOs, mobileApp);
     }
 }

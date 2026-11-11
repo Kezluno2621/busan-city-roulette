@@ -25,6 +25,8 @@ replay_pid*
 
 # backup files
 *.bak
+.runtime-backups/
+.runtime-demo/
 
 # Gradle build output (keep the wrapper in Git)
 .gradle/
@@ -59,3 +61,6 @@ application-secrets.*
 *.p12
 *.pfx
 *.jks
+
+# User-uploaded files
+uploads/

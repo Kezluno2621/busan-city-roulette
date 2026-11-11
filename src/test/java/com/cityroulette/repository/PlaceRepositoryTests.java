@@ -2,6 +2,7 @@ package com.cityroulette.repository;
 
 import com.cityroulette.domain.Place;
 import jakarta.persistence.EntityManager;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -97,6 +98,6 @@ class PlaceRepositoryTests {
                 35.1796, 129.0756, true);
 
         assertThatThrownBy(() -> placeRepository.saveAndFlush(place))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(ConstraintViolationException.class);
     }
 }
