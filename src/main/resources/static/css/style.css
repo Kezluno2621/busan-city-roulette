@@ -357,11 +357,12 @@ a {
 
 .search-control {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 10px;
 }
 
-.search-button {
+.search-button,
+.current-location-button {
     min-width: 88px;
 }
 
@@ -1169,7 +1170,8 @@ select:focus-visible {
         grid-template-columns: 1fr;
     }
 
-    .search-button {
+    .search-button,
+    .current-location-button {
         width: 100%;
     }
 
@@ -1392,4 +1394,95 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
     .place-card:hover { transform: none; }
     .place-card:hover .place-card-image img { transform: none; }
+}
+/* 추천 화면: 기존 3단계 대신 두 독립 기능을 한눈에 비교한다. */
+.feature-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.feature-choice-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color, #dfe6e9);
+    border-radius: 1.25rem;
+    color: inherit;
+    text-decoration: none;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(31, 45, 61, .08);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.feature-choice-card:hover,
+.feature-choice-card:focus-visible {
+    transform: translateY(-3px);
+    border-color: #ff8a65;
+    box-shadow: 0 14px 35px rgba(31, 45, 61, .14);
+}
+
+.feature-choice-card.personalized { background: linear-gradient(135deg, #fff 55%, #eef8ff); }
+.feature-choice-card.instant { background: linear-gradient(135deg, #fff 55%, #fff3e8); }
+.feature-choice-card h2 { margin: .15rem 0 .45rem; }
+.feature-choice-card p:last-child { margin: 0; line-height: 1.6; }
+.feature-choice-icon { font-size: 2.2rem; line-height: 1; }
+
+.course-feature { scroll-margin-top: 1rem; }
+.course-feature .course-output { margin-top: 1.25rem; }
+.course-limitations { margin: .7rem 0 0; padding-left: 1.2rem; color: #52606d; font-size: .92rem; line-height: 1.55; }
+.compact-course-form { margin-top: 1rem; }
+.form-action-stack { display: flex; flex-direction: column; justify-content: flex-end; gap: .55rem; }
+.text-button { border: 0; background: transparent; color: #52606d; text-decoration: underline; cursor: pointer; padding: .4rem; }
+
+.category-chip-fieldset,
+.category-mode-options {
+    min-width: 0;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    border: 0;
+}
+
+.category-chip-fieldset legend,
+.category-mode-options legend { margin-bottom: .65rem; font-weight: 700; }
+.category-chips { display: flex; flex-wrap: wrap; gap: .6rem; }
+.category-chips label { position: relative; cursor: pointer; }
+.category-chips input { position: absolute; opacity: 0; pointer-events: none; }
+.category-chips span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: .65rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #fff;
+    white-space: nowrap;
+    word-break: keep-all;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.category-chips input:checked + span { border-color: #ef6c45; background: #fff0e9; color: #9a3412; font-weight: 700; }
+.category-chips input:focus-visible + span { outline: 3px solid rgba(21, 101, 192, .28); outline-offset: 2px; }
+
+.category-mode-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.category-mode-options legend { grid-column: 1 / -1; }
+.category-mode-options label { display: flex; align-items: flex-start; gap: .55rem; min-width: 0; padding: .8rem; border: 1px solid #d7dee7; border-radius: .75rem; cursor: pointer; }
+.category-mode-options label:has(input:checked) { border-color: #ef6c45; background: #fff8f4; }
+.category-mode-options span { line-height: 1.45; word-break: keep-all; }
+
+@media (max-width: 700px) {
+    .feature-choice-grid { grid-template-columns: 1fr; gap: .8rem; }
+    .feature-choice-card { padding: 1.1rem; }
+    .category-mode-options { grid-template-columns: 1fr; }
+    .category-mode-options legend { grid-column: auto; }
+    .category-chips { gap: .45rem; }
+    .category-chips span { min-height: 42px; padding: .55rem .78rem; }
+    .form-action-stack .primary-button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .feature-choice-card { transition: none; }
+    .feature-choice-card:hover { transform: none; }
 }

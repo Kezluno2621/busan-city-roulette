@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="course-output" data-course-output th:fragment="courseResult">
+    <p class="form-error" role="alert" hidden data-course-error></p>
+    <div class="roulette-stage" hidden data-roulette-stage aria-live="polite" aria-atomic="true">
+        <span class="roulette-pointer" aria-hidden="true">▼</span><strong data-roulette-current>장소를 선택하고 있습니다…</strong>
+    </div>
+    <div class="course-summary" hidden data-course-summary></div>
+    <div class="course-save-panel" th:if="${currentMember != null}" hidden data-course-save-panel>
+        <label><span>저장할 코스 제목</span><input type="text" maxlength="100" value="나의 부산 여행 코스" data-course-save-title></label>
+        <button class="secondary-button" type="button" data-course-save>내 코스에 저장</button><p role="status" data-course-save-status></p>
+    </div>
+    <div class="course-save-panel" th:if="${currentMember == null}" hidden data-course-login-panel>
+        <p>코스를 저장하려면 로그인이 필요합니다.</p><a class="secondary-button" th:href="@{/login}">로그인 후 저장하기</a>
+    </div>
+    <ol class="course-results" data-course-results></ol>
+    <p class="map-disclaimer" hidden data-course-map-disclaimer>장소 간 직선 연결 — 실제 도로·도보·버스 이동 경로가 아닙니다.</p>
+    <div class="recommendation-map" hidden data-course-map aria-label="추천 여행 코스 지도"></div>
+</div>
+</body>
+</html>

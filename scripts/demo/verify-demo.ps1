@@ -10,7 +10,21 @@ $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $javaHome = if ($env:DEMO_JAVA_HOME) { $env:DEMO_JAVA_HOME } else { "C:\Program Files\Java\jdk-17" }
 $java = Join-Path $javaHome "bin\java.exe"
 if (-not (Test-Path -LiteralPath $java)) { throw "Java 17 was not found. Set DEMO_JAVA_HOME." }
-$javaVersion = & $java -version 2>&1 | Select-Object -First 1
+$javaProcess = New-Object System.Diagnostics.Process
+$javaProcess.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+$javaProcess.StartInfo.FileName = $java
+$javaProcess.StartInfo.Arguments = "-version"
+$javaProcess.StartInfo.UseShellExecute = $false
+$javaProcess.StartInfo.RedirectStandardOutput = $true
+$javaProcess.StartInfo.RedirectStandardError = $true
+[void]$javaProcess.Start()
+$javaStandardOutput = $javaProcess.StandardOutput.ReadToEnd()
+$javaStandardError = $javaProcess.StandardError.ReadToEnd()
+$javaProcess.WaitForExit()
+$javaVersion = (($javaStandardError + "`n" + $javaStandardOutput) -split "`r?`n" |
+    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+    Select-Object -First 1)
+if ($javaProcess.ExitCode -ne 0) { throw "Java version check failed." }
 if ($javaVersion -notmatch 'version "17\.') { throw "Demo requires Java 17. Found: $javaVersion" }
 if ([string]::IsNullOrWhiteSpace($Username)) { throw "Set DEMO_DB_USERNAME before verification." }
 
@@ -40,8 +54,16 @@ $previousMysqlPassword = $env:MYSQL_PWD
 try {
     $env:MYSQL_PWD = $password
     $sql = "SELECT COUNT(*) FROM places; SELECT COUNT(*) FROM place_sources; SELECT COUNT(*) FROM bus_stops; SELECT COUNT(*) FROM bus_routes; SELECT COUNT(*) FROM bus_route_stops; SELECT COUNT(*) FROM flyway_schema_history WHERE success=1 AND version='12'; SELECT COUNT(*) FROM members; SELECT COUNT(*) FROM place_favorites; SELECT COUNT(*) FROM saved_courses; SELECT COUNT(*) FROM saved_course_places;"
-    $values = @(& $mysql "--host=127.0.0.1" "--port=$Port" "--user=$Username" "--batch" "--skip-column-names" "--database=$Database" "--execute=$sql" 2>$null)
-    $queryExitCode = $LASTEXITCODE
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        # Windows PowerShell 5.1 wraps native stderr as NativeCommandError.
+        # The exit code below is the reliable success signal for mysql.exe.
+        $ErrorActionPreference = "Continue"
+        $values = @(& $mysql "--host=127.0.0.1" "--port=$Port" "--user=$Username" "--batch" "--skip-column-names" "--database=$Database" "--execute=$sql" 2>$null)
+        $queryExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
     if ($queryExitCode -ne 0 -or $values.Count -ne 10) {
         throw "Cannot verify demo DB at 127.0.0.1:$Port/$Database. Run start-demo-db.ps1 and check the demo credentials."
     }

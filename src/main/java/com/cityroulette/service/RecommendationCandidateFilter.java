@@ -2,6 +2,7 @@ package com.cityroulette.service;
 
 import com.cityroulette.config.RecommendationWeights;
 import com.cityroulette.domain.Place;
+import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import com.cityroulette.dto.recommendation.RecommendationRequest;
 import com.cityroulette.repository.PlaceRepository;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class RecommendationCandidateFilter {
 
     public CandidateSelection select(RecommendationRequest request, Long excludedPlaceId, int requestedLimit) {
         Set<String> preferred = normalizeCategories(request.categories());
+        CategorySelectionMode mode = CategorySelectionMode.defaultIfNull(request.categoryMode());
         Set<String> queryCategorySet = new LinkedHashSet<>();
         preferred.stream().map(x -> x.toLowerCase(Locale.ROOT)).forEach(queryCategorySet::add);
         if (request.categories() != null) request.categories().stream()
@@ -43,7 +45,8 @@ public class RecommendationCandidateFilter {
         String district = blankToNull(request.district());
         int poolLimit = Math.min(weights.getCandidatePoolLimit(), Math.max(50, requestedLimit * 10));
         List<Place> queried = places.findRecommendationCandidates(
-                !preferred.isEmpty(), queryCategories, district, PageRequest.of(0, poolLimit));
+                mode == CategorySelectionMode.ONLY && !preferred.isEmpty(),
+                queryCategories, district, PageRequest.of(0, poolLimit));
 
         LinkedHashMap<String, Place> unique = new LinkedHashMap<>();
         for (Place place : queried) {

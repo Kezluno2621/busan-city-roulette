@@ -3,280 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">City Roulette 추천</title>
+    <title th:text="${title}">City Roulette 여행 추천</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script th:src="@{/js/main.js}" defer></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-    <script th:src="@{/js/recommendation-engine.js}" defer></script>
     <script th:src="@{/js/course-roulette.js}" defer></script>
 </head>
 <body>
 <main class="recommend-page">
     <nav th:replace="~{fragments/navigation :: navigation}"></nav>
     <section class="hero compact-hero" aria-labelledby="recommend-title">
-        <p class="eyebrow">BUSAN RANDOM TRIP</p>
-        <h1 id="recommend-title">어디로 떠나볼까요?</h1>
-        <p>출발 위치와 시간을 알려주면 대중교통으로 다녀올 수 있는 부산 여행지를 골라드려요.</p>
+        <p class="eyebrow">CITY ROULETTE</p>
+        <h1 id="recommend-title">오늘의 부산 여행을 골라보세요</h1>
+        <p>빠르게 뽑는 즉흥 룰렛과 취향을 반영하는 맞춤 코스 중 원하는 방식을 선택하세요.</p>
     </section>
-    <nav class="journey-steps" aria-label="추천 화면 바로가기">
-        <a href="#condition-title"><span>1</span> 출발지 선택</a>
-        <a href="#personalized-title"><span>2</span> 장소 추천</a>
-        <a href="#course-title"><span>3</span> 코스 룰렛</a>
-    </nav>
+    <section class="feature-choice-grid" aria-label="여행 추천 방식 선택">
+        <a class="feature-choice-card instant" href="#instant-roulette"><span class="feature-choice-icon" aria-hidden="true">🎡</span>
+            <div><p class="step-label">빠르게 시작</p><h2>즉흥 룰렛</h2><p>어디 갈지 고민된다면? 부산의 새로운 여행 코스를 바로 뽑아보세요.</p></div></a>
+        <a class="feature-choice-card personalized" href="#personalized-course"><span class="feature-choice-icon" aria-hidden="true">🧭</span>
+            <div><p class="step-label">조건을 반영</p><h2>맞춤 코스 추천</h2><p>시간, 예산, 취향에 맞춰 나만의 부산 여행 코스를 만들어보세요.</p></div></a>
+    </section>
 
-    <section class="panel form-panel" aria-labelledby="condition-title">
-        <div class="section-heading">
-            <div>
-                <p class="step-label">STEP 1</p>
-                <h2 id="condition-title">추천 조건 입력</h2>
-            </div>
-            <span class="callout">추천 실행 시 대중교통 경로를 조회합니다.</span>
-        </div>
-
-        <p class="form-error" role="alert" th:if="${inputError}" th:text="${inputError}">
-            입력값을 확인해주세요.
-        </p>
-
-        <form class="recommend-form" th:action="@{/recommend}" method="post" data-recommend-form>
-            <div class="location-search">
-                <label for="location-query">출발지</label>
-                <div class="search-control">
-                    <input id="location-query" name="locationQuery" type="search" maxlength="100"
-                           placeholder="예: 부산역, 동아대학교 승학캠퍼스"
-                           autocomplete="off" th:value="${locationQuery}">
-                    <button class="secondary-button search-button" type="submit"
-                            th:formaction="@{/recommend/search-location}"
-                            formnovalidate data-search-button>검색</button>
-                </div>
-            </div>
+    <section class="panel origin-panel" aria-labelledby="origin-title">
+        <div class="section-heading"><div><p class="step-label">선택 입력</p><h2 id="origin-title">출발지 설정</h2></div><span class="callout">맞춤 코스에는 필요해요</span></div>
+        <p class="field-help">즉흥 룰렛은 출발지를 생략하면 부산 중심을 기준으로 만들고, 맞춤 코스는 선택한 출발지를 사용합니다.</p>
+        <form class="recommend-form" th:action="@{/recommend/search-location}" method="post" data-recommend-form>
+            <div class="location-search"><label for="location-query">장소 검색</label><div class="search-control">
+                <input id="location-query" name="locationQuery" type="search" maxlength="100" placeholder="예: 부산역, 동아대학교 승학캠퍼스" autocomplete="off" th:value="${locationQuery}">
+                <button class="secondary-button search-button" type="submit" data-search-button>검색</button>
+                <button class="secondary-button current-location-button" type="button" data-current-location>현재 위치</button>
+            </div></div>
             <input name="departureName" type="hidden" th:value="${departureName}" data-departure-name>
             <input name="latitude" type="hidden" th:value="${latitude}" data-departure-latitude>
             <input name="longitude" type="hidden" th:value="${longitude}" data-departure-longitude>
-
-            <p class="form-error location-error" role="alert"
-               th:if="${locationSearchError}" th:text="${locationSearchError}">
-                출발지를 찾지 못했습니다.
-            </p>
-
+            <input name="availableMinutes" type="hidden" value="180"><input name="stayMinutes" type="hidden" value="60"><input name="limit" type="hidden" value="1">
+            <p class="form-error" role="alert" th:if="${inputError}" th:text="${inputError}">입력값을 확인해주세요.</p>
+            <p class="form-error location-error" role="alert" th:if="${locationSearchError}" th:text="${locationSearchError}">출발지를 찾지 못했습니다.</p>
             <div class="location-results" th:if="${locationSearchResults != null and !locationSearchResults.isEmpty()}">
                 <p class="result-count">검색 결과 <strong th:text="${locationSearchResults.size()}">0</strong>곳</p>
                 <label class="location-option" th:each="location : ${locationSearchResults}">
-                    <input type="radio" name="selectedLocation" th:value="${location.id}"
-                           th:attr="data-location-name=${location.name},data-latitude=${location.latitude},data-longitude=${location.longitude}"
-                           th:checked="${departureName == location.name}">
-                    <span class="location-option-copy">
-                        <strong th:text="${location.name}">부산역</strong>
-                        <small th:text="${location.address}">부산광역시 동구 중앙대로 206</small>
-                        <em th:if="${location.category != null and !location.category.isBlank()}"
-                            th:text="${location.category}">교통,수송 &gt; 기차역</em>
-                    </span>
+                    <input type="radio" name="selectedLocation" th:value="${location.id}" th:attr="data-location-name=${location.name},data-latitude=${location.latitude},data-longitude=${location.longitude}">
+                    <span class="location-option-copy"><strong th:text="${location.name}">부산역</strong><small th:text="${location.address}">부산광역시</small></span>
                 </label>
             </div>
-
-            <div class="selected-location" data-selected-location
-                 th:classappend="${departureName == null or departureName.isBlank()} ? ' is-empty'">
-                <span>선택한 출발지</span>
-                <strong data-selected-location-name
-                        th:text="${departureName == null or departureName.isBlank() ? '검색 결과에서 선택해주세요' : departureName}">
-                    검색 결과에서 선택해주세요
-                </strong>
+            <div class="selected-location" data-selected-location th:classappend="${departureName == null or departureName.isBlank()} ? ' is-empty'">
+                <span>현재 출발지</span><strong data-selected-location-name th:text="${departureName == null or departureName.isBlank() ? '선택하지 않음' : departureName}">선택하지 않음</strong>
             </div>
-            <p class="field-help">부산 지역의 장소만 검색합니다. 외부 검색 키가 없는 시연 모드에서는 저장된 장소 DB에서 출발지를 찾습니다.</p>
-
-            <div class="field-row three-columns">
-                <label>
-                    <span>사용 가능 시간</span>
-                    <select name="availableMinutes" required>
-                        <option value="120" th:selected="${availableMinutes.toString() == '120'}">2시간</option>
-                        <option value="180" th:selected="${availableMinutes.toString() == '180'}">3시간</option>
-                        <option value="240" th:selected="${availableMinutes.toString() == '240'}">4시간</option>
-                        <option value="300" th:selected="${availableMinutes.toString() == '300'}">5시간</option>
-                        <option value="360" th:selected="${availableMinutes.toString() == '360'}">6시간</option>
-                    </select>
-                </label>
-                <label>
-                    <span>예상 체류시간</span>
-                    <select name="stayMinutes" required>
-                        <option value="30" th:selected="${stayMinutes.toString() == '30'}">30분</option>
-                        <option value="60" th:selected="${stayMinutes.toString() == '60'}">60분</option>
-                        <option value="90" th:selected="${stayMinutes.toString() == '90'}">90분</option>
-                        <option value="120" th:selected="${stayMinutes.toString() == '120'}">120분</option>
-                    </select>
-                </label>
-                <label>
-                    <span>후보 탐색 수</span>
-                    <select name="limit" required>
-                        <option value="1" th:selected="${limit.toString() == '1'}">1개</option>
-                        <option value="2" th:selected="${limit.toString() == '2'}">2개</option>
-                        <option value="3" th:selected="${limit.toString() == '3'}">3개</option>
-                    </select>
-                </label>
-            </div>
-            <p class="field-help">후보 수가 많을수록 추천 폭은 넓어지지만 대중교통 조회 횟수가 증가합니다.</p>
-
-            <button class="primary-button" type="submit" data-submit-button>🎲 룰렛 돌리기</button>
+            <p class="field-help" data-current-location-status role="status" aria-live="polite">검색 결과를 선택하거나 브라우저 현재 위치를 사용할 수 있습니다.</p>
         </form>
     </section>
 
-    <section class="panel personalized-panel" aria-labelledby="personalized-title">
-        <div class="section-heading">
-            <div>
-                <p class="step-label">PHASE 3-B</p>
-                <h2 id="personalized-title">내 조건으로 장소 추천</h2>
-            </div>
-            <span class="callout">저장된 장소 데이터로 평가합니다.</span>
-        </div>
-        <p class="field-help data-notice"><strong>알아두세요.</strong> 시간과 예산 정보가 없는 장소는 임의 값으로 평가하지 않고 결과의 제한사항에 표시합니다.</p>
-        <form class="recommend-form personalized-form" th:action="@{/api/recommendations}" method="post"
-              data-personalized-recommend-form>
-            <fieldset class="category-options">
-                <legend>선호 카테고리</legend>
-                <label><input type="checkbox" name="categories" value="ATTRACTION"> 관광지</label>
-                <label><input type="checkbox" name="categories" value="CAFE"> 카페</label>
-                <label><input type="checkbox" name="categories" value="RESTAURANT"> 음식점</label>
-                <label><input type="checkbox" name="categories" value="CULTURE"> 문화시설</label>
-            </fieldset>
-            <div class="field-row three-columns">
-                <label><span>희망 지역</span>
-                    <select name="district">
-                        <option value="">전체 부산</option><option>중구</option><option>서구</option><option>동구</option>
-                        <option>영도구</option><option>부산진구</option><option>동래구</option><option>남구</option>
-                        <option>북구</option><option>해운대구</option><option>사하구</option><option>금정구</option>
-                        <option>강서구</option><option>연제구</option><option>수영구</option><option>사상구</option><option>기장군</option>
-                    </select>
-                </label>
-                <label><span>여행 가능 시간(분)</span><input type="number" name="availableMinutes" min="1" value="180"></label>
-                <label><span>예산(원)</span><input type="number" name="budget" min="0" value="30000"></label>
-            </div>
-            <div class="field-row two-columns">
-                <label><span>랜덤성 <output data-randomness-output>50</output>%</span>
-                    <input type="range" name="randomness" min="0" max="100" value="50" data-randomness>
-                </label>
-                <label><span>추천 수</span><input type="number" name="personalizedLimit" min="1" max="20" value="10"></label>
-            </div>
-            <button class="primary-button" type="submit" data-personalized-submit>조건 기반 추천 받기</button>
-        </form>
-        <p class="form-error" role="alert" hidden data-personalized-error></p>
-        <div class="recommendation-loading" hidden data-personalized-loading role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span> 추천 후보를 평가하고 있습니다…</div>
-        <div class="recommendation-summary" hidden data-personalized-summary role="status" tabindex="-1"></div>
-        <div class="personalized-results" data-personalized-results></div>
-        <div id="recommendation-map" class="recommendation-map" hidden aria-label="추천 장소 지도"></div>
-    </section>
-
-    <section class="panel course-panel" aria-labelledby="course-title">
-        <div class="section-heading">
-            <div>
-                <p class="step-label">PHASE 3-C</p>
-                <h2 id="course-title">City Roulette 즉흥 코스</h2>
-            </div>
-            <span class="callout">서버가 확정한 장소만 룰렛에 표시합니다.</span>
-        </div>
-        <p class="field-help data-notice">출발지를 선택한 뒤 여러 장소를 한 번에 뽑아보세요. <strong>코스는 저장 버튼을 누르기 전까지 자동 저장되지 않습니다.</strong></p>
-        <form class="recommend-form course-form" th:action="@{/api/courses/generate}" method="post" data-course-form>
-            <fieldset class="category-options">
-                <legend>코스 카테고리</legend>
-                <label><input type="checkbox" name="courseCategories" value="ATTRACTION"> 관광지</label>
-                <label><input type="checkbox" name="courseCategories" value="CAFE"> 카페</label>
-                <label><input type="checkbox" name="courseCategories" value="RESTAURANT"> 음식점</label>
-                <label><input type="checkbox" name="courseCategories" value="CULTURE"> 문화시설</label>
-            </fieldset>
-            <div class="field-row three-columns">
-                <label><span>희망 지역</span>
-                    <select name="courseDistrict">
-                        <option value="">전체 부산</option><option>중구</option><option>서구</option><option>동구</option>
-                        <option>영도구</option><option>부산진구</option><option>동래구</option><option>남구</option>
-                        <option>북구</option><option>해운대구</option><option>사하구</option><option>금정구</option>
-                        <option>강서구</option><option>연제구</option><option>수영구</option><option>사상구</option><option>기장군</option>
-                    </select>
-                </label>
-                <label><span>여행 가능 시간(분)</span><input type="number" name="courseMinutes" min="1" value="240"></label>
-                <label><span>예산(원)</span><input type="number" name="courseBudget" min="0" value="50000"></label>
-            </div>
-            <div class="field-row three-columns">
-                <label><span>랜덤성 <output data-course-randomness-output>60</output>%</span>
-                    <input type="range" name="courseRandomness" min="0" max="100" value="60" data-course-randomness>
-                </label>
-                <label><span>장소 수</span><input type="number" name="placeCount" min="1" max="5" value="3"></label>
-                <label><span>재현 seed (선택)</span><input type="number" name="courseSeed" placeholder="예: 42"></label>
-            </div>
-            <button class="primary-button roulette-button" type="submit" data-course-submit>🎡 룰렛 시작</button>
-        </form>
-        <p class="form-error" role="alert" hidden data-course-error></p>
-        <div class="roulette-stage" hidden data-roulette-stage aria-live="polite" aria-atomic="true">
-            <span class="roulette-pointer" aria-hidden="true">▼</span>
-            <strong data-roulette-current>장소를 선택하고 있습니다…</strong>
-        </div>
-        <div class="course-summary" hidden data-course-summary></div>
-        <div class="course-save-panel" th:if="${currentMember != null}" hidden data-course-save-panel>
-            <label><span>저장할 코스 제목</span><input type="text" maxlength="100" value="나의 부산 즉흥 코스" data-course-save-title></label>
-            <button class="secondary-button" type="button" data-course-save>내 코스에 저장</button>
-            <p role="status" data-course-save-status></p>
-        </div>
-        <div class="course-save-panel" th:if="${currentMember == null}" hidden data-course-login-panel>
-            <p>코스를 저장하려면 로그인이 필요합니다.</p><a class="secondary-button" th:href="@{/login}">로그인 후 저장하기</a>
-        </div>
-        <ol class="course-results" data-course-results></ol>
-        <p class="map-disclaimer" hidden data-course-map-disclaimer>장소 간 직선 연결 — 실제 도로·도보·버스 이동 경로가 아닙니다.</p>
-        <div id="course-map" class="recommendation-map" hidden aria-label="즉흥 여행 코스 지도"></div>
-    </section>
-
-    <section class="panel result-panel" aria-labelledby="result-title"
-             th:if="${recommendationResponse != null}">
-        <p class="step-label">STEP 2</p>
-
+    <!-- 기존 POST /recommend 호출은 하위 호환성을 위해 결과를 계속 표시한다. -->
+    <section class="panel result-panel" th:if="${recommendationResponse != null}" aria-labelledby="legacy-result-title">
         <div th:if="${recommendationResponse.recommended}">
-            <p class="result-kicker">시간 안에 다녀올 수 있는 장소예요</p>
-            <h2 id="result-title" class="place-name"
-                th:text="${recommendationResponse.recommendation.name}">감천문화마을</h2>
-            <p class="place-meta">
-                <span th:text="${recommendationResponse.recommendation.category}">관광지</span>
-                <span aria-hidden="true">·</span>
-                <span th:text="${recommendationResponse.recommendation.address}">부산광역시</span>
-            </p>
-
-            <div class="time-highlights">
-                <div>
-                    <span>대중교통 편도</span>
-                    <strong><b th:text="${recommendationResponse.recommendation.oneWayTransitMinutes}">35</b>분</strong>
-                </div>
-                <div>
-                    <span>전체 예상</span>
-                    <strong><b th:text="${recommendationResponse.recommendation.estimatedRequiredMinutes}">130</b>분</strong>
-                </div>
-                <div>
-                    <span>사용 가능</span>
-                    <strong><b th:text="${recommendationResponse.recommendation.availableMinutes}">180</b>분</strong>
-                </div>
-            </div>
-
-            <dl class="result-details">
-                <div><dt>직선거리</dt><dd><span th:text="${#numbers.formatDecimal(recommendationResponse.recommendation.distanceKm, 1, 2)}">4.3</span> km</dd></div>
-                <div><dt>예상 왕복 이동</dt><dd><span th:text="${recommendationResponse.recommendation.estimatedRoundTripMinutes}">70</span>분</dd></div>
-                <div><dt>체류시간</dt><dd><span th:text="${recommendationResponse.recommendation.stayMinutes}">60</span>분</dd></div>
-                <div><dt>교통비</dt><dd><span th:text="${recommendationResponse.recommendation.payment}">1550</span>원</dd></div>
-                <div><dt>첫 승차 지점</dt><dd th:text="${recommendationResponse.recommendation.firstStartStation}">출발 정류장</dd></div>
-                <div><dt>최종 하차 지점</dt><dd th:text="${recommendationResponse.recommendation.lastEndStation}">도착 정류장</dd></div>
-                <div><dt>버스 환승</dt><dd><span th:text="${recommendationResponse.recommendation.busTransitCount}">1</span>회</dd></div>
-                <div><dt>지하철 환승</dt><dd><span th:text="${recommendationResponse.recommendation.subwayTransitCount}">0</span>회</dd></div>
-            </dl>
-            <div class="result-actions">
-                <a class="primary-button"
-                   th:href="@{/my/trips/new(placeName=${recommendationResponse.recommendation.name},placeAddress=${recommendationResponse.recommendation.address})}">
-                    내 여행에 저장
-                </a>
+            <p class="result-kicker">기존 단일 장소 추천 결과</p>
+            <h2 id="legacy-result-title" th:text="${recommendationResponse.recommendation.name}">감천문화마을</h2>
+            <p class="place-meta"><span th:text="${recommendationResponse.recommendation.category}">관광지</span>
+                <span th:if="${recommendationResponse.recommendation.address != null and !recommendationResponse.recommendation.address.isBlank()}"
+                      th:text="${recommendationResponse.recommendation.address}">부산광역시</span></p>
+            <div class="time-highlights" th:if="${recommendationResponse.recommendation.oneWayTransitMinutes != null}">
+                <div><span>대중교통 편도</span><strong><b th:text="${recommendationResponse.recommendation.oneWayTransitMinutes}">35</b>분</strong></div>
+                <div><span>전체 예상</span><strong><b th:text="${recommendationResponse.recommendation.estimatedRequiredMinutes}">130</b>분</strong></div>
             </div>
         </div>
-
         <div class="empty-result" th:unless="${recommendationResponse.recommended}">
-            <div class="empty-icon" aria-hidden="true">🧭</div>
-            <h2 id="result-title">조건에 맞는 관광지를 찾지 못했어요.</h2>
-            <p th:text="${recommendationResponse.message}">주어진 시간 안에 방문 가능한 관광지를 찾지 못했습니다.</p>
-            <p>사용 가능 시간을 늘리거나 다른 출발지에서 다시 시도해보세요.</p>
-            <a class="secondary-button" href="#condition-title">다시 조건 입력하기</a>
+            <h2 id="legacy-result-title">조건에 맞는 관광지를 찾지 못했어요.</h2>
+            <p th:text="${recommendationResponse.message}">현재 저장된 데이터에서 후보를 찾지 못했습니다.</p>
+            <a class="secondary-button" href="#personalized-course">다시 조건 입력하기</a>
         </div>
+    </section>
+
+    <section id="instant-roulette" class="panel course-feature instant-feature" data-course-feature aria-labelledby="instant-title">
+        <div class="section-heading"><div><p class="step-label">기능 A</p><h2 id="instant-title">즉흥 룰렛</h2></div><span class="callout">조건은 가볍게, 결과는 다양하게</span></div>
+        <p class="field-help data-notice">최근에 나온 장소는 다음 추첨에서 우선 제외합니다. 고정 seed를 입력하면 같은 결과를 재현합니다.</p>
+        <form class="recommend-form course-form compact-course-form" th:action="@{/api/courses/generate}" method="post" data-course-form data-course-mode="INSTANT">
+            <div class="field-row three-columns">
+                <label><span>장소 수</span><input type="number" name="placeCount" min="1" max="5" value="3" required></label>
+                <label><span>랜덤 seed (선택)</span><input type="number" name="randomSeed" placeholder="비우면 매번 새 결과"></label>
+                <div class="form-action-stack"><button class="primary-button roulette-button" type="submit" data-course-submit>🎡 바로 뽑기</button>
+                    <button class="text-button" type="button" data-reset-history>추천 기록 초기화</button></div>
+            </div>
+        </form>
+        <div class="course-output" data-course-output th:replace="~{fragments/course-result :: courseResult}"></div>
+    </section>
+
+    <section id="personalized-course" class="panel course-feature personalized-feature" data-course-feature aria-labelledby="personalized-title">
+        <div class="section-heading"><div><p class="step-label">기능 B</p><h2 id="personalized-title">맞춤 코스 추천</h2></div><span class="callout">취향과 이동 거리를 함께 고려</span></div>
+        <p class="field-help data-notice">시간과 비용의 실제 데이터가 없는 장소는 임의로 추정하지 않고 제한사항으로 안내합니다.</p>
+        <form class="recommend-form course-form" th:action="@{/api/courses/generate}" method="post" data-course-form data-course-mode="PERSONALIZED">
+            <fieldset class="category-chip-fieldset"><legend>카테고리</legend><div class="category-chips">
+                <label><input type="checkbox" name="categories" value="ATTRACTION"><span>관광지</span></label>
+                <label><input type="checkbox" name="categories" value="CAFE"><span>카페</span></label>
+                <label><input type="checkbox" name="categories" value="RESTAURANT"><span>음식점</span></label>
+                <label><input type="checkbox" name="categories" value="CULTURE"><span>문화시설</span></label>
+            </div></fieldset>
+            <fieldset class="category-mode-options"><legend>선택한 카테고리를 어떻게 반영할까요?</legend>
+                <label><input type="radio" name="categoryMode" value="PREFERRED" checked><span><strong>선호</strong> 점수를 높이고 다른 유형도 조합</span></label>
+                <label><input type="radio" name="categoryMode" value="REQUIRED"><span><strong>필수 포함</strong> 선택 유형을 최소 한 곳씩 시도</span></label>
+                <label><input type="radio" name="categoryMode" value="ONLY"><span><strong>선택한 유형만</strong> 다른 유형 제외</span></label>
+            </fieldset>
+            <div class="field-row three-columns">
+                <label><span>희망 지역</span><select name="district"><option value="">전체 부산</option><option>중구</option><option>서구</option><option>동구</option><option>영도구</option><option>부산진구</option><option>동래구</option><option>남구</option><option>북구</option><option>해운대구</option><option>사하구</option><option>금정구</option><option>강서구</option><option>연제구</option><option>수영구</option><option>사상구</option><option>기장군</option></select></label>
+                <label><span>여행 가능 시간(분)</span><input type="number" name="availableMinutes" min="1" value="240"></label>
+                <label><span>예산(원)</span><input type="number" name="budget" min="0" value="50000"></label>
+            </div>
+            <div class="field-row three-columns">
+                <label><span>랜덤성 <output data-course-randomness-output>50</output>%</span><input type="range" name="randomness" min="0" max="100" value="50" data-course-randomness></label>
+                <label><span>장소 수</span><input type="number" name="placeCount" min="1" max="5" value="4" required></label>
+                <label><span>랜덤 seed (선택)</span><input type="number" name="randomSeed" placeholder="예: 42"></label>
+            </div>
+            <button class="primary-button roulette-button" type="submit" data-course-submit>🧭 맞춤 코스 만들기</button>
+        </form>
+        <div class="course-output" data-course-output th:replace="~{fragments/course-result :: courseResult}"></div>
     </section>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
 </main>
+
 </body>
 </html>

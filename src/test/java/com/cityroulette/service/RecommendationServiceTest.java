@@ -1,6 +1,7 @@
 package com.cityroulette.service;
 
 import com.cityroulette.dto.place.TransitPlaceCandidateDto;
+import com.cityroulette.dto.place.NearbyPlaceDto;
 import com.cityroulette.dto.recommendation.RecommendationDto;
 import com.cityroulette.dto.recommendation.RecommendationResponse;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,9 @@ class RecommendationServiceTest {
 
     private final PlaceTransitEvaluationService evaluationService =
             mock(PlaceTransitEvaluationService.class);
-    private final RecommendationService service = new RecommendationService(evaluationService);
+    private final PlaceCandidateService placeCandidateService = mock(PlaceCandidateService.class);
+    private final RecommendationService service = new RecommendationService(
+            evaluationService, placeCandidateService);
 
     @Test
     void calculatesRoundTripStayAndRequiredMinutes() {
@@ -106,6 +109,26 @@ class RecommendationServiceTest {
         assertThat(response.recommended()).isTrue();
         assertThat(response.recommendation().name()).isIn("가능 A", "가능 B");
         verify(evaluationService).evaluateCandidates(LATITUDE, LONGITUDE, 3);
+    }
+
+    @Test
+    void returnsPlaceWithoutInventedTransitValuesWhenOdsayFails() {
+        when(evaluationService.evaluateCandidates(LATITUDE, LONGITUDE, 3))
+                .thenThrow(new OdsayApiException("ODsay API 호출에 실패했습니다."));
+        when(placeCandidateService.findNearestPlaces(LATITUDE, LONGITUDE, 3))
+                .thenReturn(List.of(new NearbyPlaceDto(
+                        7L, "external-7", "대체 추천 장소", "관광지", "부산광역시",
+                        35.12, 129.01, 2.4)));
+
+        RecommendationResponse response = service.recommend(
+                LATITUDE, LONGITUDE, 180, 60, 3);
+
+        assertThat(response.recommended()).isTrue();
+        assertThat(response.message()).contains("대중교통 정보는 확인할 수 없습니다");
+        assertThat(response.recommendation().name()).isEqualTo("대체 추천 장소");
+        assertThat(response.recommendation().oneWayTransitMinutes()).isNull();
+        assertThat(response.recommendation().payment()).isNull();
+        assertThat(response.recommendation().stayMinutes()).isEqualTo(60);
     }
 
     private TransitPlaceCandidateDto candidate(

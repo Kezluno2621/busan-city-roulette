@@ -28,7 +28,9 @@ public class LocationSearchService {
     }
 
     public List<LocationSearchResultDto> search(String query) {
-        if (localOnly) return searchSavedPlaces(query.trim());
+        if (localOnly || !kakaoLocalApiClient.isConfigured()) {
+            return searchSavedPlaces(query.trim());
+        }
         return kakaoLocalApiClient.searchPlaces(query.trim(), SEARCH_RESULT_SIZE)
                 .documents()
                 .stream()

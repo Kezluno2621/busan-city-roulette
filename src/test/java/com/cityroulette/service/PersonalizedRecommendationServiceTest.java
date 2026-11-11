@@ -7,6 +7,7 @@ import com.cityroulette.dto.bus.TransitRoutePlanResponse;
 import com.cityroulette.dto.bus.TransitRouteType;
 import com.cityroulette.dto.bus.TransitVerificationStatus;
 import com.cityroulette.dto.recommendation.RecommendationRequest;
+import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import com.cityroulette.dto.recommendation.RecommendationTransitStatus;
 import com.cityroulette.repository.PlaceRepository;
 import java.util.List;
@@ -35,13 +36,27 @@ class PersonalizedRecommendationServiceTest {
         place("해운대 카페", "카페", "해운대구", 35.161, 129.161);
         place("중구 명소", "관광지", "중구", 35.100, 129.030);
 
-        var response = service.recommend(request(null, 35.159, 129.159,
-                List.of("ATTRACTION"), "해운대구", null, null, 0, 10, 1L));
+        var response = service.recommend(new RecommendationRequest(null, 35.159, 129.159,
+                List.of("ATTRACTION"), "해운대구", null, null, 0, 10, 1L,
+                CategorySelectionMode.ONLY));
 
         assertThat(response.recommendations()).extracting(x -> x.placeName())
                 .containsExactly("해운대 명소");
         assertThat(response.candidateCount()).isEqualTo(1);
         assertThat(response.insufficientCandidates()).isTrue();
+    }
+
+    @Test void preferredCategoryBoostDoesNotExcludeOtherCategories() {
+        place("해운대 명소", "관광지", "해운대구", 35.160, 129.160);
+        place("해운대 식당", "음식점", "해운대구", 35.161, 129.161);
+        place("해운대 카페", "카페", "해운대구", 35.162, 129.162);
+
+        var response = service.recommend(new RecommendationRequest(null, 35.159, 129.159,
+                List.of("RESTAURANT"), "해운대구", null, null, 0, 10, 1L,
+                CategorySelectionMode.PREFERRED));
+
+        assertThat(response.recommendations()).extracting(x -> x.category())
+                .contains("음식점", "관광지", "카페");
     }
 
     @Test void ranksCloserPlacesHigherAndKeepsScoresInRange() {

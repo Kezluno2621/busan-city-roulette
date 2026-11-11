@@ -19,4 +19,23 @@ public record RecommendationRequest(
         @PositiveOrZero Long budget,
         @Min(0) @Max(100) Integer randomness,
         @Min(1) @Max(20) Integer limit,
-        Long randomSeed) { }
+        Long randomSeed,
+        CategorySelectionMode categoryMode) {
+
+    /** 기존 API 호출 코드와의 호환성을 유지하며 기본 모드는 선호 카테고리다. */
+    public RecommendationRequest(
+            Long originPlaceId,
+            Double originLatitude,
+            Double originLongitude,
+            List<String> categories,
+            String district,
+            Integer availableMinutes,
+            Long budget,
+            Integer randomness,
+            Integer limit,
+            Long randomSeed) {
+        this(originPlaceId, originLatitude, originLongitude, categories, district,
+                availableMinutes, budget, randomness, limit, randomSeed,
+                CategorySelectionMode.PREFERRED);
+    }
+}

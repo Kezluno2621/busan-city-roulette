@@ -5,8 +5,11 @@ import com.cityroulette.dto.bus.TransitDataCoverageStatus;
 import com.cityroulette.dto.bus.TransitRoutePlanResponse;
 import com.cityroulette.dto.bus.TransitVerificationStatus;
 import com.cityroulette.dto.course.CourseEstimateStatus;
+import com.cityroulette.dto.course.CourseGenerationMode;
 import com.cityroulette.dto.course.CourseGenerationRequest;
+import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import com.cityroulette.dto.recommendation.PersonalizedRecommendationResponse;
+import com.cityroulette.dto.recommendation.RecommendationRequest;
 import com.cityroulette.dto.recommendation.RecommendationResultDto;
 import com.cityroulette.dto.recommendation.RecommendationScoreBreakdown;
 import com.cityroulette.dto.recommendation.RecommendationTransitStatus;
@@ -171,14 +174,116 @@ class CourseGenerationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test void instantModeUsesBusanDefaultOriginWhenDepartureIsOmitted() {
+        stub(List.of(result(1, "즉흥 명소", "관광지", 90, 35.18, 129.08)));
+        CourseGenerationRequest request = new CourseGenerationRequest(null, null, null,
+                List.of(), null, null, null, 100, 1, 7L,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.INSTANT, List.of());
+
+        var response = courses.generate(request);
+
+        assertThat(response.origin().name()).isEqualTo("부산 중심 출발");
+        assertThat(response.places()).hasSize(1);
+        assertThat(response.courseTitle()).contains("즉흥 룰렛");
+    }
+
+    @Test void defaultRandomRunAvoidsRecentPlacesWhenFreshCandidatesAreEnough() {
+        stub(List.of(
+                result(1, "최근 A", "관광지", 100, 35.11, 129.11),
+                result(2, "최근 B", "카페", 99, 35.12, 129.12),
+                result(3, "새 장소 C", "문화시설", 98, 35.13, 129.13),
+                result(4, "새 장소 D", "음식점", 97, 35.14, 129.14)));
+        CourseGenerationRequest request = new CourseGenerationRequest(null, 35.10, 129.10,
+                List.of(), null, null, null, 100, 2, null,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.INSTANT, List.of(1L, 2L));
+
+        var response = courses.generate(request);
+
+        assertThat(response.places()).extracting(x -> x.placeId()).containsExactlyInAnyOrder(3L, 4L);
+    }
+
+    @Test void fixedSeedKeepsReproducibilityEvenWithRecentHistory() {
+        stub(List.of(
+                result(1, "장소 A", "관광지", 100, 35.11, 129.11),
+                result(2, "장소 B", "카페", 99, 35.12, 129.12),
+                result(3, "장소 C", "문화시설", 98, 35.13, 129.13)));
+        CourseGenerationRequest first = new CourseGenerationRequest(null, 35.10, 129.10,
+                List.of(), null, null, null, 100, 2, 42L,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.INSTANT, List.of(1L, 2L));
+        CourseGenerationRequest second = new CourseGenerationRequest(null, 35.10, 129.10,
+                List.of(), null, null, null, 100, 2, 42L,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.INSTANT, List.of());
+
+        assertThat(ids(courses.generate(first))).containsExactlyElementsOf(ids(courses.generate(second)));
+    }
+
+    @Test void requiredModeIncludesRequestedMealWhenCandidateExists() {
+        stub(List.of(
+                result(1, "명소 A", "관광지", 100, 35.11, 129.11),
+                result(2, "명소 B", "관광지", 99, 35.12, 129.12),
+                result(3, "식당 C", "음식점", 70, 35.13, 129.13)));
+        CourseGenerationRequest request = new CourseGenerationRequest(null, 35.10, 129.10,
+                List.of("RESTAURANT"), null, null, null, 0, 2, 1L,
+                CategorySelectionMode.REQUIRED, CourseGenerationMode.PERSONALIZED, List.of());
+
+        assertThat(courses.generate(request).places()).extracting(x -> x.category()).contains("음식점");
+    }
+
+    @Test void preferredMealModeBuildsMixedCourseWhenOtherRolesExist() {
+        stub(List.of(
+                result(1, "식당 A", "음식점", 100, 35.11, 129.11),
+                result(2, "식당 B", "음식점", 99, 35.12, 129.12),
+                result(3, "명소 C", "관광지", 82, 35.13, 129.13),
+                result(4, "카페 D", "카페", 80, 35.14, 129.14),
+                result(5, "문화 E", "문화시설", 78, 35.15, 129.15)));
+        CourseGenerationRequest request = new CourseGenerationRequest(null, 35.10, 129.10,
+                List.of("RESTAURANT"), null, null, null, 50, 4, 7L,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.PERSONALIZED, List.of());
+
+        var response = courses.generate(request);
+
+        assertThat(response.places()).hasSize(4);
+        assertThat(response.places()).extracting(x -> x.category())
+                .contains("음식점", "관광지", "카페", "문화시설");
+    }
+
+    @Test void preferredModeLoadsSmallSamplesForRareMissingCategories() {
+        when(recommendations.recommend(argThat(request -> request != null
+                && request.categories().equals(List.of("RESTAURANT"))
+                && request.categoryMode() == CategorySelectionMode.PREFERRED)))
+                .thenReturn(response(List.of(result(1, "식당", "음식점", 100, 35.11, 129.11))));
+        when(recommendations.recommend(argThat(request -> request != null && request.categories().isEmpty())))
+                .thenReturn(response(List.of(
+                        result(1, "식당", "음식점", 100, 35.11, 129.11),
+                        result(2, "명소", "관광지", 80, 35.12, 129.12))));
+        when(recommendations.recommend(argThat(request -> request != null
+                && request.categories().equals(List.of("CAFE"))
+                && request.categoryMode() == CategorySelectionMode.ONLY)))
+                .thenReturn(response(List.of(result(3, "희소 카페", "카페", 70, 35.13, 129.13))));
+        when(recommendations.recommend(argThat(request -> request != null
+                && request.categories().equals(List.of("CULTURE"))
+                && request.categoryMode() == CategorySelectionMode.ONLY)))
+                .thenReturn(response(List.of(result(4, "희소 문화", "문화시설", 60, 35.14, 129.14))));
+        CourseGenerationRequest request = new CourseGenerationRequest(null, 35.10, 129.10,
+                List.of("RESTAURANT"), null, null, null, 50, 4, 7L,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.PERSONALIZED, List.of());
+
+        assertThat(courses.generate(request).places()).extracting(x -> x.category())
+                .containsExactlyInAnyOrder("음식점", "관광지", "카페", "문화시설");
+    }
+
     private CourseGenerationRequest request(int randomness, int count, Long seed) {
         return new CourseGenerationRequest(null, 35.10, 129.10, List.of(), null,
                 180, 30_000L, randomness, count, seed);
     }
 
     private void stub(List<RecommendationResultDto> candidates) {
-        when(recommendations.recommend(any())).thenReturn(new PersonalizedRecommendationResponse(
-                candidates, candidates.size(), false, "fixture", List.of("fixture limitation")));
+        when(recommendations.recommend(any())).thenReturn(response(candidates));
+    }
+
+    private PersonalizedRecommendationResponse response(List<RecommendationResultDto> candidates) {
+        return new PersonalizedRecommendationResponse(
+                candidates, candidates.size(), false, "fixture", List.of("fixture limitation"));
     }
 
     private RecommendationResultDto result(long id, String name, String category,

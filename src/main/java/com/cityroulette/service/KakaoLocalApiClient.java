@@ -48,6 +48,11 @@ public class KakaoLocalApiClient {
         }
     }
 
+    /** API 키의 실제 값을 노출하지 않고 외부 장소 검색 가능 여부만 알려준다. */
+    public boolean isConfigured() {
+        return restApiKey != null && !restApiKey.isBlank();
+    }
+
     private String requireApiKey() {
         if (restApiKey == null || restApiKey.isBlank()) {
             throw new KakaoLocalApiException("KAKAO_REST_API_KEY 환경변수가 설정되지 않았습니다.");

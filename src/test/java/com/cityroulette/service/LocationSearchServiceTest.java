@@ -7,6 +7,7 @@ import com.cityroulette.domain.Place;
 import com.cityroulette.repository.PlaceRepository;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,6 +22,11 @@ class LocationSearchServiceTest {
     private final KakaoLocalApiClient client = mock(KakaoLocalApiClient.class);
     private final PlaceRepository places = mock(PlaceRepository.class);
     private final LocationSearchService service = new LocationSearchService(client, places, false);
+
+    @BeforeEach
+    void externalSearchIsConfigured() {
+        when(client.isConfigured()).thenReturn(true);
+    }
 
     @Test
     void mapsKakaoCoordinatesAndPrefersRoadAddress() {
@@ -61,5 +67,18 @@ class LocationSearchServiceTest {
             assertThat(result.longitude()).isEqualTo(129.0414);
         });
         org.mockito.Mockito.verifyNoInteractions(client);
+    }
+
+    @Test
+    void fallsBackToSavedPlacesWhenKakaoKeyIsMissing() {
+        when(client.isConfigured()).thenReturn(false);
+        Place place = new Place("부산역 주변 명소", "관광지", "부산광역시 동구", 35.1151, 129.0414, false);
+        when(places.search(org.mockito.ArgumentMatchers.isNull(), org.mockito.ArgumentMatchers.isNull(),
+                org.mockito.ArgumentMatchers.eq("부산역"), org.mockito.ArgumentMatchers.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(place)));
+
+        assertThat(service.search("부산역")).singleElement()
+                .extracting(LocationSearchResultDto::name)
+                .isEqualTo("부산역 주변 명소");
     }
 }

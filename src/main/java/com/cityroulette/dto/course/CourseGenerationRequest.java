@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import java.util.List;
 
 public record CourseGenerationRequest(
@@ -19,4 +20,25 @@ public record CourseGenerationRequest(
         @PositiveOrZero Long budget,
         @Min(0) @Max(100) Integer randomness,
         @Min(1) @Max(5) Integer placeCount,
-        Long randomSeed) { }
+        Long randomSeed,
+        CategorySelectionMode categoryMode,
+        CourseGenerationMode generationMode,
+        @Size(max = 50) List<Long> excludedPlaceIds) {
+
+    /** 기존 테스트와 API 호출부가 사용하던 10개 인자 생성자를 유지한다. */
+    public CourseGenerationRequest(
+            Long originPlaceId,
+            Double originLatitude,
+            Double originLongitude,
+            List<String> categories,
+            String district,
+            Integer availableMinutes,
+            Long budget,
+            Integer randomness,
+            Integer placeCount,
+            Long randomSeed) {
+        this(originPlaceId, originLatitude, originLongitude, categories, district,
+                availableMinutes, budget, randomness, placeCount, randomSeed,
+                CategorySelectionMode.PREFERRED, CourseGenerationMode.PERSONALIZED, List.of());
+    }
+}
