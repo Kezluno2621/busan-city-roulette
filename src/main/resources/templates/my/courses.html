@@ -1,9 +1,33 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>내 여행 코스 - City Roulette</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
-<body><main class="my-page"><nav th:replace="~{fragments/navigation :: navigation}"></nav>
-<header class="page-heading"><div><p class="eyebrow">MY SAVED COURSES</p><h1>내 여행 코스</h1><p>룰렛으로 만든 여행 계획을 다시 확인하고 관리하세요.</p></div><a class="primary-button" th:href="@{/recommend#instant-roulette}">새 코스 만들기</a></header>
-<form class="course-search" method="get" th:action="@{/my/courses}"><label for="course-title-search">제목 검색</label><div class="search-control"><input id="course-title-search" name="title" th:value="${titleQuery}" maxlength="100"><button class="secondary-button">검색</button></div></form>
-<section class="trip-empty-card" th:if="${courses.content.isEmpty()}"><div class="empty-icon">🎡</div><h2>저장한 코스가 없습니다.</h2><p>City Roulette에서 첫 즉흥 코스를 만들어보세요.</p></section>
-<section class="trip-grid" th:unless="${courses.content.isEmpty()}"><article class="trip-card" th:each="course : ${courses.content}"><div class="trip-card-topline"><span th:text="${#temporals.format(course.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span><span th:text="${course.actualPlaceCount + '곳'}">3곳</span></div><h2 th:text="${course.title}">코스 제목</h2><p class="trip-place" th:text="${course.representativePlaceName ?: '대표 장소 없음'}">대표 장소</p><div class="trip-card-footer"><a th:href="@{/my/courses/{id}(id=${course.id})}">코스 상세 보기</a></div></article></section>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 여행 코스 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <main class="my-page">
+        <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+        <header class="page-heading">
+            <div>
+                <p class="eyebrow">MY SAVED COURSES</p>
+                <h1>내 여행 코스</h1>
+                <p>룰렛으로 만든 여행 계획을 다시 확인하고 관리하세요.</p>
+            </div><a class="primary-button" th:href="@{/recommend#instant-roulette}">새 코스 만들기</a>
+        </header>
+        <form class="course-search" method="get" th:action="@{/my/courses}"><label for="course-title-search">제목 검색</label>
+            <div class="search-control"><input id="course-title-search" name="title" th:value="${titleQuery}" maxlength="100"><button class="secondary-button">검색</button></div>
+        </form>
+        <section class="trip-empty-card" th:if="${courses.content.isEmpty()}">
+            <div class="empty-icon">🎡</div>
+            <h2>저장한 코스가 없습니다.</h2>
+            <p>City Roulette에서 첫 즉흥 코스를 만들어보세요.</p>
+        </section>
+        <section class="trip-grid" th:unless="${courses.content.isEmpty()}">
+            <article class="trip-card" th:each="course : ${courses.content}">
+                <div class="trip-card-topline"><span th:text="${#temporals.format(course.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span><span th:text="${course.actualPlaceCount + '곳'}">3곳</span></div><h2 th:text="${course.title}">코스 제목</h2><p class="trip-place" th:text="${course.representativePlaceName ?: '대표 장소 없음'}">대표 장소</p><div class="trip-card-footer"><a th:href="@{/my/courses/{id}(id=${course.id})}">코스 상세 보기</a></div></article></section>
 <nav class="pagination" th:if="${courses.totalPages > 1}" aria-label="코스 페이지"><a th:if="${courses.page > 0}" th:href="@{/my/courses(page=${courses.page - 1},title=${titleQuery})}">이전</a><span th:text="${courses.page + 1 + ' / ' + courses.totalPages}">1 / 1</span><a th:if="${courses.page + 1 < courses.totalPages}" th:href="@{/my/courses(page=${courses.page + 1},title=${titleQuery})}">다음</a></nav><footer th:replace="~{fragments/footer :: footer}"></footer>
 </main></body></html>

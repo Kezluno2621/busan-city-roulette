@@ -1,8 +1,77 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title th:text="${course.title + ' - City Roulette'}">저장 코스</title><link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script><script th:src="@{/js/saved-course-map.js}" defer></script></head>
-<body><main class="my-page"><nav th:replace="~{fragments/navigation :: navigation}"></nav>
-<header class="page-heading"><div><p class="eyebrow">SAVED COURSE</p><h1 th:text="${course.title}">코스 제목</h1><p th:text="${'저장 ' + #temporals.format(course.createdAt, 'yyyy-MM-dd HH:mm')}">저장일</p></div><a class="secondary-button" th:href="@{/my/courses}">목록으로</a></header>
-<section class="panel course-manage-panel"><div><p class="step-label">COURSE SETTINGS</p><h2>코스 관리</h2></div><form class="course-manage-form" method="post" th:action="@{/my/courses/{id}/title(id=${course.id})}"><input type="hidden" name="version" th:value="${course.version}"><label>코스 제목<input name="title" maxlength="100" required th:value="${course.title}"></label><button class="secondary-button">제목 수정</button><p class="form-error" role="alert" th:if="${titleError}" th:text="${titleError}"></p></form><form id="course-delete-form" class="course-delete-form" method="post" th:action="@{/my/courses/{id}/delete(id=${course.id})}"><p>더 이상 필요하지 않은 코스를 삭제할 수 있습니다.</p><div class="delete-confirm" data-delete-dialog><input class="delete-confirm-toggle visually-hidden" id="delete-confirm-toggle" type="checkbox"><label class="danger-button delete-confirm-label" for="delete-confirm-toggle"><span class="delete-open-label">코스 삭제</span><span class="delete-close-label">취소</span></label><div class="confirm-dialog-panel" role="alertdialog" aria-labelledby="delete-dialog-title"><div class="confirm-dialog-icon" aria-hidden="true">!</div><div><h3 id="delete-dialog-title">이 코스를 삭제할까요?</h3><p>저장된 방문 순서와 메모가 함께 삭제되며 복구할 수 없습니다.</p></div><button class="danger-button" type="submit">삭제하기</button></div></div></form></section>
-<section class="panel course-detail-map" th:attr="data-origin-lat=${course.originLatitude},data-origin-lon=${course.originLongitude},data-origin-name=${course.originName}"><h2>방문 순서</h2><ol class="course-results"><li class="course-card" data-course-place="true" th:each="place : ${course.places}" th:attr="data-lat=${place.latitude},data-lon=${place.longitude},data-name=${place.placeName},data-sequence=${place.visitOrder}"><span class="course-sequence" th:text="${place.visitOrder}">1</span><div class="result-place-image course-place-image"><img th:src="${place.imageUrl != null ? place.imageUrl : '/images/place-placeholder.svg'}" th:alt="${place.placeName + ' 대표 이미지'}" loading="lazy" data-image-fallback></div><div><h3 th:text="${place.placeName}">장소</h3><p class="place-meta" th:text="${place.category + ' · 이전 지점에서 직선 ' + #numbers.formatDecimal(place.distanceFromPreviousMeters, 0, 0) + 'm'}">정보</p><p th:text="${'추천 점수 ' + place.recommendationScore + ' · 교통 ' + place.transitVerificationStatus}">상태</p><ul><li th:each="reason : ${place.recommendationReasons}" th:text="${reason}">이유</li></ul><a th:if="${place.placeId != null}" th:href="@{/places/{id}(id=${place.placeId})}">최신 장소 상세 보기</a></div></li></ol><p class="map-disclaimer">장소 간 직선 연결 — 실제 도로·도보·버스 이동 경로가 아닙니다.</p><div id="saved-course-map" class="recommendation-map" aria-label="저장 코스 지도"></div></section>
-<section class="panel"><h2>데이터 제한사항</h2><ul><li th:each="limitation : ${course.dataLimitations}" th:text="${limitation}">제한사항</li></ul><p>예상 시간: <strong th:text="${course.estimateTimeStatus}">UNKNOWN</strong> · 예상 비용: <strong th:text="${course.estimateCostStatus}">UNKNOWN</strong></p></section>
-<footer th:replace="~{fragments/footer :: footer}"></footer></main></body></html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${course.title + ' - City Roulette'}">저장 코스</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script th:src="@{/js/saved-course-map.js}" defer></script>
+</head>
+
+<body>
+    <main class="my-page">
+        <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+        <header class="page-heading">
+            <div>
+                <p class="eyebrow">SAVED COURSE</p>
+                <h1 th:text="${course.title}">코스 제목</h1>
+                <p th:text="${'저장 ' + #temporals.format(course.createdAt, 'yyyy-MM-dd HH:mm')}">저장일</p>
+            </div><a class="secondary-button" th:href="@{/my/courses}">목록으로</a>
+        </header>
+        <section class="panel course-manage-panel">
+            <div>
+                <p class="step-label">COURSE SETTINGS</p>
+                <h2>코스 관리</h2>
+            </div>
+            <form class="course-manage-form" method="post" th:action="@{/my/courses/{id}/title(id=${course.id})}"><input type="hidden" name="version" th:value="${course.version}"><label>코스 제목<input name="title" maxlength="100" required th:value="${course.title}"></label><button class="secondary-button">제목 수정</button>
+                <p class="form-error" role="alert" th:if="${titleError}" th:text="${titleError}"></p>
+            </form>
+            <form id="course-delete-form" class="course-delete-form" method="post" th:action="@{/my/courses/{id}/delete(id=${course.id})}">
+                <p>더 이상 필요하지 않은 코스를 삭제할 수 있습니다.</p>
+                <div class="delete-confirm" data-delete-dialog><input class="delete-confirm-toggle visually-hidden" id="delete-confirm-toggle" type="checkbox"><label class="danger-button delete-confirm-label" for="delete-confirm-toggle"><span class="delete-open-label">코스 삭제</span><span class="delete-close-label">취소</span></label>
+                    <div class="confirm-dialog-panel" role="alertdialog" aria-labelledby="delete-dialog-title">
+                        <div class="confirm-dialog-icon" aria-hidden="true">!</div>
+                        <div>
+                            <h3 id="delete-dialog-title">이 코스를 삭제할까요?</h3>
+                            <p>저장된 방문 순서와 메모가 함께 삭제되며 복구할 수 없습니다.</p>
+                        </div><button class="danger-button" type="submit">삭제하기</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <section class="panel course-detail-map" th:attr="data-origin-lat=${course.originLatitude},data-origin-lon=${course.originLongitude},data-origin-name=${course.originName}">
+            <h2>방문 순서</h2>
+            <ol class="course-results">
+                <li class="course-card" data-course-place="true" th:each="place : ${course.places}" th:attr="data-lat=${place.latitude},data-lon=${place.longitude},data-name=${place.placeName},data-sequence=${place.visitOrder}"><span class="course-sequence" th:text="${place.visitOrder}">1</span>
+                    <div class="result-place-image course-place-image"><img th:src="${place.imageUrl != null ? place.imageUrl : '/images/place-placeholder.svg'}" th:alt="${place.placeName + ' 대표 이미지'}" loading="lazy" data-image-fallback></div>
+                    <div>
+                        <h3 th:text="${place.placeName}">장소</h3>
+                        <p class="place-meta"
+                           th:text="${place.visitOrder == 1 and course.originName == '출발지 미지정'
+                               ? place.category + ' · 코스 첫 방문 장소'
+                               : place.category + ' · 이전 지점에서 직선 ' + #numbers.formatDecimal(place.distanceFromPreviousMeters, 0, 0) + 'm'}">정보</p>
+                        <p th:text="${'추천 점수 ' + place.recommendationScore + ' · 교통 ' + place.transitVerificationStatus}">상태</p>
+                        <ul>
+                            <li th:each="reason : ${place.recommendationReasons}" th:text="${reason}">이유</li>
+                        </ul><a th:if="${place.placeId != null}" th:href="@{/places/{id}(id=${place.placeId})}">최신 장소 상세 보기</a>
+                    </div>
+                </li>
+            </ol>
+            <p class="map-disclaimer">장소 간 직선 연결 — 실제 도로·도보·버스 이동 경로가 아닙니다.</p>
+            <div id="saved-course-map" class="recommendation-map" aria-label="저장 코스 지도"></div>
+        </section>
+        <section class="panel">
+            <h2>데이터 제한사항</h2>
+            <ul>
+                <li th:each="limitation : ${course.dataLimitations}" th:text="${limitation}">제한사항</li>
+            </ul>
+            <p>예상 시간: <strong th:text="${course.estimateTimeStatus}">UNKNOWN</strong> · 예상 비용: <strong th:text="${course.estimateCostStatus}">UNKNOWN</strong></p>
+        </section>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </main>
+</body>
+
+</html>

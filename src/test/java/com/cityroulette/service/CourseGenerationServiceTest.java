@@ -174,7 +174,7 @@ class CourseGenerationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test void instantModeUsesBusanDefaultOriginWhenDepartureIsOmitted() {
+    @Test void instantModeDoesNotExposeInternalReferencePointAsDeparture() {
         stub(List.of(result(1, "즉흥 명소", "관광지", 90, 35.18, 129.08)));
         CourseGenerationRequest request = new CourseGenerationRequest(null, null, null,
                 List.of(), null, null, null, 100, 1, 7L,
@@ -182,8 +182,12 @@ class CourseGenerationServiceTest {
 
         var response = courses.generate(request);
 
-        assertThat(response.origin().name()).isEqualTo("부산 중심 출발");
+        assertThat(response.origin().name()).isEqualTo("출발지 미지정");
+        assertThat(response.origin().selectedByUser()).isFalse();
+        assertThat(response.origin().latitude()).isNull();
+        assertThat(response.origin().longitude()).isNull();
         assertThat(response.places()).hasSize(1);
+        assertThat(response.places().get(0).distanceFromPreviousMeters()).isZero();
         assertThat(response.courseTitle()).contains("즉흥 룰렛");
     }
 

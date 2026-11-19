@@ -6,6 +6,8 @@ import com.cityroulette.service.KakaoLocalApiException;
 import com.cityroulette.service.LocationSearchService;
 import com.cityroulette.service.OdsayApiException;
 import com.cityroulette.service.RecommendationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,7 @@ import java.util.List;
 @Controller
 public class RecommendationPageController {
 
+    private static final Logger log = LoggerFactory.getLogger(RecommendationPageController.class);
     private static final int DEFAULT_AVAILABLE_MINUTES = 180;
     private static final int DEFAULT_STAY_MINUTES = 60;
     private static final int DEFAULT_LIMIT = 1;
@@ -68,8 +71,9 @@ public class RecommendationPageController {
                 model.addAttribute("locationSearchError", "부산에서 일치하는 출발지를 찾지 못했습니다.");
             }
         } catch (KakaoLocalApiException exception) {
-            model.addAttribute("locationSearchError",
-                    "출발지 검색을 사용할 수 없습니다. KAKAO_REST_API_KEY 설정을 확인해주세요.");
+            // 키나 전체 요청 URL은 남기지 않고 상태 코드만 기록한다.
+            log.warn("Kakao Local API search failed: status={}", exception.getHttpStatusCode());
+            model.addAttribute("locationSearchError", kakaoSearchErrorMessage(exception));
         }
         return "recommend";
     }
@@ -155,6 +159,19 @@ public class RecommendationPageController {
         } catch (NullPointerException | NumberFormatException exception) {
             return null;
         }
+    }
+
+    private String kakaoSearchErrorMessage(KakaoLocalApiException exception) {
+        Integer statusCode = exception.getHttpStatusCode();
+        if (statusCode == null) {
+            return "카카오 장소 검색 서버에 연결할 수 없습니다. 인터넷 연결과 STS 실행 환경을 확인해주세요.";
+        }
+        return switch (statusCode) {
+            case 401 -> "카카오 REST API 키 인증에 실패했습니다. STS의 KAKAO_REST_API_KEY가 앱의 REST API 키인지 확인해주세요.";
+            case 403 -> "카카오 Local API 사용 권한이 거부되었습니다. 카카오 개발자 콘솔의 앱과 권한 설정을 확인해주세요.";
+            case 429 -> "카카오 장소 검색 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요.";
+            default -> "카카오 장소 검색이 일시적으로 실패했습니다. 잠시 후 다시 시도해주세요. (HTTP " + statusCode + ")";
+        };
     }
 
     private void prepareModel(

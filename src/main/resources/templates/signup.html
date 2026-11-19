@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입 - City Roulette</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
-<main class="auth-page">
-    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <main class="auth-page">
+        <nav th:replace="~{fragments/navigation :: navigation}"></nav>
 
-    <section class="auth-container" aria-labelledby="signup-title">
-        <header class="auth-header">
-            <p class="eyebrow">BUSAN RANDOM TRIP</p>
-            <h1 id="signup-title">회원가입</h1>
-            <p>City Roulette에서<br>나만의 여행 기록을 시작해보세요.</p>
-        </header>
+        <section class="auth-container" aria-labelledby="signup-title">
+            <header class="auth-header">
+                <p class="eyebrow">BUSAN RANDOM TRIP</p>
+                <h1 id="signup-title">회원가입</h1>
+                <p>City Roulette에서<br>나만의 여행 기록을 시작해보세요.</p>
+            </header>
 
-        <div class="auth-card">
-            <form class="auth-form" th:action="@{/signup}" th:object="${signupRequest}" method="post">
-                <fieldset class="auth-fields">
-                    <legend class="visually-hidden">회원 정보</legend>
-                    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+            <div class="auth-card">
+                <form class="auth-form" th:action="@{/signup}" th:object="${signupRequest}" method="post">
+                    <fieldset class="auth-fields">
+                        <legend class="visually-hidden">회원 정보</legend>
+                        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
                         <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">회원가입 오류</p>
                     </div>
 
@@ -42,7 +44,7 @@
                                autocomplete="new-password" minlength="8" required
                                aria-describedby="password-help password-error"
                                th:attr="aria-invalid=${#fields.hasErrors('password')}">
-                        <p id="password-help" class="form-help">8자 이상, UTF-8 기준 72바이트 이내로 입력해주세요.</p>
+                        <p id="password-help" class="form-help">8자 이상 입력해주세요.</p>
                         <p id="password-error" th:if="${#fields.hasErrors('password')}"
                            th:errors="*{password}" class="form-error-message" role="alert"></p>
                     </div>

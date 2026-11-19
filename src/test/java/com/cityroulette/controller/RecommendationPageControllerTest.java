@@ -4,6 +4,7 @@ import com.cityroulette.dto.location.LocationSearchResultDto;
 import com.cityroulette.dto.recommendation.RecommendationDto;
 import com.cityroulette.dto.recommendation.RecommendationResponse;
 import com.cityroulette.service.LocationSearchService;
+import com.cityroulette.service.KakaoLocalApiException;
 import com.cityroulette.service.OdsayApiException;
 import com.cityroulette.service.RecommendationService;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ class RecommendationPageControllerTest {
                 .andExpect(content().string(containsString("value=\"PREFERRED\"")))
                 .andExpect(content().string(containsString("data-course-form")))
                 .andExpect(content().string(containsString("course-roulette.js")))
-                .andExpect(content().string(containsString("코스를 저장하려면 로그인이 필요합니다.")));
+                .andExpect(content().string(containsString("로그인하면 추천 코스를 내 여행 기록에 저장할 수 있어요.")));
 
         verifyNoInteractions(recommendationService);
         verifyNoInteractions(locationSearchService);
@@ -88,6 +89,21 @@ class RecommendationPageControllerTest {
 
         verify(locationSearchService).search("부산역");
         verifyNoInteractions(recommendationService);
+    }
+
+    @Test
+    void explainsKakaoAuthenticationFailureWithoutExposingKey() throws Exception {
+        when(locationSearchService.search("동아대"))
+                .thenThrow(new KakaoLocalApiException("status=401", new RuntimeException(), 401));
+
+        mockMvc.perform(post("/recommend/search-location")
+                        .param("locationQuery", "동아대")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("locationSearchError",
+                        "카카오 REST API 키 인증에 실패했습니다. STS의 KAKAO_REST_API_KEY가 앱의 REST API 키인지 확인해주세요."))
+                .andExpect(content().string(containsString("REST API 키 인증에 실패했습니다")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("status=401"))));
     }
 
     @Test

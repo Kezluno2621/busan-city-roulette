@@ -147,7 +147,13 @@ public class CourseGenerationService {
         }
         if (!hasId && !hasLatitude) {
             if (generationMode == CourseGenerationMode.INSTANT) {
-                return new Origin(null, "부산 중심 출발", DEFAULT_ORIGIN_LATITUDE, DEFAULT_ORIGIN_LONGITUDE);
+                // 부산 중심 좌표는 후보 거리 계산에만 사용하며 실제 출발지로 노출하지 않는다.
+                return new Origin(
+                        null,
+                        "출발지 미지정",
+                        DEFAULT_ORIGIN_LATITUDE,
+                        DEFAULT_ORIGIN_LONGITUDE,
+                        false);
             }
             throw new IllegalArgumentException("출발 장소 ID 또는 출발 좌표가 필요합니다.");
         }
@@ -157,14 +163,24 @@ public class CourseGenerationService {
             if (place.getLatitude() == null || place.getLongitude() == null) {
                 throw new PlaceCoordinatesMissingException(place.getId());
             }
-            return new Origin(place.getId(), place.getName(), place.getLatitude(), place.getLongitude());
+            return new Origin(
+                    place.getId(),
+                    place.getName(),
+                    place.getLatitude(),
+                    place.getLongitude(),
+                    true);
         }
         if (!Double.isFinite(request.originLatitude()) || !Double.isFinite(request.originLongitude())
                 || request.originLatitude() < -90 || request.originLatitude() > 90
                 || request.originLongitude() < -180 || request.originLongitude() > 180) {
             throw new IllegalArgumentException("출발 좌표 범위를 확인해주세요.");
         }
-        return new Origin(null, "사용자 지정 출발지", request.originLatitude(), request.originLongitude());
+        return new Origin(
+                null,
+                "사용자 지정 출발지",
+                request.originLatitude(),
+                request.originLongitude(),
+                true);
     }
 
     private List<RecommendationResultDto> applyRecentExclusions(List<RecommendationResultDto> candidates,
@@ -468,9 +484,12 @@ public class CourseGenerationService {
             if (transit != RecommendationTransitStatus.VERIFIED) {
                 limitations.add("부분 정적 교통 데이터로 실제 이동 가능 여부를 단정하지 않습니다.");
             }
+            double distanceFromPrevious = index == 0 && !origin.selectedByUser()
+                    ? 0
+                    : orderedCandidate.distanceMeters();
             result.add(new CoursePlaceDto(item.placeId(), item.placeName(), item.category(), item.address(),
                     item.latitude(), item.longitude(), index + 1, item.score(), item.recommendationReasons(),
-                    round(orderedCandidate.distanceMeters()), transit, CourseEstimateStatus.UNKNOWN,
+                    round(distanceFromPrevious), transit, CourseEstimateStatus.UNKNOWN,
                     CourseEstimateStatus.UNKNOWN, List.copyOf(limitations), item.imageUrl()));
             previousPlaceId = item.placeId();
         }
@@ -503,7 +522,17 @@ public class CourseGenerationService {
     private double round(double value) { return Math.round(value * 10.0) / 10.0; }
     private record OrderedCandidate(RecommendationResultDto item, double distanceMeters) { }
     private enum PlaceRole { MEAL, CAFE, SIGHTSEEING, CULTURE, WALKING, OTHER }
-    private record Origin(Long placeId, String name, double latitude, double longitude) {
-        CourseOriginDto dto() { return new CourseOriginDto(placeId, name, latitude, longitude); }
+    private record Origin(
+            Long placeId,
+            String name,
+            double latitude,
+            double longitude,
+            boolean selectedByUser) {
+
+        CourseOriginDto dto() {
+            return selectedByUser
+                    ? new CourseOriginDto(placeId, name, latitude, longitude, true)
+                    : CourseOriginDto.unselected();
+        }
     }
 }

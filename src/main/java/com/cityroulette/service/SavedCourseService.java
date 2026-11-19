@@ -49,8 +49,18 @@ public class SavedCourseService {
         validate(snapshot);
         CourseGenerationRequest generation = snapshot.request();
         CourseGenerationResponse response = snapshot.response();
+        CourseOriginDto origin = response.origin();
+        CoursePlaceDto firstPlace = response.places().get(0);
+        // 기존 스키마는 출발 좌표를 필수로 저장한다. 출발지를 생략한 즉흥 코스는
+        // 가짜 부산 중심 좌표 대신 첫 방문 장소 좌표를 저장하고 화면에서는 출발지 마커를 숨긴다.
+        double storedOriginLatitude = origin.selectedByUser()
+                ? origin.latitude()
+                : firstPlace.latitude();
+        double storedOriginLongitude = origin.selectedByUser()
+                ? origin.longitude()
+                : firstPlace.longitude();
         SavedCourse course = new SavedCourse(member, request.title().trim(), response.origin().name(),
-                decimal(response.origin().latitude()), decimal(response.origin().longitude()),
+                decimal(storedOriginLatitude), decimal(storedOriginLongitude),
                 response.requestedPlaceCount(), response.actualPlaceCount(),
                 generation.randomness() == null ? 0 : generation.randomness(), generation.availableMinutes(),
                 generation.budget(), json(response.dataLimitations()));

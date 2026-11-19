@@ -2,21 +2,85 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
 <div class="course-output" data-course-output th:fragment="courseResult">
+    <!-- API 또는 입력 오류는 결과 영역의 가장 위에서 바로 안내한다. -->
     <p class="form-error" role="alert" hidden data-course-error></p>
+
+    <!-- 서버가 선택한 장소를 순서대로 보여주는 시각 효과 영역이다. -->
     <div class="roulette-stage" hidden data-roulette-stage aria-live="polite" aria-atomic="true">
-        <span class="roulette-pointer" aria-hidden="true">▼</span><strong data-roulette-current>장소를 선택하고 있습니다…</strong>
+        <span class="roulette-pointer" aria-hidden="true">▼</span>
+        <strong data-roulette-current>장소를 선택하고 있습니다…</strong>
     </div>
-    <div class="course-summary" hidden data-course-summary></div>
-    <div class="course-save-panel" th:if="${currentMember != null}" hidden data-course-save-panel>
-        <label><span>저장할 코스 제목</span><input type="text" maxlength="100" value="나의 부산 여행 코스" data-course-save-title></label>
-        <button class="secondary-button" type="button" data-course-save>내 코스에 저장</button><p role="status" data-course-save-status></p>
+
+    <!-- 코스 제목, 방문 순서, 추천 기준은 JavaScript가 실제 응답 데이터로 채운다. -->
+    <section class="course-summary" hidden data-course-summary aria-label="생성된 추천 코스"></section>
+
+    <!-- 로그인 회원에게만 실제 코스 저장 입력과 버튼을 제공한다. -->
+    <div class="course-save-panel course-save-banner"
+         th:if="${currentMember != null}"
+         hidden
+         data-course-save-panel>
+        <div class="course-save-copy">
+            <p class="course-save-eyebrow">SAVE YOUR COURSE</p>
+            <h3>이 코스를 내 여행에 담아보세요</h3>
+            <p>제목을 정해 저장하면 내 코스에서 언제든 다시 확인할 수 있어요.</p>
+        </div>
+        <div class="course-save-actions">
+            <label>
+                <span>저장할 코스 제목</span>
+                <input type="text"
+                       maxlength="100"
+                       value="나의 부산 여행 코스"
+                       data-course-save-title>
+            </label>
+            <button class="primary-button" type="button" data-course-save>
+                내 여행에 저장
+            </button>
+            <p role="status" data-course-save-status></p>
+        </div>
     </div>
-    <div class="course-save-panel" th:if="${currentMember == null}" hidden data-course-login-panel>
-        <p>코스를 저장하려면 로그인이 필요합니다.</p><a class="secondary-button" th:href="@{/login}">로그인 후 저장하기</a>
+
+    <!-- 비회원에게는 가짜 저장 버튼 대신 로그인 링크만 보여준다. -->
+    <div class="course-save-panel course-save-banner course-login-banner"
+         th:if="${currentMember == null}"
+         hidden
+         data-course-login-panel>
+        <div class="course-save-copy">
+            <p class="course-save-eyebrow">KEEP THIS COURSE</p>
+            <h3>이 코스가 마음에 드시나요?</h3>
+            <p>로그인하면 추천 코스를 내 여행 기록에 저장할 수 있어요.</p>
+        </div>
+        <a class="primary-button" th:href="@{/login}">로그인 후 저장하기</a>
     </div>
-    <ol class="course-results" data-course-results></ol>
-    <p class="map-disclaimer" hidden data-course-map-disclaimer>장소 간 직선 연결 — 실제 도로·도보·버스 이동 경로가 아닙니다.</p>
-    <div class="recommendation-map" hidden data-course-map aria-label="추천 여행 코스 지도"></div>
+
+    <!-- 상단 방문 순서와 같은 번호를 사용해 각 장소의 상세 정보를 연결한다. -->
+    <section class="course-list-section" hidden data-course-list-section aria-label="추천 장소 목록">
+        <div class="course-section-heading">
+            <div>
+                <p class="course-section-eyebrow">PLACES</p>
+                <h3>추천 장소</h3>
+            </div>
+            <p>위 코스 순서와 같은 번호로 장소 정보를 확인할 수 있어요.</p>
+        </div>
+        <ol class="course-results" data-course-results></ol>
+    </section>
+
+    <!-- 지도는 위치 관계만 표현하며 실제 도로나 대중교통 경로를 의미하지 않는다. -->
+    <section class="course-map-section" hidden data-course-map-section aria-label="추천 코스 지도">
+        <div class="course-section-heading">
+            <div>
+                <p class="course-section-eyebrow">MAP</p>
+                <h3>추천 코스 지도</h3>
+            </div>
+        </div>
+        <p class="map-disclaimer" data-course-map-disclaimer>
+            <strong>위치 관계 안내</strong>
+            <span>
+                지도는 추천 장소의 위치 관계를 보여줍니다.
+                연결선은 실제 도로·도보·대중교통 경로가 아닙니다.
+            </span>
+        </p>
+        <div class="recommendation-map" data-course-map aria-label="추천 여행 코스 지도"></div>
+    </section>
 </div>
 </body>
 </html>

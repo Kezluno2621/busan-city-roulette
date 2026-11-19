@@ -4,7 +4,9 @@
  */
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("[data-personalized-recommend-form]");
-    if (!form) return;
+    if (!form) {
+        return;
+    }
     const results = document.querySelector("[data-personalized-results]");
     const summary = document.querySelector("[data-personalized-summary]");
     const error = document.querySelector("[data-personalized-error]");
@@ -15,7 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const mapElement = document.getElementById("recommendation-map");
     let map;
 
-    range.addEventListener("input", () => { output.textContent = range.value; });
+    // 슬라이더 값을 즉시 표시해 키보드 사용자도 현재 랜덤성을 확인할 수 있게 한다.
+    range.addEventListener("input", () => {
+        output.textContent = range.value;
+    });
+
+    // 추천 점수 계산은 서버가 담당하며 브라우저는 입력 검증과 결과 표현만 수행한다.
     form.addEventListener("submit", async event => {
         event.preventDefault();
         clearResults();
@@ -43,12 +50,16 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const token = form.querySelector("input[name='_csrf']")?.value;
             const headers = {"Content-Type": "application/json"};
-            if (token) headers["X-CSRF-TOKEN"] = token;
+            if (token) {
+                headers["X-CSRF-TOKEN"] = token;
+            }
             const response = await fetch("/api/recommendations", {
                 method: "POST", headers, body: JSON.stringify(body)
             });
             const payload = await response.json();
-            if (!response.ok) throw new Error(payload.message || "추천 요청을 처리하지 못했습니다.");
+            if (!response.ok) {
+                throw new Error(payload.message || "추천 요청을 처리하지 못했습니다.");
+            }
             render(payload);
         } catch (exception) {
             showError(exception.message || "추천 요청 중 오류가 발생했습니다.");
@@ -68,7 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
         summary.hidden = true;
         results.replaceChildren();
         mapElement.hidden = true;
-        if (map) { map.remove(); map = null; }
+        if (map) {
+            map.remove();
+            map = null;
+        }
     }
     function showError(message) {
         error.textContent = message;
@@ -87,7 +101,9 @@ document.addEventListener("DOMContentLoaded", () => {
             results.append(empty);
             return;
         }
-        payload.recommendations.forEach((item, index) => results.append(card(item, index + 1)));
+        payload.recommendations.forEach((item, index) => {
+            results.append(card(item, index + 1));
+        });
         renderMap(payload.recommendations);
     }
     function card(item, rank) {
@@ -103,16 +119,25 @@ document.addEventListener("DOMContentLoaded", () => {
         score.className = "recommendation-score";
         score.textContent = `${item.score.toFixed(1)}점 · ${Math.round(item.distanceMeters)}m · 교통 ${item.transitVerificationStatus}`;
         const reasons = document.createElement("ul");
-        item.recommendationReasons.forEach(reason => {
-            const li = document.createElement("li"); li.textContent = reason; reasons.append(li);
+        item.recommendationReasons.forEach((reason) => {
+            const li = document.createElement("li");
+            li.textContent = reason;
+            reasons.append(li);
         });
         const limitations = document.createElement("details");
-        const label = document.createElement("summary"); label.textContent = "데이터 제한사항";
+        const label = document.createElement("summary");
+        label.textContent = "데이터 제한사항";
         const list = document.createElement("ul");
-        item.dataLimitations.forEach(value => { const li = document.createElement("li"); li.textContent = value; list.append(li); });
+        item.dataLimitations.forEach((value) => {
+            const li = document.createElement("li");
+            li.textContent = value;
+            list.append(li);
+        });
         limitations.append(label, list);
         const link = document.createElement("a");
-        link.href = `/places/${item.placeId}`; link.className = "secondary-button"; link.textContent = "장소 상세 보기";
+        link.href = `/places/${item.placeId}`;
+        link.className = "secondary-button";
+        link.textContent = "장소 상세 보기";
         article.append(image, heading, meta, score, reasons, limitations, link);
         return article;
     }
@@ -143,13 +168,17 @@ document.addEventListener("DOMContentLoaded", () => {
         mapElement.hidden = false;
         map = L.map(mapElement);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            maxZoom: 19, attribution: "&copy; OpenStreetMap contributors"
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap contributors"
         }).addTo(map);
         const bounds = [];
         located.forEach(item => {
-            const point = [item.latitude, item.longitude]; bounds.push(point);
+            const point = [item.latitude, item.longitude];
+            bounds.push(point);
             const marker = L.marker(point).addTo(map);
-            const link = document.createElement("a"); link.href = `/places/${item.placeId}`; link.textContent = item.placeName;
+            const link = document.createElement("a");
+            link.href = `/places/${item.placeId}`;
+            link.textContent = item.placeName;
             marker.bindPopup(link);
         });
         map.fitBounds(bounds, {padding: [30, 30], maxZoom: 14});

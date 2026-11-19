@@ -40,9 +40,11 @@ public class KakaoLocalApiClient {
         } catch (KakaoLocalApiException exception) {
             throw exception;
         } catch (RestClientResponseException exception) {
+            int statusCode = exception.getStatusCode().value();
             throw new KakaoLocalApiException(
-                    "Kakao 장소 검색 HTTP 오류: status=" + exception.getStatusCode().value(),
-                    exception);
+                    "Kakao 장소 검색 HTTP 오류: status=" + statusCode,
+                    exception,
+                    statusCode);
         } catch (RestClientException exception) {
             throw new KakaoLocalApiException("Kakao 장소 검색 호출에 실패했습니다.", exception);
         }
