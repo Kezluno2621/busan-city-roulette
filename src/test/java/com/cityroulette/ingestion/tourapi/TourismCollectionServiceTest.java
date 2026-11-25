@@ -1,12 +1,12 @@
 package com.cityroulette.ingestion.tourapi;
 
 import com.cityroulette.integration.tourapi.TourismApiException;
-import com.cityroulette.ingestion.ImportRun;
+import com.cityroulette.ingestion.history.ImportRun;
 import com.cityroulette.domain.place.entity.Place;
 import com.cityroulette.ingestion.tourapi.dto.TourismCollectionResult;
 import com.cityroulette.integration.tourapi.dto.TourismPage;
 import com.cityroulette.integration.tourapi.dto.TourismPlaceDto;
-import com.cityroulette.ingestion.ImportRunRepository;
+import com.cityroulette.ingestion.history.ImportRunRepository;
 import com.cityroulette.domain.place.repository.PlaceMergeCandidateRepository;
 import com.cityroulette.domain.place.repository.PlaceRepository;
 import com.cityroulette.domain.place.repository.PlaceSourceRepository;

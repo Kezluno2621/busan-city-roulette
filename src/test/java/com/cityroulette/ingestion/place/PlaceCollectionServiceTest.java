@@ -1,6 +1,7 @@
 package com.cityroulette.ingestion.place;
 
-import com.cityroulette.ingestion.ImportRunService;
+import com.cityroulette.ingestion.place.provider.PlaceDataProvider;
+import com.cityroulette.ingestion.history.ImportRunService;
 import com.cityroulette.ingestion.place.dto.NormalizedPlace;
 import com.cityroulette.ingestion.place.dto.NormalizedProviderPage;
 import com.cityroulette.ingestion.place.dto.PlaceImportResult;

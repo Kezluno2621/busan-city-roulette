@@ -42,7 +42,7 @@
 Java 소스는 기능별 `domain/{member,place,transport,recommendation,course,favorite,trip}`을
 중심으로 배치합니다. 각 기능에는 필요한 MVC·JPA 계층을 둡니다. `integration`은 외부 API,
 `ingestion`은 공공데이터 변환·적재, `global`은 보안과 공통 유틸리티를 담당합니다.
-화면은 `templates` 아래 같은 기능 이름에서 찾을 수 있습니다. [프로젝트 구조](docs/PROJECT_STRUCTURE.md)
+화면은 `templates` 아래 같은 기능 이름에서 찾을 수 있습니다. [프로젝트 구조](docs/architecture/PROJECT_STRUCTURE.md)
 
 ```mermaid
 flowchart LR
@@ -162,12 +162,12 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
 빈 비밀번호를 명시적으로 허용해야 하는 준비된 로컬 복제본에만
 `-AllowEmptyPassword`를 추가합니다. 실행 후 `http://127.0.0.1:18090/`에 접속하고,
 종료는 `Ctrl+C` 후 `Y`입니다. 자세한 절차는
-[`docs/final-demo-guide.md`](docs/final-demo-guide.md)를 참고하세요.
+[`docs/submission/final-demo-guide.md`](docs/submission/final-demo-guide.md)를 참고하세요.
 
 ## 테스트 결과
 
 - Java 17 `gradlew --no-daemon clean build`: 성공
-- JUnit/Spring 테스트: 334개, 실패 0, 오류 0, 건너뜀 0
+- JUnit/Spring 테스트: 344개, 실패 0, 오류 0, 건너뜀 0
 - Chromium GUI QA: 검색, 상세, 지도, 추천, 룰렛, 로그인, 코스 저장, 즐겨찾기 확인
 - 반응형: 1440×900, 1024×768, 768×1024, 390×844, 360×800 확인
 - demo MySQL 및 Spring Boot 재시작 후 데이터 보존 확인
@@ -180,11 +180,11 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
 
 | 화면 | 파일 |
 | --- | --- |
-| 관광지 목록 | `docs/qa/screenshots/02-places-desktop.png` |
-| 장소 상세 지도 | `docs/qa/screenshots/03-place-detail-map-desktop.png` |
-| 개인화 추천 | `docs/qa/screenshots/05-personalized-recommendation-desktop.png` |
-| 룰렛 코스 | `docs/qa/screenshots/06-course-roulette-desktop.png` |
-| 저장 코스 | `docs/qa/screenshots/08-saved-course-detail-desktop.png` |
+| 관광지 목록 | `docs/testing/qa/screenshots/02-places-desktop.png` |
+| 장소 상세 지도 | `docs/testing/qa/screenshots/03-place-detail-map-desktop.png` |
+| 개인화 추천 | `docs/testing/qa/screenshots/05-personalized-recommendation-desktop.png` |
+| 룰렛 코스 | `docs/testing/qa/screenshots/06-course-roulette-desktop.png` |
+| 저장 코스 | `docs/testing/qa/screenshots/08-saved-course-detail-desktop.png` |
 
 ## 제한사항
 
@@ -197,14 +197,14 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
 
 ## 7. Documentation
 
-- [교수 제출용 최종 설명서](docs/final-submission.md)
-- [최종 프로젝트 보고서](docs/final-project-report.md)
-- [발표 시연 가이드](docs/final-demo-guide.md)
-- [최종 시연 검증](docs/phase5-d-final-demo-rehearsal.md)
-- [관광데이터 확대 수집](docs/phase4-c3-tourism-data-scale-up.md)
-- [버스 경로 탐색](docs/phase3-a2-transit-route-planner.md)
-- [추천 엔진](docs/phase3-b-recommendation-engine.md)
-- [룰렛 코스](docs/phase3-c-course-roulette.md)
+- [교수 제출용 최종 설명서](docs/submission/final-submission.md)
+- [최종 프로젝트 보고서](docs/submission/final-project-report.md)
+- [발표 시연 가이드](docs/submission/final-demo-guide.md)
+- [최종 시연 검증](docs/testing/phase5-d-final-demo-rehearsal.md)
+- [관광데이터 확대 수집](docs/archive/phase4-c3-tourism-data-scale-up.md)
+- [버스 경로 탐색](docs/archive/phase3-a2-transit-route-planner.md)
+- [추천 엔진](docs/archive/phase3-b-recommendation-engine.md)
+- [룰렛 코스](docs/archive/phase3-c-course-roulette.md)
 
 ## 라이선스와 출처
 

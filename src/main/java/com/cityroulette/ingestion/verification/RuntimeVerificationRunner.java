@@ -5,7 +5,7 @@ import com.cityroulette.domain.transport.repository.BusRouteRepository;
 import com.cityroulette.domain.transport.repository.BusRouteStopRepository;
 import com.cityroulette.domain.transport.repository.BusStopRepository;
 import com.cityroulette.domain.transport.service.BusQueryService;
-import com.cityroulette.ingestion.ImportRunRepository;
+import com.cityroulette.ingestion.history.ImportRunRepository;
 import com.cityroulette.ingestion.bus.BusCollectionService;
 import com.cityroulette.ingestion.bus.BusRouteMapper;
 import com.cityroulette.ingestion.bus.BusRouteStopMapper;

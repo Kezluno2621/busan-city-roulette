@@ -2,7 +2,7 @@ package com.cityroulette.ingestion.bus;
 
 import com.cityroulette.integration.ExternalApiException;
 import com.cityroulette.integration.bus.BusanBusClient;
-import com.cityroulette.ingestion.ImportRunRepository;
+import com.cityroulette.ingestion.history.ImportRunRepository;
 import com.cityroulette.domain.transport.repository.BusRouteRepository;
 import com.cityroulette.domain.transport.repository.BusRouteStopRepository;
 import com.cityroulette.domain.transport.repository.BusStopRepository;

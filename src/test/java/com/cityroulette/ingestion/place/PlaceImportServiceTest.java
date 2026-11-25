@@ -1,12 +1,13 @@
 package com.cityroulette.ingestion.place;
 
-import com.cityroulette.ingestion.ImportRunService;
+import com.cityroulette.ingestion.place.provider.PlaceDataProvider;
+import com.cityroulette.ingestion.history.ImportRunService;
 import com.cityroulette.integration.ExternalApiException;
 import com.cityroulette.ingestion.place.dto.NormalizedPlace;
 import com.cityroulette.domain.place.repository.PlaceMergeCandidateRepository;
 import com.cityroulette.domain.place.repository.PlaceRepository;
 import com.cityroulette.domain.place.repository.PlaceSourceRepository;
-import com.cityroulette.ingestion.ImportRunRepository;
+import com.cityroulette.ingestion.history.ImportRunRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

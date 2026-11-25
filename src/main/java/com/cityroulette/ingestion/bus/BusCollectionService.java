@@ -1,8 +1,8 @@
 package com.cityroulette.ingestion.bus;
 
-import com.cityroulette.ingestion.ImportRunService;
+import com.cityroulette.ingestion.history.ImportRunService;
 import com.cityroulette.integration.bus.BusanBusClient;
-import com.cityroulette.ingestion.ImportRun;
+import com.cityroulette.ingestion.history.ImportRun;
 import com.cityroulette.ingestion.bus.dto.BusImportReport;
 import com.cityroulette.ingestion.bus.dto.NormalizedBusRoute;
 import com.cityroulette.ingestion.bus.dto.NormalizedBusRouteStop;

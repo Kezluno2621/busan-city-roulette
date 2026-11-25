@@ -3,7 +3,7 @@ package com.cityroulette.ingestion.place.runner;
 import com.cityroulette.domain.place.repository.PlaceMergeCandidateRepository;
 import com.cityroulette.domain.place.repository.PlaceRepository;
 import com.cityroulette.domain.place.repository.PlaceSourceRepository;
-import com.cityroulette.ingestion.ImportRunRepository;
+import com.cityroulette.ingestion.history.ImportRunRepository;
 import com.cityroulette.integration.ExternalApiProperties;
 import com.cityroulette.ingestion.place.dto.PlaceImportResult;
 import com.cityroulette.ingestion.place.PlaceCollectionService;

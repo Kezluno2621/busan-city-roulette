@@ -12,7 +12,7 @@
 | HTML 페이지 | Thymeleaf·JavaScript·CSS 반응형 화면 | `src/main/resources/templates`, `static` |
 | 회원·비회원 구분 | 회원가입·로그인, 회원 전용 코스·즐겨찾기·여행 기록 | Member·SavedCourse·PlaceFavorite 기능 |
 | 파일 업로드·다운로드 | PNG 검증, 회원별 접근 제어, 재시작 후 파일 보존 | TripRecord·FileStorage 기능과 테스트 |
-| 구두 발표 | 10장 PPT와 약 6분 발표 대본, 3~4분 시연 | `presentation`, `docs/presentation` |
+| 구두 발표 | 10장 PPT와 약 6분 발표 대본, 3~4분 시연 | `presentation`, `docs/submission/presentation` |
 
 ## 추가점수 근거
 

@@ -29,5 +29,5 @@ Spring Boot는 `Ctrl+C`로 종료하고, MySQL은 다음 명령으로 종료한�
 표시하고 실행을 중단한다. `verify-demo.ps1`은 Java 17, 백업 SHA-256, Flyway V12,
 기준 데이터 건수를 확인하며 MySQL 연결 오류에 비밀번호나 연결 문자열을 노출하지 않는다.
 
-상세 절차와 복구 방법은 `docs/phase5-c-local-demo.md`, 최종 리허설 결과와 장애 대응은
-`docs/phase5-d-final-demo-rehearsal.md`를 참고한다.
+상세 절차와 복구 방법은 `docs/submission/phase5-c-local-demo.md`, 최종 리허설 결과와 장애 대응은
+`docs/testing/phase5-d-final-demo-rehearsal.md`를 참고한다.

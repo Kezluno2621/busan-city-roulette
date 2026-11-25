@@ -1,9 +1,10 @@
 package com.cityroulette.ingestion.place;
 
-import com.cityroulette.ingestion.ImportRunService;
-import com.cityroulette.ingestion.ImportRun;
+import com.cityroulette.ingestion.history.ImportRun;
+import com.cityroulette.ingestion.history.ImportRunService;
 import com.cityroulette.ingestion.place.dto.PlaceImportResult;
 import com.cityroulette.ingestion.place.dto.ProviderInspection;
+import com.cityroulette.ingestion.place.provider.PlaceDataProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;

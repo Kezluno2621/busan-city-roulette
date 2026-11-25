@@ -1,7 +1,7 @@
 package com.cityroulette.ingestion.tourapi;
 
-import com.cityroulette.ingestion.ImportRunService;
-import com.cityroulette.ingestion.ImportRun;
+import com.cityroulette.ingestion.history.ImportRunService;
+import com.cityroulette.ingestion.history.ImportRun;
 import com.cityroulette.ingestion.tourapi.dto.TourismCollectionResult;
 import com.cityroulette.ingestion.tourapi.dto.TourismImportPageResult;
 import com.cityroulette.integration.tourapi.dto.TourismPage;

@@ -30,6 +30,7 @@ replay_pid*
 
 # Gradle build output (keep the wrapper in Git)
 .gradle/
+.build/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 

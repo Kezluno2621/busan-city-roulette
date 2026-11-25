@@ -1,2 +1,20 @@
-<!--/* 요청한 장소를 찾지 못했을 때 서버가 선택하는 오류 화면입니다. */-->
-<!DOCTYPE html><html lang="ko" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>장소를 찾을 수 없습니다 | City Roulette</title><link rel="stylesheet" th:href="@{/css/style.css}"></head><body><main class="explorer-page"><nav th:replace="~{fragments/navigation :: navigation}"></nav><section class="empty-state error-state"><p class="eyebrow">404 NOT FOUND</p><h1>장소를 찾을 수 없습니다</h1><p th:text="${message}">요청한 장소가 존재하지 않습니다.</p><a class="primary-button" th:href="@{/places}">여행지 목록으로</a></section></main></body></html>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>장소를 찾을 수 없습니다 | City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="explorer-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <section class="empty-state error-state">
+        <p class="eyebrow">404 NOT FOUND</p>
+        <h1>장소를 찾을 수 없습니다</h1>
+        <p th:text="${message}">요청한 장소가 존재하지 않습니다.</p>
+        <a class="primary-button" th:href="@{/places}">여행지 목록으로</a>
+    </section>
+</main>
+</body>
+</html>

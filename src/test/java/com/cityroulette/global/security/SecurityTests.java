@@ -45,6 +45,9 @@ class SecurityTests {
     @ParameterizedTest
     @ValueSource(strings = {
             "/", "/recommend", "/login", "/signup", "/places", "/css/style.css",
+            "/css/shared/foundation.css", "/css/shared/layout.css", "/css/shared/overrides.css",
+            "/css/pages/place.css", "/css/pages/member-trip.css", "/css/pages/results.css",
+            "/css/pages/recommendation.css",
             "/js/common/main.js", "/js/course/roulette.js", "/js/place/explorer.js", "/js/course/saved-map.js"
     })
     void guestCanAccessPublicPagesAndResources(String path) throws Exception {
