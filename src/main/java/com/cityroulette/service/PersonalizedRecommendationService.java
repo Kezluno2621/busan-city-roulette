@@ -1,6 +1,7 @@
 package com.cityroulette.service;
 
 import com.cityroulette.config.RecommendationWeights;
+import com.cityroulette.config.RecommendationSettings;
 import com.cityroulette.domain.Place;
 import com.cityroulette.dto.bus.TransitDataCoverageStatus;
 import com.cityroulette.dto.bus.TransitRoutePlanResponse;
@@ -34,26 +35,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class PersonalizedRecommendationService {
-    private static final int DEFAULT_LIMIT = 10;
     private static final int DEFAULT_RANDOMNESS = 0;
-    private static final int TRANSIT_RADIUS_METERS = 1_000;
 
     private final PlaceRepository places;
     private final RecommendationCandidateFilter candidateFilter;
     private final RecommendationScorer scorer;
     private final TransitRoutePlannerService transitPlanner;
     private final RecommendationWeights weights;
+    private final RecommendationSettings settings;
     private final PlaceImagePolicyService images;
 
     public PersonalizedRecommendationService(PlaceRepository places,
             RecommendationCandidateFilter candidateFilter, RecommendationScorer scorer,
             TransitRoutePlannerService transitPlanner, RecommendationWeights weights,
-            PlaceImagePolicyService images) {
+            RecommendationSettings settings, PlaceImagePolicyService images) {
         this.places = places;
         this.candidateFilter = candidateFilter;
         this.scorer = scorer;
         this.transitPlanner = transitPlanner;
         this.weights = weights;
+        this.settings = settings;
         this.images = images;
     }
 
@@ -65,7 +66,7 @@ public class PersonalizedRecommendationService {
      */
     public PersonalizedRecommendationResponse recommend(RecommendationRequest request) {
         Origin origin = resolveOrigin(request);
-        int limit = request.limit() == null ? DEFAULT_LIMIT : request.limit();
+        int limit = request.limit() == null ? settings.defaults().recommendationLimit() : request.limit();
         int randomness = request.randomness() == null ? DEFAULT_RANDOMNESS : request.randomness();
         CandidateSelection selection = candidateFilter.select(request, origin.placeId(), limit);
         List<String> globalLimitations = globalLimitations(request, origin.placeId() == null);
@@ -131,13 +132,13 @@ public class PersonalizedRecommendationService {
             List<ScoredCandidate> ranked, int requestedLimit) {
         Map<Long, RecommendationTransitStatus> result = new HashMap<>();
         if (originPlaceId == null) return result;
-        int evaluationLimit = Math.min(ranked.size(), Math.min(weights.getTransitEvaluationLimit(),
+        int evaluationLimit = Math.min(ranked.size(), Math.min(settings.transit().evaluationLimit(),
                 Math.max(requestedLimit, requestedLimit * 2)));
         for (int i = 0; i < evaluationLimit; i++) {
             Place destination = ranked.get(i).place();
             try {
                 TransitRoutePlanResponse plan = transitPlanner.plan(
-                        originPlaceId, destination.getId(), TRANSIT_RADIUS_METERS, 1);
+                        originPlaceId, destination.getId(), settings.transit().radiusMeters(), 1);
                 result.put(destination.getId(), transitStatus(plan));
             } catch (RuntimeException exception) {
                 result.put(destination.getId(), RecommendationTransitStatus.UNVERIFIED);

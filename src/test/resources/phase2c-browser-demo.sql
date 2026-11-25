@@ -1,3 +1,5 @@
+-- 장소 탐색 브라우저 검증에 필요한 테스트용 데이터입니다.
+
 INSERT INTO places (
     external_id, name, normalized_name, category, address, normalized_address,
     district, latitude, longitude, description, image_url, indoor, merge_status,

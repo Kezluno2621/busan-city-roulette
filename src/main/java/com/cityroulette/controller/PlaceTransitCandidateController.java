@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/** 교통 경로 평가에 사용할 장소 후보를 조회합니다. */
 @RestController
 @RequestMapping("/api/places")
 public class PlaceTransitCandidateController {

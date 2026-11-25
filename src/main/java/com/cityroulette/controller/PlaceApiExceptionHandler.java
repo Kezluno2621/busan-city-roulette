@@ -1,6 +1,6 @@
 package com.cityroulette.controller;
 
-import com.cityroulette.dto.place.ApiErrorResponse;
+import com.cityroulette.dto.ApiErrorResponse;
 import com.cityroulette.service.PlaceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -15,6 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.time.LocalDateTime;
 
+/** 장소 조회 오류를 API 응답으로 변환합니다. */
 @RestControllerAdvice(assignableTypes = PlaceController.class)
 public class PlaceApiExceptionHandler {
 

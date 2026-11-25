@@ -1,3 +1,4 @@
+# 시연에 사용한 MySQL 프로세스에 종료를 요청할 포트입니다.
 param([int]$Port = 33321)
 
 $ErrorActionPreference = "Stop"

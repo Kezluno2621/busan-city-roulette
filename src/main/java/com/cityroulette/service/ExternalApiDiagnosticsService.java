@@ -1,6 +1,6 @@
 package com.cityroulette.service;
 
-import com.cityroulette.dto.external.ExternalApiProbeResult;
+import com.cityroulette.dto.ExternalApiProbeResult;
 import com.cityroulette.dto.tourism.TourismApiResponse;
 import com.cityroulette.dto.tourism.TourismPlaceDto;
 import org.springframework.stereotype.Service;

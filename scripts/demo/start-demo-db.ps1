@@ -1,3 +1,4 @@
+# 준비된 시연용 MySQL 데이터 디렉터리와 지정 포트를 사용합니다.
 param(
     [int]$Port = 33321,
     [string]$DataDirectory = ""

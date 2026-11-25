@@ -1,3 +1,5 @@
+// Spring Boot 빌드와 테스트 설정입니다. Java 도구 체인, 의존성 및 테스트 실행 방식을 관리합니다.
+
 plugins {
     id 'java'
     id 'eclipse'

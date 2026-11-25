@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/** 코스 생성 요청 오류를 API 오류 응답으로 변환합니다. */
 @RestControllerAdvice(assignableTypes = CourseGenerationController.class)
 public class CourseApiExceptionHandler {
     @ExceptionHandler(PlaceNotFoundException.class)

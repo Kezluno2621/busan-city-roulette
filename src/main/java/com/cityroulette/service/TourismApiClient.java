@@ -11,6 +11,9 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
+/**
+ * 외부 HTTP 요청과 공급자 응답 처리를 애플리케이션 로직에서 분리합니다.
+ */
 public class TourismApiClient {
 
     private static final String SUCCESS_CODE = "0000";

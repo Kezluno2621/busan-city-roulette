@@ -1,6 +1,6 @@
 package com.cityroulette.controller;
 
-import com.cityroulette.dto.external.ExternalApiProbeResult;
+import com.cityroulette.dto.ExternalApiProbeResult;
 import com.cityroulette.service.ExternalApiDiagnosticsService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/** 개발 환경에서 외부 API의 연결 상태를 확인합니다. */
 @RestController
 @RequestMapping("/dev")
 @Profile({"local", "dev"})

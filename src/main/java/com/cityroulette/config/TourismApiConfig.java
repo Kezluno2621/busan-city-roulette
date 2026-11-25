@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.client.RestClient;
 
+/** TourAPI 호출에 사용할 HTTP 클라이언트를 구성합니다. */
 @Configuration
 @EnableConfigurationProperties(ExternalApiProperties.class)
 public class TourismApiConfig {

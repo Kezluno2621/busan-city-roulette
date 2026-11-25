@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/** 좌표를 기준으로 ODsay 대중교통 경로를 조회합니다. */
 @RestController
 @RequestMapping("/api/transit")
 public class TransitController {

@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+/** 적재된 장소 데이터의 품질 지표를 조사합니다. */
 @Component
 @ConditionalOnProperty(name = "place.quality.enabled", havingValue = "true")
 public class PlaceDataQualityRunner implements ApplicationRunner {

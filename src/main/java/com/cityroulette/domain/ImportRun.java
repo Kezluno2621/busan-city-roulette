@@ -9,6 +9,9 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
+/**
+ * 데이터 수집 실행 이력의 저장 구조를 표현하는 JPA 엔티티입니다. 식별자와 컬럼 매핑을 정의합니다.
+ */
 @Entity
 @Table(name = "import_runs")
 public class ImportRun {

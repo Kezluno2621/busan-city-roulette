@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/** 관광 원천 데이터를 조회하고 DB 동기화를 요청합니다. */
 @RestController
 @RequestMapping("/api/tourism")
 public class TourismController {

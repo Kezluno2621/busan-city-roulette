@@ -6,6 +6,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
+/**
+ * 외부 HTTP 요청과 공급자 응답 처리를 애플리케이션 로직에서 분리합니다.
+ */
 public class KakaoLocalApiClient {
 
     private static final String BUSAN_RECT = "128.45,34.75,129.35,35.40";

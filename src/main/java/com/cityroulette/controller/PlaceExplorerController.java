@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+/**
+ * 장소 목록과 상세의 GET 요청을 받습니다. 서비스가 구성한 조회 결과를 Model에 넣어 Thymeleaf 화면에 전달합니다.
+ */
 @Controller @Validated
 public class PlaceExplorerController {
     private final PlaceExplorerService service;

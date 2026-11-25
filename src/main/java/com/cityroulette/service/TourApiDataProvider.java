@@ -4,6 +4,9 @@ import com.cityroulette.dto.importing.NormalizedProviderPage;
 import com.cityroulette.dto.importing.ProviderPage;
 import org.springframework.stereotype.Component;
 
+/**
+ * 수집 서비스에서 공급자별 API와 응답 형식의 차이를 다룰 수 있도록 연결합니다.
+ */
 @Component
 public class TourApiDataProvider implements PlaceDataProvider {
     private final TourismService client; private final TourApiPlaceMapper mapper;

@@ -11,6 +11,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 
+/**
+ * 회원의 저장 구조를 표현하는 JPA 엔티티입니다. 식별자와 컬럼 매핑을 정의합니다.
+ */
 @Entity
 @Table(name = "members", uniqueConstraints = {
         @UniqueConstraint(name = "uk_members_username", columnNames = "username"),

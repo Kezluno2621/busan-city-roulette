@@ -30,6 +30,7 @@ public class MemberService {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
+    /** 가입 입력을 검증하고 비밀번호 해시를 저장합니다. */
     public Member register(MemberSignupRequest request) {
         var violations = validator.validate(request);
         if (!violations.isEmpty()) {

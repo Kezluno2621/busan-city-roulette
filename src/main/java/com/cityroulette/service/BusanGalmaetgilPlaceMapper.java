@@ -8,6 +8,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 외부 또는 상위 계층의 값을 내부에서 사용하는 형식으로 변환합니다.
+ */
 @Component
 public class BusanGalmaetgilPlaceMapper implements ProviderPlaceMapper<BusanGalmaetgilItem> {
     private static final String OPEN_LICENSE = "공공데이터포털 이용허락범위 제한 없음";

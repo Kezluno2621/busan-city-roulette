@@ -14,6 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+/**
+ * 테스트 프로필에서 스프링 애플리케이션 컨텍스트 구성이 완료되는지 확인합니다.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

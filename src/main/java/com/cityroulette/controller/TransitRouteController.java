@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/** 장소 ID를 기준으로 적재된 부산 버스의 경로 후보를 조회합니다. */
 @RestController
 @RequestMapping("/api/transit")
 @Validated

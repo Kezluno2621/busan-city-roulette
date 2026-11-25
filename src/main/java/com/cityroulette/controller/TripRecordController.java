@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDate;
 
+/** 회원의 여행 기록과 첨부파일을 조회하고 새 기록을 등록합니다. */
 @Controller
 @RequestMapping("/my/trips")
 public class TripRecordController {

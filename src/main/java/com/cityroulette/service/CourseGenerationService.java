@@ -1,6 +1,7 @@
 package com.cityroulette.service;
 
 import com.cityroulette.config.RecommendationWeights;
+import com.cityroulette.config.RecommendationSettings;
 import com.cityroulette.domain.Place;
 import com.cityroulette.dto.bus.TransitDataCoverageStatus;
 import com.cityroulette.dto.bus.TransitRoutePlanResponse;
@@ -18,17 +19,14 @@ import com.cityroulette.dto.recommendation.RecommendationResultDto;
 import com.cityroulette.dto.recommendation.RecommendationScoreBreakdown;
 import com.cityroulette.dto.recommendation.RecommendationTransitStatus;
 import com.cityroulette.repository.PlaceRepository;
-import com.cityroulette.util.DistanceCalculator;
+import com.cityroulette.service.CourseCandidateSelector.PlaceRole;
+import com.cityroulette.service.CourseOrderingService.OrderedCandidate;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.SplittableRandom;
-import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,46 +39,51 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class CourseGenerationService {
-    private static final int RECOMMENDATION_POOL_LIMIT = 200;
-    private static final int TRANSIT_RADIUS_METERS = 1_000;
-    private static final double DEFAULT_ORIGIN_LATITUDE = 35.1796;
-    private static final double DEFAULT_ORIGIN_LONGITUDE = 129.0756;
     private static final List<String> DIVERSITY_CATEGORIES = List.of(
             "ATTRACTION", "CAFE", "RESTAURANT", "CULTURE");
-    private static final double CATEGORY_NOVELTY_BONUS = 12.0;
-    private static final double MAX_DIVERSITY_DISTANCE_FACTOR = 1.35;
-    private static final double MAX_DIVERSITY_DISTANCE_ALLOWANCE_METERS = 1_000;
 
     private final PersonalizedRecommendationService recommendations;
     private final TransitRoutePlannerService transitPlanner;
     private final PlaceRepository places;
     private final GeneratedCourseRegistry generatedCourses;
     private final RecommendationWeights weights;
+    private final RecommendationSettings settings;
+    private final CourseCandidateSelector candidateSelector;
+    private final CourseOrderingService ordering;
 
     public CourseGenerationService(PersonalizedRecommendationService recommendations,
             TransitRoutePlannerService transitPlanner, PlaceRepository places,
-            GeneratedCourseRegistry generatedCourses, RecommendationWeights weights) {
+            GeneratedCourseRegistry generatedCourses, RecommendationWeights weights,
+            RecommendationSettings settings, CourseCandidateSelector candidateSelector,
+            CourseOrderingService ordering) {
         this.recommendations = recommendations;
         this.transitPlanner = transitPlanner;
         this.places = places;
         this.generatedCourses = generatedCourses;
         this.weights = weights;
+        this.settings = settings;
+        this.candidateSelector = candidateSelector;
+        this.ordering = ordering;
     }
 
+    /** 후보를 선택해 방문 순서를 정하고, 필요한 경우 저장용 토큰을 발급합니다. */
     public CourseGenerationResponse generate(CourseGenerationRequest request) {
         CourseGenerationMode generationMode = CourseGenerationMode.defaultIfNull(request.generationMode());
         CategorySelectionMode categoryMode = CategorySelectionMode.defaultIfNull(request.categoryMode());
         Origin origin = resolveOrigin(request, generationMode);
-        int requestedCount = request.placeCount() == null ? 3 : request.placeCount();
+        int requestedCount = request.placeCount() == null
+                ? settings.course().defaultPlaceCount() : request.placeCount();
         int randomness = request.randomness() == null
-                ? (generationMode == CourseGenerationMode.INSTANT ? 100 : 40)
+                ? (generationMode == CourseGenerationMode.INSTANT
+                        ? settings.course().instantRandomness()
+                        : settings.course().personalizedRandomness())
                 : request.randomness();
         Double recommendationLatitude = request.originPlaceId() == null ? origin.latitude() : null;
         Double recommendationLongitude = request.originPlaceId() == null ? origin.longitude() : null;
         RecommendationRequest recommendationRequest = new RecommendationRequest(
                 request.originPlaceId(), recommendationLatitude, recommendationLongitude,
                 request.categories(), request.district(), request.availableMinutes(), request.budget(),
-                0, RECOMMENDATION_POOL_LIMIT, request.randomSeed(), categoryMode);
+                0, settings.course().recommendationPoolLimit(), request.randomSeed(), categoryMode);
         PersonalizedRecommendationResponse recommendationResponse = recommendations.recommend(recommendationRequest);
 
         List<RecommendationResultDto> candidates = recommendationResponse.recommendations();
@@ -91,29 +94,30 @@ public class CourseGenerationService {
             RecommendationRequest neutralRequest = new RecommendationRequest(
                     request.originPlaceId(), recommendationLatitude, recommendationLongitude,
                     List.of(), request.district(), request.availableMinutes(), request.budget(),
-                    0, RECOMMENDATION_POOL_LIMIT, request.randomSeed(), CategorySelectionMode.PREFERRED);
+                    0, settings.course().recommendationPoolLimit(), request.randomSeed(),
+                    CategorySelectionMode.PREFERRED);
             candidates = mergeCandidates(candidates, recommendations.recommend(neutralRequest).recommendations());
         }
         candidates = ensureCategoryCoverage(candidates, request, recommendationLatitude,
                 recommendationLongitude, categoryMode);
         candidates = applyRecentExclusions(candidates, request, requestedCount);
-        List<RecommendationResultDto> selected = select(
+        List<RecommendationResultDto> selected = candidateSelector.select(
                 candidates, requestedCount, randomness, request.randomSeed(), categoryMode, request.categories());
-        List<OrderedCandidate> ordered = diversityAwareOrder(origin, selected);
+        List<OrderedCandidate> ordered = ordering.order(origin.latitude(), origin.longitude(), selected);
         List<CoursePlaceDto> coursePlaces = buildCoursePlaces(origin, ordered);
         boolean insufficient = coursePlaces.size() < requestedCount;
         LinkedHashSet<String> limitations = new LinkedHashSet<>(recommendationResponse.dataLimitations());
         if (categoryMode == CategorySelectionMode.PREFERRED) {
-            List<String> missingTypes = missingDiversityTypes(candidates);
+            List<String> missingTypes = candidateSelector.missingDiversityTypes(candidates);
             if (!missingTypes.isEmpty()) {
                 limitations.add("현재 조건에서 " + String.join("·", missingTypes)
                         + " 후보가 없어 확인 가능한 장소 유형으로 구성했습니다.");
             }
         }
         limitations.add("장소 순서는 직선거리 기반 휴리스틱이며 최적 경로나 실제 이동 경로가 아닙니다.");
-        if (hasMealAdjacency(ordered)) {
+        if (ordering.hasMealAdjacency(ordered)) {
             limitations.add("후보 구성과 이동거리 제한으로 음식점이 연속될 수 있습니다.");
-        } else if (selected.stream().filter(item -> role(item) == PlaceRole.MEAL).count() > 1) {
+        } else if (selected.stream().filter(item -> candidateSelector.role(item) == PlaceRole.MEAL).count() > 1) {
             limitations.add("장소 역할 다양성을 고려해 음식점 연속 방문을 줄였습니다.");
         }
         limitations.add("방문 소요시간과 비용 데이터가 없어 두 상태는 UNKNOWN입니다.");
@@ -151,8 +155,8 @@ public class CourseGenerationService {
                 return new Origin(
                         null,
                         "출발지 미지정",
-                        DEFAULT_ORIGIN_LATITUDE,
-                        DEFAULT_ORIGIN_LONGITUDE,
+                        settings.origin().latitude(),
+                        settings.origin().longitude(),
                         false);
             }
             throw new IllegalArgumentException("출발 장소 ID 또는 출발 좌표가 필요합니다.");
@@ -214,9 +218,9 @@ public class CourseGenerationService {
                 : DIVERSITY_CATEGORIES;
         List<RecommendationResultDto> covered = new ArrayList<>(candidates);
         for (String target : targets) {
-            PlaceRole targetRole = role(target);
+            PlaceRole targetRole = candidateSelector.role(target);
             if (targetRole == PlaceRole.OTHER
-                    || covered.stream().anyMatch(candidate -> role(candidate) == targetRole)) {
+                    || covered.stream().anyMatch(candidate -> candidateSelector.role(candidate) == targetRole)) {
                 continue;
             }
             RecommendationRequest categoryRequest = new RecommendationRequest(
@@ -233,18 +237,19 @@ public class CourseGenerationService {
     private RecommendationResultDto normalizeSupplemental(RecommendationResultDto candidate,
             List<String> actualPreferences) {
         if (actualPreferences == null || actualPreferences.isEmpty()
-                || actualPreferences.stream().map(this::role).anyMatch(role(candidate)::equals)) {
+                || actualPreferences.stream().map(candidateSelector::role)
+                        .anyMatch(candidateSelector.role(candidate)::equals)) {
             return candidate;
         }
         RecommendationScoreBreakdown source = candidate.scoreBreakdown();
-        double denominator = weights.getCategory() + weights.getDistance()
-                + weights.getDiversity() + weights.getDataQuality();
-        double numerator = source.distance() * weights.getDistance()
-                + source.diversity() * weights.getDiversity()
-                + source.dataQuality() * weights.getDataQuality();
+        double denominator = weights.category() + weights.distance()
+                + weights.diversity() + weights.dataQuality();
+        double numerator = source.distance() * weights.distance()
+                + source.diversity() * weights.diversity()
+                + source.dataQuality() * weights.dataQuality();
         if (source.transitIncluded()) {
-            numerator += source.transitConnectivity() * weights.getTransit();
-            denominator += weights.getTransit();
+            numerator += source.transitConnectivity() * weights.transit();
+            denominator += weights.transit();
         }
         double score = denominator == 0 ? 0 : Math.round(numerator / denominator * 100.0) / 100.0;
         RecommendationScoreBreakdown breakdown = new RecommendationScoreBreakdown(
@@ -257,216 +262,6 @@ public class CourseGenerationService {
                 candidate.address(), candidate.latitude(), candidate.longitude(), score, breakdown, reasons,
                 candidate.distanceMeters(), candidate.transitVerificationStatus(), candidate.dataLimitations(),
                 candidate.imageUrl());
-    }
-
-    private List<String> missingDiversityTypes(List<RecommendationResultDto> candidates) {
-        Set<PlaceRole> roles = new LinkedHashSet<>();
-        candidates.forEach(candidate -> roles.add(role(candidate)));
-        List<String> missing = new ArrayList<>();
-        if (!roles.contains(PlaceRole.SIGHTSEEING)) missing.add("관광지");
-        if (!roles.contains(PlaceRole.CAFE)) missing.add("카페");
-        if (!roles.contains(PlaceRole.MEAL)) missing.add("음식점");
-        if (!roles.contains(PlaceRole.CULTURE)) missing.add("문화시설");
-        return missing;
-    }
-
-    private List<RecommendationResultDto> select(List<RecommendationResultDto> candidates,
-            int requestedCount, int randomness, Long requestedSeed,
-            CategorySelectionMode categoryMode, List<String> requestedCategories) {
-        if (candidates.isEmpty()) return List.of();
-        int count = Math.min(requestedCount, candidates.size());
-        LinkedHashMap<Long, RecommendationResultDto> unique = new LinkedHashMap<>();
-        candidates.stream().filter(this::hasValidCoordinates)
-                .forEach(candidate -> unique.putIfAbsent(candidate.placeId(), candidate));
-        List<RecommendationResultDto> available = new ArrayList<>(unique.values());
-        count = Math.min(requestedCount, available.size());
-        List<RecommendationResultDto> selected = new ArrayList<>();
-        Set<PlaceRole> selectedRoles = new LinkedHashSet<>();
-        long seed = requestedSeed == null ? ThreadLocalRandom.current().nextLong() : requestedSeed;
-        SplittableRandom random = new SplittableRandom(seed);
-
-        if ((categoryMode == CategorySelectionMode.REQUIRED || categoryMode == CategorySelectionMode.PREFERRED)
-                && requestedCategories != null) {
-            for (String requestedCategory : requestedCategories) {
-                if (selected.size() >= count) break;
-                PlaceRole requiredRole = role(requestedCategory);
-                RecommendationResultDto required = available.stream()
-                        .filter(candidate -> role(candidate) == requiredRole)
-                        .max(Comparator.comparingDouble(RecommendationResultDto::score)
-                                .thenComparing(item -> -item.placeId()))
-                        .orElse(null);
-                if (required != null) {
-                    selected.add(required);
-                    selectedRoles.add(requiredRole);
-                    available.remove(required);
-                }
-            }
-        }
-
-        while (selected.size() < count && !available.isEmpty()) {
-            List<RecommendationResultDto> diverse = available.stream()
-                    .filter(candidate -> role(candidate) != PlaceRole.OTHER)
-                    .filter(candidate -> !selectedRoles.contains(role(candidate)))
-                    .toList();
-            List<RecommendationResultDto> choicePool = categoryMode == CategorySelectionMode.ONLY || diverse.isEmpty()
-                    ? available : diverse;
-            RecommendationResultDto chosen;
-            if (randomness == 0) {
-                chosen = choicePool.stream().max(Comparator
-                        .comparingDouble((RecommendationResultDto item) -> deterministicWeight(item, selectedRoles))
-                        .thenComparingDouble(item -> -item.distanceMeters())
-                        .thenComparing(item -> -item.placeId())).orElseThrow();
-            } else {
-                int remaining = count - selected.size();
-                int poolSize = Math.min(choicePool.size(), remaining + (int) Math.ceil(
-                        (choicePool.size() - remaining) * randomness / 100.0));
-                List<RecommendationResultDto> pool = choicePool.subList(0, poolSize);
-                double exponent = 4.0 - 3.3 * randomness / 100.0;
-                double total = pool.stream().mapToDouble(item -> randomWeight(item, selectedRoles, exponent)).sum();
-                double pick = random.nextDouble(total);
-                chosen = pool.get(pool.size() - 1);
-                for (RecommendationResultDto item : pool) {
-                    pick -= randomWeight(item, selectedRoles, exponent);
-                    if (pick <= 0) { chosen = item; break; }
-                }
-            }
-            selected.add(chosen);
-            selectedRoles.add(role(chosen));
-            available.remove(chosen);
-        }
-        return selected;
-    }
-
-    private double deterministicWeight(RecommendationResultDto item, Set<PlaceRole> selectedRoles) {
-        return item.score() + (selectedRoles.contains(role(item)) ? 0 : CATEGORY_NOVELTY_BONUS);
-    }
-
-    private double randomWeight(RecommendationResultDto item, Set<PlaceRole> selectedRoles, double exponent) {
-        double diversity = selectedRoles.contains(role(item)) ? 1.0 : 1.35;
-        return Math.pow(Math.max(1, item.score() + 1), exponent) * diversity;
-    }
-
-    private String categoryKey(RecommendationResultDto item) {
-        return item.category() == null ? "" : item.category().trim().toLowerCase(Locale.ROOT);
-    }
-
-    private PlaceRole role(RecommendationResultDto item) {
-        return role(categoryKey(item));
-    }
-
-    private PlaceRole role(String category) {
-        String key = category == null ? "" : category.trim().toLowerCase(Locale.ROOT);
-        if (key.contains("음식") || key.contains("식사") || key.contains("restaurant") || key.equals("food")) {
-            return PlaceRole.MEAL;
-        }
-        if (key.contains("카페") || key.contains("디저트") || key.contains("cafe")) return PlaceRole.CAFE;
-        if (key.contains("문화") || key.contains("박물관") || key.contains("전시") || key.contains("culture")) {
-            return PlaceRole.CULTURE;
-        }
-        if (key.contains("공원") || key.contains("산책") || key.contains("갈맷길") || key.contains("walking")) {
-            return PlaceRole.WALKING;
-        }
-        if (key.contains("관광") || key.contains("명소") || key.contains("attraction")) {
-            return PlaceRole.SIGHTSEEING;
-        }
-        return PlaceRole.OTHER;
-    }
-
-    private boolean hasValidCoordinates(RecommendationResultDto item) {
-        return item.latitude() != null && item.longitude() != null
-                && Double.isFinite(item.latitude()) && Double.isFinite(item.longitude())
-                && item.latitude() >= -90 && item.latitude() <= 90
-                && item.longitude() >= -180 && item.longitude() <= 180;
-    }
-
-    private List<OrderedCandidate> nearestNeighbor(Origin origin, List<RecommendationResultDto> selected) {
-        List<RecommendationResultDto> remaining = new ArrayList<>(selected);
-        List<OrderedCandidate> ordered = new ArrayList<>();
-        double latitude = origin.latitude();
-        double longitude = origin.longitude();
-        while (!remaining.isEmpty()) {
-            final double currentLatitude = latitude;
-            final double currentLongitude = longitude;
-            RecommendationResultDto next = remaining.stream().min(Comparator
-                    .comparingDouble((RecommendationResultDto item) -> distance(
-                            currentLatitude, currentLongitude, item.latitude(), item.longitude()))
-                    .thenComparing(RecommendationResultDto::score, Comparator.reverseOrder())
-                    .thenComparing(RecommendationResultDto::placeId)).orElseThrow();
-            double legDistance = distance(latitude, longitude, next.latitude(), next.longitude());
-            ordered.add(new OrderedCandidate(next, legDistance));
-            latitude = next.latitude();
-            longitude = next.longitude();
-            remaining.remove(next);
-        }
-        return ordered;
-    }
-
-    private List<OrderedCandidate> diversityAwareOrder(Origin origin, List<RecommendationResultDto> selected) {
-        if (selected.size() < 2) return nearestNeighbor(origin, selected);
-        List<OrderedCandidate> baseline = nearestNeighbor(origin, selected);
-        double baselineDistance = totalDistance(baseline);
-        double maximumDistance = baselineDistance * MAX_DIVERSITY_DISTANCE_FACTOR
-                + MAX_DIVERSITY_DISTANCE_ALLOWANCE_METERS;
-        List<List<RecommendationResultDto>> permutations = new ArrayList<>();
-        permute(new ArrayList<>(), new ArrayList<>(selected), permutations);
-        return permutations.stream().map(order -> ordered(origin, order))
-                .filter(order -> totalDistance(order) <= maximumDistance)
-                .min(Comparator.comparingInt(this::mealAdjacencies)
-                        .thenComparingInt(this::sameRoleAdjacencies)
-                        .thenComparingDouble(this::totalDistance)
-                        .thenComparing(this::orderKey))
-                .orElse(baseline);
-    }
-
-    private void permute(List<RecommendationResultDto> prefix, List<RecommendationResultDto> remaining,
-            List<List<RecommendationResultDto>> result) {
-        if (remaining.isEmpty()) { result.add(List.copyOf(prefix)); return; }
-        for (int i = 0; i < remaining.size(); i++) {
-            RecommendationResultDto candidate = remaining.remove(i);
-            prefix.add(candidate);
-            permute(prefix, remaining, result);
-            prefix.remove(prefix.size() - 1);
-            remaining.add(i, candidate);
-        }
-    }
-
-    private List<OrderedCandidate> ordered(Origin origin, List<RecommendationResultDto> items) {
-        List<OrderedCandidate> result = new ArrayList<>();
-        double latitude = origin.latitude();
-        double longitude = origin.longitude();
-        for (RecommendationResultDto item : items) {
-            double leg = distance(latitude, longitude, item.latitude(), item.longitude());
-            result.add(new OrderedCandidate(item, leg));
-            latitude = item.latitude();
-            longitude = item.longitude();
-        }
-        return result;
-    }
-
-    private int mealAdjacencies(List<OrderedCandidate> order) {
-        int count = 0;
-        for (int i = 1; i < order.size(); i++) {
-            if (role(order.get(i - 1).item()) == PlaceRole.MEAL
-                    && role(order.get(i).item()) == PlaceRole.MEAL) count++;
-        }
-        return count;
-    }
-
-    private int sameRoleAdjacencies(List<OrderedCandidate> order) {
-        int count = 0;
-        for (int i = 1; i < order.size(); i++) {
-            if (role(order.get(i - 1).item()) == role(order.get(i).item())) count++;
-        }
-        return count;
-    }
-
-    private boolean hasMealAdjacency(List<OrderedCandidate> order) { return mealAdjacencies(order) > 0; }
-    private double totalDistance(List<OrderedCandidate> order) {
-        return order.stream().mapToDouble(OrderedCandidate::distanceMeters).sum();
-    }
-    private String orderKey(List<OrderedCandidate> order) {
-        return order.stream().map(item -> String.format("%020d", item.item().placeId()))
-                .reduce("", String::concat);
     }
 
     private List<CoursePlaceDto> buildCoursePlaces(Origin origin, List<OrderedCandidate> ordered) {
@@ -500,7 +295,7 @@ public class CourseGenerationService {
         if (originPlaceId == null) return RecommendationTransitStatus.UNVERIFIED;
         try {
             TransitRoutePlanResponse plan = transitPlanner.plan(
-                    originPlaceId, destinationPlaceId, TRANSIT_RADIUS_METERS, 1);
+                    originPlaceId, destinationPlaceId, settings.transit().radiusMeters(), 1);
             if (plan.verificationStatus() == TransitVerificationStatus.VERIFIED
                     && !plan.candidates().isEmpty()) return RecommendationTransitStatus.VERIFIED;
             if (plan.dataCoverageStatus() == TransitDataCoverageStatus.PARTIAL_DATA
@@ -514,14 +309,7 @@ public class CourseGenerationService {
         }
     }
 
-    private double distance(double fromLatitude, double fromLongitude, Double toLatitude, Double toLongitude) {
-        if (toLatitude == null || toLongitude == null) return Double.MAX_VALUE;
-        return DistanceCalculator.calculateKm(fromLatitude, fromLongitude, toLatitude, toLongitude) * 1_000;
-    }
-
     private double round(double value) { return Math.round(value * 10.0) / 10.0; }
-    private record OrderedCandidate(RecommendationResultDto item, double distanceMeters) { }
-    private enum PlaceRole { MEAL, CAFE, SIGHTSEEING, CULTURE, WALKING, OTHER }
     private record Origin(
             Long placeId,
             String name,

@@ -1,3 +1,4 @@
+<!--/* 저장된 방문 순서와 코스의 제목 변경·삭제 UI를 제공합니다. */-->
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
@@ -30,14 +31,18 @@
                 <p class="form-error" role="alert" th:if="${titleError}" th:text="${titleError}"></p>
             </form>
             <form id="course-delete-form" class="course-delete-form" method="post" th:action="@{/my/courses/{id}/delete(id=${course.id})}">
-                <p>더 이상 필요하지 않은 코스를 삭제할 수 있습니다.</p>
-                <div class="delete-confirm" data-delete-dialog><input class="delete-confirm-toggle visually-hidden" id="delete-confirm-toggle" type="checkbox"><label class="danger-button delete-confirm-label" for="delete-confirm-toggle"><span class="delete-open-label">코스 삭제</span><span class="delete-close-label">취소</span></label>
+                <p class="course-delete-intro">더 이상 필요하지 않은 코스를 삭제할 수 있습니다.</p>
+                <div class="delete-confirm" data-delete-dialog><input class="delete-confirm-toggle visually-hidden" id="delete-confirm-toggle" type="checkbox"><label class="danger-button delete-confirm-label" for="delete-confirm-toggle"><span>코스 삭제</span></label>
                     <div class="confirm-dialog-panel" role="alertdialog" aria-labelledby="delete-dialog-title">
                         <div class="confirm-dialog-icon" aria-hidden="true">!</div>
                         <div>
                             <h3 id="delete-dialog-title">이 코스를 삭제할까요?</h3>
                             <p>저장된 방문 순서와 메모가 함께 삭제되며 복구할 수 없습니다.</p>
-                        </div><button class="danger-button" type="submit">삭제하기</button>
+                        </div>
+                        <div class="confirm-dialog-actions">
+                            <label class="secondary-button" for="delete-confirm-toggle">취소</label>
+                            <button class="danger-button" type="submit">삭제하기</button>
+                        </div>
                     </div>
                 </div>
             </form>

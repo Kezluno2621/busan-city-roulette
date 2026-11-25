@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+/** 개발 환경에서 관광 데이터 적재의 실행 조건과 결과를 검증합니다. */
 @Component
 @Profile("dev")
 @ConditionalOnProperty(name = "tourism.verification.enabled", havingValue = "true")

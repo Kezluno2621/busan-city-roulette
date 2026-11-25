@@ -29,6 +29,7 @@ public class TransitRoutePlannerService {
         this.busQueries=busQueries;this.routeStops=routeStops;this.graphs=graphs;
     }
 
+    /** 적재된 노선에서 정차 순서가 연속인 직통·1회 환승 후보를 찾습니다. */
     public TransitRoutePlanResponse plan(Long originPlaceId,Long destinationPlaceId,int radiusMeters,int maxCandidates){
         if(originPlaceId==null||destinationPlaceId==null)throw new IllegalArgumentException("출발지와 목적지가 필요합니다.");
         if(radiusMeters<50||radiusMeters>3_000)throw new IllegalArgumentException("검색 반경은 50~3000m이어야 합니다.");

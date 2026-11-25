@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/** 회원의 저장 코스를 등록·조회·수정·삭제합니다. */
 @RestController
 @RequestMapping("/api/courses")
 @Validated

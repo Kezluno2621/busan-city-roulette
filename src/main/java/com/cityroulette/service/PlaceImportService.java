@@ -32,6 +32,7 @@ public class PlaceImportService {
         this.places = places; this.sources = sources; this.candidates = candidates;
     }
 
+    /** 공급자와 외부 ID로 장소를 등록·갱신합니다. 모의 실행은 검증과 집계만 수행합니다. */
     @Transactional
     public PlaceImportResult importItems(String provider, List<NormalizedPlace> items, boolean dryRun) {
         PlaceImportResult result = PlaceImportResult.empty(provider, dryRun);

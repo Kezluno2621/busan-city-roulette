@@ -9,7 +9,6 @@ import com.cityroulette.dto.course.CourseGenerationMode;
 import com.cityroulette.dto.course.CourseGenerationRequest;
 import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import com.cityroulette.dto.recommendation.PersonalizedRecommendationResponse;
-import com.cityroulette.dto.recommendation.RecommendationRequest;
 import com.cityroulette.dto.recommendation.RecommendationResultDto;
 import com.cityroulette.dto.recommendation.RecommendationScoreBreakdown;
 import com.cityroulette.dto.recommendation.RecommendationTransitStatus;

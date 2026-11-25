@@ -1,3 +1,4 @@
+# 시연용 Spring Boot 프로필을 시작하기 위한 실행 매개변수입니다.
 param(
     [int]$Port = 18090,
     [int]$DatabasePort = 33321,

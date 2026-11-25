@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/** 출발 좌표 주변의 장소 후보를 조회합니다. */
 @RestController
 @RequestMapping("/api/places")
 public class PlaceCandidateController {

@@ -1,3 +1,4 @@
+# 시연 DB 시작·검증·앱 실행을 순서대로 연결합니다.
 param(
     [int]$Port = 18090,
     [int]$DatabasePort = 33321,

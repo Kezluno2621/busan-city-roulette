@@ -1,6 +1,6 @@
 package com.cityroulette.service;
 
-import com.cityroulette.config.RecommendationWeights;
+import com.cityroulette.config.RecommendationSettings;
 import com.cityroulette.domain.Place;
 import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import com.cityroulette.dto.recommendation.RecommendationRequest;
@@ -25,13 +25,14 @@ public class RecommendationCandidateFilter {
             Map.entry("FESTIVAL", "행사"), Map.entry("EVENT", "행사"));
 
     private final PlaceRepository places;
-    private final RecommendationWeights weights;
+    private final RecommendationSettings settings;
 
-    public RecommendationCandidateFilter(PlaceRepository places, RecommendationWeights weights) {
+    public RecommendationCandidateFilter(PlaceRepository places, RecommendationSettings settings) {
         this.places = places;
-        this.weights = weights;
+        this.settings = settings;
     }
 
+    /** DB 조회 상한을 적용하고 출발 장소와 이름이 중복된 후보를 제외합니다. */
     public CandidateSelection select(RecommendationRequest request, Long excludedPlaceId, int requestedLimit) {
         Set<String> preferred = normalizeCategories(request.categories());
         CategorySelectionMode mode = CategorySelectionMode.defaultIfNull(request.categoryMode());
@@ -43,7 +44,7 @@ public class RecommendationCandidateFilter {
         List<String> queryCategories = queryCategorySet.isEmpty()
                 ? List.of("__all_categories__") : List.copyOf(queryCategorySet);
         String district = blankToNull(request.district());
-        int poolLimit = Math.min(weights.getCandidatePoolLimit(), Math.max(50, requestedLimit * 10));
+        int poolLimit = Math.min(settings.limits().candidatePool(), Math.max(50, requestedLimit * 10));
         List<Place> queried = places.findRecommendationCandidates(
                 mode == CategorySelectionMode.ONLY && !preferred.isEmpty(),
                 queryCategories, district, PageRequest.of(0, poolLimit));

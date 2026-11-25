@@ -2,7 +2,7 @@ package com.cityroulette.service;
 
 import com.cityroulette.config.ExternalApiProperties;
 import com.cityroulette.dto.bus.*;
-import com.cityroulette.dto.external.ExternalApiProbeResult;
+import com.cityroulette.dto.ExternalApiProbeResult;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.*;
@@ -11,6 +11,9 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * 외부 HTTP 요청과 공급자 응답 처리를 애플리케이션 로직에서 분리합니다.
+ */
 @Component
 public class BusanBusClient {
     private final RestClient restClient; private final String key; private final BusanBusXmlParser xml;

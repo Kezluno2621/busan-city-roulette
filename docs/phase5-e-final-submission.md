@@ -1,6 +1,6 @@
 # Phase 5-E 최종 제출 패키지
 
-검증일: 2026-11-07 (Asia/Seoul)
+검증일: 2026-11-24 (Asia/Seoul)
 
 ## 1. 제출 결과물
 
@@ -8,18 +8,18 @@
 | --- | --- | --- |
 | `README.md` | 프로젝트 소개, 아키텍처, 실행, 테스트, 제한사항 | 완료 |
 | `docs/final-project-report.md` | 요구사항·설계·DB·알고리즘·구현·검증 최종 보고서 | 완료 |
-| `submission/presentation/city-roulette-final-presentation-v2.pptx` | 10장 발표 자료 | 완료·검증 |
+| `submission/presentation/city-roulette-final-presentation-v3.pptx` | 10장 발표 자료 | 완료·검증 |
 | `docs/final-demo-guide.md` | 5~7분 대본, 실행·오류·종료 절차 | 완료 |
 | `submission/db/cityroulette-demo-public-data.sql` | 회원 없는 공공 정적 데이터 | 완료·복원 검증 |
 | `submission/db/README.md` | Flyway 이후 데이터 복원 절차 | 완료 |
-| `dist/city-roulette-final/` | 제출용 디렉터리 | 완료 |
-| `dist/city-roulette-final.zip` | 최종 ZIP | 완료 |
+| `dist/city-roulette-final-ready/` | 압축 전 제출용 디렉터리 | 완료 |
+| 최종 ZIP | 제출용 디렉터리 확인 후 생성 | 사용자 요청에 따라 미생성 |
 
 ## 2. README와 보고서
 
 기존 README의 초기 계획, 미구현 설명, 배포 예정 내용을 실제 완료 상태로 교체했다.
 최종 README에는 프로젝트 목적, 핵심 기능, 기술 스택, 아키텍처, ERD, 추천·룰렛 알고리즘,
-4개 공공데이터 공급자, 로컬 실행, 324개 테스트, 주요 화면과 제한사항을 포함한다.
+4개 공공데이터 공급자, 로컬 실행, 334개 테스트, 주요 화면과 제한사항을 포함한다.
 
 최종 보고서는 다음 9개 장으로 작성했다.
 
@@ -43,7 +43,7 @@
 - Malgun Gothic 글꼴
 - 발표 순서: 문제 → 서비스 → 탐색 → 아키텍처 → 데이터 → DB → 알고리즘 → 화면 → 검증 → 한계
 - speaker notes에 근거 문서 경로 기록
-- PPTX SHA-256: `2144C4AB9EB3AB8CACA2034F74D37573881B2CE8141D79886ADEC55A65FCB2B6`
+- PPTX SHA-256: `734029711F981717922A8790B2AC9E59FB347A5382E9587066C797A6EF2EF2DD`
 
 검증 결과:
 
@@ -124,7 +124,7 @@ SQL SHA-256:
 ## 7. 테스트 결과
 
 - Java 17 `gradlew --no-daemon clean build`: 성공
-- 테스트 324개, 실패 0, 오류 0, 건너뜀 0
+- 테스트 334개, 실패 0, 오류 0, 건너뜀 0
 - demo PowerShell 5개 구문 오류 0
 - 로컬 demo URL HTTP 200 및 Chromium 핵심 흐름 검증
 - Spring Boot·MySQL 재시작 후 데이터 보존
@@ -132,18 +132,17 @@ SQL SHA-256:
 - 제출용 DB 새 V12 스키마 복원 성공
 - ZIP central directory 검사 및 압축 해제 무결성 검사 성공
 
-## 8. ZIP 결과
+## 8. 압축 전 제출 폴더 결과
 
-- 파일: `dist/city-roulette-final.zip`
-- SHA-256: `D09328001D16C6795801D1F24DE23E3720FE8DA3615FBFD36B81CA2AE3972758`
-- 크기: 3,948,768 bytes
-- 포함 파일 수: 387
-- 압축 해제 파일 수: 387
-- 파일별 SHA-256 불일치: 0
-- 제외 경로 ZIP 항목: 0
-- 압축 해제 테스트: 성공
-- 파일 manifest: `dist/city-roulette-final-manifest.txt`
-- manifest SHA-256: `9F1B9A058A7914E981259EC939B9C84A3450473EF4852866A27E2348585C234E`
+- 폴더: `dist/city-roulette-final-ready/`
+- 포함 파일 수: 405
+- 전체 파일 크기: 5,230,618 bytes
+- PPTX: 10장, SHA-256 `734029711F981717922A8790B2AC9E59FB347A5382E9587066C797A6EF2EF2DD`
+- DB SQL SHA-256: `AD308E870F464C45F911962B14F4B880465B0720B7E913ECE3B290D201172AFC`
+- `.git`, 빌드 결과, Gradle 캐시, 런타임 DB, 업로드 파일: 0건
+- 비밀키 형식 탐지: 0건
+- 사용자 테이블 INSERT: 0건
+- ZIP: 사용자 요청에 따라 아직 생성하지 않음
 
 ## 9. 남은 수동 작업
 
@@ -154,5 +153,6 @@ SQL SHA-256:
 - 제출 사이트의 허용 ZIP 크기와 파일명 규칙 확인
 - 공개 저장소 제출 시 공공 이미지와 데이터의 이용 조건 재확인
 
-현재 소스, 최종 보고서, 10장 발표 자료, 시연 가이드, 비식별 DB 재현 자료와 제출 ZIP이
-준비되어 있다. 위 수동 항목을 확인하면 최종 제출할 수 있다.
+현재 소스, 최종 보고서, 10장 발표 자료, 시연 가이드와 비식별 DB 재현 자료가 하나의
+압축 전 제출 폴더로 준비되어 있다. 위 수동 항목을 확인한 뒤 이 폴더만 ZIP으로 압축하면
+최종 제출할 수 있다.

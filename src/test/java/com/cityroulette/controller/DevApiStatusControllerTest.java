@@ -1,6 +1,6 @@
 package com.cityroulette.controller;
 
-import com.cityroulette.dto.external.ExternalApiProbeResult;
+import com.cityroulette.dto.ExternalApiProbeResult;
 import com.cityroulette.service.ExternalApiDiagnosticsService;
 import com.cityroulette.service.MemberService;
 import com.cityroulette.dto.member.MemberProfile;

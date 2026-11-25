@@ -4,6 +4,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.stereotype.Component;
 import com.cityroulette.dto.importing.BusanAttractionItem;
 import com.cityroulette.dto.importing.ProviderPage;
+/**
+ * 외부 HTTP 요청과 공급자 응답 처리를 애플리케이션 로직에서 분리합니다.
+ */
 @Component
 public class BusanAttractionClient extends BusanJsonApiClient {
     public BusanAttractionClient(RestClient.Builder builder, ExternalApiProperties p) {

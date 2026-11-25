@@ -1,6 +1,7 @@
 package com.cityroulette.service;
 
 import com.cityroulette.config.RecommendationWeights;
+import com.cityroulette.config.RecommendationSettings;
 import com.cityroulette.domain.Place;
 import com.cityroulette.dto.recommendation.RecommendationScoreBreakdown;
 import com.cityroulette.dto.recommendation.RecommendationTransitStatus;
@@ -12,10 +13,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class RecommendationScorer {
     private final RecommendationWeights weights;
+    private final RecommendationSettings settings;
     private final RecommendationCandidateFilter categories;
 
-    public RecommendationScorer(RecommendationWeights weights, RecommendationCandidateFilter categories) {
+    public RecommendationScorer(RecommendationWeights weights, RecommendationSettings settings,
+            RecommendationCandidateFilter categories) {
         this.weights = weights;
+        this.settings = settings;
         this.categories = categories;
     }
 
@@ -23,8 +27,8 @@ public class RecommendationScorer {
             Map<String, Long> categoryCounts, int candidateCount, RecommendationTransitStatus transitStatus) {
         String normalizedCategory = categories.normalizeCategory(place.getCategory());
         double category = preferred.isEmpty() || preferred.contains(normalizedCategory) ? 100 : 0;
-        double distance = clamp(100 * (1 - Math.min(distanceMeters, weights.getMaxDistanceMeters())
-                / weights.getMaxDistanceMeters()));
+        double maximumDistance = settings.limits().maxDistanceMeters();
+        double distance = clamp(100 * (1 - Math.min(distanceMeters, maximumDistance) / maximumDistance));
         long count = categoryCounts.getOrDefault(normalizedCategory, 1L);
         double diversity = candidateCount <= 1 ? 100
                 : clamp(100 * (1 - (count - 1.0) / candidateCount));
@@ -32,13 +36,13 @@ public class RecommendationScorer {
         boolean transitIncluded = transitStatus == RecommendationTransitStatus.VERIFIED;
         double transit = transitIncluded ? 100 : 0;
 
-        double numerator = category * weights.getCategory() + distance * weights.getDistance()
-                + diversity * weights.getDiversity() + quality * weights.getDataQuality();
-        double denominator = weights.getCategory() + weights.getDistance()
-                + weights.getDiversity() + weights.getDataQuality();
+        double numerator = category * weights.category() + distance * weights.distance()
+                + diversity * weights.diversity() + quality * weights.dataQuality();
+        double denominator = weights.category() + weights.distance()
+                + weights.diversity() + weights.dataQuality();
         if (transitIncluded) {
-            numerator += transit * weights.getTransit();
-            denominator += weights.getTransit();
+            numerator += transit * weights.transit();
+            denominator += weights.transit();
         }
         double total = denominator == 0 ? 0 : round(numerator / denominator);
         return new ScoredCandidate(place, distanceMeters, total,

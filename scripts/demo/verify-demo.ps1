@@ -1,3 +1,4 @@
+# 발표 전에 백업 지문과 시연 데이터베이스의 기준 상태를 확인합니다.
 param(
     [string]$Database = "cityroulette_demo",
     [int]$Port = 33321,

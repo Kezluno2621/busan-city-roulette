@@ -1,6 +1,6 @@
 package com.cityroulette.service;
 
-import com.cityroulette.dto.external.ExternalApiProbeResult;
+import com.cityroulette.dto.ExternalApiProbeResult;
 import com.cityroulette.dto.importing.ProviderPage;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +17,9 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 외부 HTTP 요청과 공급자 응답 처리를 애플리케이션 로직에서 분리합니다.
+ */
 abstract class BusanJsonApiClient {
     private final RestClient restClient;
     private final String provider;

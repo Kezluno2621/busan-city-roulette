@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
 
+/** 회원가입, 로그인 화면과 마이페이지를 제공합니다. */
 @Controller
 public class MemberController {
     private final MemberService memberService;

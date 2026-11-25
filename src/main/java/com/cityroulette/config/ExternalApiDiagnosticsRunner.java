@@ -1,6 +1,6 @@
 package com.cityroulette.config;
 
-import com.cityroulette.dto.external.ExternalApiProbeResult;
+import com.cityroulette.dto.ExternalApiProbeResult;
 import com.cityroulette.service.ExternalApiDiagnosticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+/** 명시적으로 켠 경우 외부 API 연결 상태를 점검합니다. */
 @Component
 @ConditionalOnProperty(name = "external.api.diagnostics.enabled", havingValue = "true")
 public class ExternalApiDiagnosticsRunner implements ApplicationRunner {

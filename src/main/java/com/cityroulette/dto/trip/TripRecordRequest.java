@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
+/**
+ * 호출자가 보내는 입력의 계약입니다. 값은 선언된 필드와 검증 규칙에 따라 해석합니다.
+ */
 public class TripRecordRequest {
 
     @NotBlank(message = "여행 제목을 입력해주세요.")

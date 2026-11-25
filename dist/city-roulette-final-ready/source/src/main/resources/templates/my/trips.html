@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 여행 기록 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="my-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+
+    <header class="page-heading trip-page-heading">
+        <div>
+            <p class="eyebrow">MY TRIP ARCHIVE</p>
+            <h1>내 여행 기록</h1>
+            <p>다녀온 부산 여행과 사진을 한곳에 모아보세요.</p>
+        </div>
+        <a class="primary-button" th:href="@{/my/trips/new}">새 여행 기록</a>
+    </header>
+
+    <section th:if="${tripRecords.isEmpty()}" class="trip-empty-card" aria-labelledby="empty-title">
+        <div class="empty-icon" aria-hidden="true">📷</div>
+        <h2 id="empty-title">아직 저장한 여행이 없습니다.</h2>
+        <p>추천받은 장소나 기억하고 싶은 부산 여행을 첫 기록으로 남겨보세요.</p>
+        <a class="primary-button" th:href="@{/my/trips/new}">첫 여행 기록 만들기</a>
+    </section>
+
+    <section th:unless="${tripRecords.isEmpty()}" class="trip-grid" aria-label="저장한 여행 기록">
+        <article class="trip-card" th:each="trip : ${tripRecords}">
+            <div class="trip-card-topline">
+                <span class="trip-date" th:text="${trip.visitDate}">2026-10-26</span>
+                <span class="attachment-badge" th:if="${trip.hasAttachment()}">사진 첨부</span>
+            </div>
+            <h2 th:text="${trip.title}">부산 바다 여행</h2>
+            <p class="trip-place" th:text="${trip.placeName}">감천문화마을</p>
+            <p class="trip-address" th:if="${trip.placeAddress != null}" th:text="${trip.placeAddress}">부산광역시</p>
+            <div class="trip-card-footer">
+                <span>작성 <time th:datetime="${trip.createdAt}" th:text="${trip.createdAt}">2026-10-26</time></span>
+                <a th:href="@{/my/trips/{id}(id=${trip.id})}">기록 보기</a>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

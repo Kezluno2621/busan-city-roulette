@@ -4,6 +4,9 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+/**
+ * 목록과 페이지 정보를 함께 전달해 호출자가 다음 페이지를 조회할 수 있게 합니다.
+ */
 public record PlacePageResponse(
         List<PlaceResponse> content,
         int page,

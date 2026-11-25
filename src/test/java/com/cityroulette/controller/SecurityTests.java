@@ -28,6 +28,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * 인증 여부와 CSRF가 HTTP 요청의 허용 결과에 반영되는지 검증합니다.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

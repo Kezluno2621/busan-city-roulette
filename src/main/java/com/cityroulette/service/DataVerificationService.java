@@ -1,7 +1,7 @@
 package com.cityroulette.service;
 
 import com.cityroulette.domain.Place;
-import com.cityroulette.dto.bus.DataVerificationSnapshot;
+import com.cityroulette.dto.DataVerificationSnapshot;
 import com.cityroulette.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

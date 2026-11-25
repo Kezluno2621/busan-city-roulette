@@ -12,6 +12,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+/**
+ * 회원과 장소를 키로 즐겨찾기 목록 및 등록 여부를 조회합니다. 회원별로 조회 범위를 구분합니다.
+ */
 public interface PlaceFavoriteRepository extends JpaRepository<PlaceFavorite, Long> {
     @EntityGraph(attributePaths = "place")
     Page<PlaceFavorite> findByMemberUsername(String username, Pageable pageable);

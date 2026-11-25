@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+/** 저장 코스 API의 조회·저장 오류를 응답으로 변환합니다. */
 @RestControllerAdvice(assignableTypes = SavedCourseController.class)
 public class SavedCourseApiExceptionHandler {
     @ExceptionHandler(SavedCourseNotFoundException.class)

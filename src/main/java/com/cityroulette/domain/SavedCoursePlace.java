@@ -4,6 +4,9 @@ import com.cityroulette.dto.recommendation.RecommendationTransitStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
+/**
+ * 저장 코스의 방문 지점의 저장 구조를 표현하는 JPA 엔티티입니다. 식별자와 컬럼 매핑을 정의합니다.
+ */
 @Entity
 @Table(name = "saved_course_places", uniqueConstraints = {
         @UniqueConstraint(name = "uk_saved_course_visit_order", columnNames = {"saved_course_id", "visit_order"}),

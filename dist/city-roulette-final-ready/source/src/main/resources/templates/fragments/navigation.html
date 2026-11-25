@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="site-nav" th:fragment="navigation" aria-label="주 메뉴">
+    <a class="brand" th:href="@{/}" aria-label="City Roulette 홈">
+        <span class="brand-mark" aria-hidden="true">CR</span>
+        <span>City Roulette</span>
+    </a>
+    <span class="nav-primary">
+        <a class="nav-link" th:href="@{/places}">여행지</a>
+        <a class="nav-link" th:href="@{/recommend}">추천·룰렛</a>
+    </span>
+    <span class="nav-actions" th:if="${currentMember == null}">
+        <a class="nav-link" th:href="@{/login}">로그인</a>
+        <a class="nav-link nav-link-emphasis" th:href="@{/signup}">회원가입</a>
+    </span>
+    <span class="nav-actions" th:if="${currentMember != null}">
+        <span class="member-greeting" th:text="${currentMember.displayName + '님'}">회원님</span>
+        <a class="nav-link" th:href="@{/my}">내 여행</a>
+        <a class="nav-link" th:href="@{/my/favorites}">즐겨찾기</a>
+        <a class="nav-link" th:href="@{/my/courses}">내 코스</a>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button class="nav-button" type="submit">로그아웃</button>
+        </form>
+    </span>
+</nav>
+</body>
+</html>

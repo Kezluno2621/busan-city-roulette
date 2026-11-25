@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/** 정류장 좌표 보강 작업의 실행 옵션을 처리합니다. */
 @Component
 @Profile("dev")
 @ConditionalOnProperty(name="bus.stop-enrichment.enabled",havingValue="true")

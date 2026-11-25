@@ -45,6 +45,7 @@ public class FileStorageService {
         }
     }
 
+    /** 첨부파일을 검증·저장합니다. 첨부가 생략되면 빈 값을 반환합니다. */
     public Optional<StoredFileInfo> store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return Optional.empty();

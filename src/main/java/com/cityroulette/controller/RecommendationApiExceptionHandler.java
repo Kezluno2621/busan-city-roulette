@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/** 추천 API의 요청과 계산 오류를 응답으로 변환합니다. */
 @RestControllerAdvice(assignableTypes = PersonalizedRecommendationController.class)
 public class RecommendationApiExceptionHandler {
     @ExceptionHandler(PlaceNotFoundException.class)

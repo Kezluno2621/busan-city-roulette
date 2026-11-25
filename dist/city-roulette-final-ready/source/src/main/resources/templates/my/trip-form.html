@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 여행 기록 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="my-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+
+    <header class="page-heading trip-form-heading">
+        <div>
+            <p class="eyebrow">NEW TRIP RECORD</p>
+            <h1>새 여행 기록</h1>
+            <p>장소의 기억과 여행 사진 한 장을 안전하게 저장하세요.</p>
+        </div>
+        <a class="secondary-button" th:href="@{/my/trips}">목록으로</a>
+    </header>
+
+    <section class="trip-form-card" aria-labelledby="trip-form-title">
+        <h2 id="trip-form-title" class="visually-hidden">여행 기록 입력</h2>
+        <form class="auth-form" th:action="@{/my/trips}" th:object="${tripRecordRequest}"
+              method="post" enctype="multipart/form-data">
+            <p th:if="${uploadError}" class="alert alert-error" role="alert" th:text="${uploadError}">
+                파일 크기는 5MB 이하만 가능합니다.
+            </p>
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+                <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">저장 오류</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="title">여행 제목</label>
+                <input class="form-input" type="text" th:field="*{title}" maxlength="100" required
+                       placeholder="예: 비 오는 날의 감천문화마을"
+                       aria-describedby="title-error"
+                       th:attr="aria-invalid=${#fields.hasErrors('title')}">
+                <p id="title-error" th:if="${#fields.hasErrors('title')}"
+                   th:errors="*{title}" class="form-error-message" role="alert"></p>
+            </div>
+
+            <div class="trip-form-row">
+                <div class="form-group">
+                    <label class="form-label" for="placeName">방문 장소</label>
+                    <input class="form-input" type="text" th:field="*{placeName}" maxlength="200" required
+                           placeholder="예: 감천문화마을"
+                           aria-describedby="placeName-error"
+                           th:attr="aria-invalid=${#fields.hasErrors('placeName')}">
+                    <p id="placeName-error" th:if="${#fields.hasErrors('placeName')}"
+                       th:errors="*{placeName}" class="form-error-message" role="alert"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="visitDate">방문일</label>
+                    <input class="form-input" type="date" th:field="*{visitDate}" required
+                           aria-describedby="visitDate-error"
+                           th:attr="aria-invalid=${#fields.hasErrors('visitDate')}">
+                    <p id="visitDate-error" th:if="${#fields.hasErrors('visitDate')}"
+                       th:errors="*{visitDate}" class="form-error-message" role="alert"></p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="placeAddress">장소 주소 <span class="optional-label">선택</span></label>
+                <input class="form-input" type="text" th:field="*{placeAddress}" maxlength="255"
+                       placeholder="예: 부산광역시 사하구 감내2로 203"
+                       aria-describedby="placeAddress-error"
+                       th:attr="aria-invalid=${#fields.hasErrors('placeAddress')}">
+                <p id="placeAddress-error" th:if="${#fields.hasErrors('placeAddress')}"
+                   th:errors="*{placeAddress}" class="form-error-message" role="alert"></p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="memo">메모 <span class="optional-label">선택</span></label>
+                <textarea class="form-input form-textarea" th:field="*{memo}" maxlength="2000"
+                          rows="6" placeholder="여행에서 기억하고 싶은 내용을 적어보세요."
+                          aria-describedby="memo-help memo-error"
+                          th:attr="aria-invalid=${#fields.hasErrors('memo')}"></textarea>
+                <p id="memo-help" class="form-help">최대 2000자까지 입력할 수 있습니다.</p>
+                <p id="memo-error" th:if="${#fields.hasErrors('memo')}"
+                   th:errors="*{memo}" class="form-error-message" role="alert"></p>
+            </div>
+
+            <div class="form-group file-field">
+                <label class="form-label" for="image">여행 사진 <span class="optional-label">선택</span></label>
+                <input class="form-file" id="image" name="image" type="file"
+                       accept="image/jpeg,image/png,image/webp"
+                       aria-describedby="image-help image-error"
+                       th:attr="aria-invalid=${#fields.hasErrors('image')}">
+                <p id="image-help" class="form-help">JPG, PNG, WEBP 형식 · 최대 5MB · 한 장만 첨부할 수 있습니다.</p>
+                <p id="image-error" th:if="${#fields.hasErrors('image')}"
+                   th:errors="*{image}" class="form-error-message" role="alert"></p>
+            </div>
+
+            <div class="trip-form-actions">
+                <a class="secondary-button" th:href="@{/my/trips}">취소</a>
+                <button class="primary-button" type="submit">여행 기록 저장</button>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

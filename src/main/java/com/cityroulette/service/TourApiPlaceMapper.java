@@ -9,6 +9,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 
+/**
+ * 외부 또는 상위 계층의 값을 내부에서 사용하는 형식으로 변환합니다.
+ */
 @Component
 public class TourApiPlaceMapper implements ProviderPlaceMapper<TourismPlaceDto> {
     private static final String SOURCE_URL = "https://www.data.go.kr/data/15101578/openapi.do";

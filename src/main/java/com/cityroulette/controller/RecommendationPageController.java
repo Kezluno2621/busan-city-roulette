@@ -6,6 +6,9 @@ import com.cityroulette.service.KakaoLocalApiException;
 import com.cityroulette.service.LocationSearchService;
 import com.cityroulette.service.OdsayApiException;
 import com.cityroulette.service.RecommendationService;
+import com.cityroulette.service.RecommendationInputValidator;
+import com.cityroulette.service.RecommendationInputValidator.ValidationError;
+import com.cityroulette.config.RecommendationSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -16,28 +19,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+/**
+ * 화면 요청을 받고 Service의 결과와 함께 Thymeleaf에 전달할 뷰를 선택합니다.
+ */
 @Controller
 public class RecommendationPageController {
 
     private static final Logger log = LoggerFactory.getLogger(RecommendationPageController.class);
-    private static final int DEFAULT_AVAILABLE_MINUTES = 180;
-    private static final int DEFAULT_STAY_MINUTES = 60;
-    private static final int DEFAULT_LIMIT = 1;
-
     private final RecommendationService recommendationService;
     private final LocationSearchService locationSearchService;
+    private final RecommendationInputValidator validator;
+    private final RecommendationSettings settings;
 
     public RecommendationPageController(
             RecommendationService recommendationService,
-            LocationSearchService locationSearchService) {
+            LocationSearchService locationSearchService,
+            RecommendationInputValidator validator,
+            RecommendationSettings settings) {
         this.recommendationService = recommendationService;
         this.locationSearchService = locationSearchService;
+        this.validator = validator;
+        this.settings = settings;
     }
 
     @GetMapping("/recommend")
     public String showRecommendationForm(Model model) {
         prepareModel(model, "", "", "", "",
-                DEFAULT_AVAILABLE_MINUTES, DEFAULT_STAY_MINUTES, DEFAULT_LIMIT);
+                settings.defaults().availableMinutes(), settings.defaults().stayMinutes(),
+                settings.defaults().uiCandidateLimit());
         return "recommend";
     }
 
@@ -101,8 +110,8 @@ public class RecommendationPageController {
 
         Double latitude = parseDouble(latitudeInput);
         Double longitude = parseDouble(longitudeInput);
-        String validationMessage = validate(
-                latitude, longitude, availableMinutes, stayMinutes, limit);
+        String validationMessage = validationMessage(validator.validate(
+                latitude, longitude, availableMinutes, stayMinutes, limit, true));
         if (validationMessage != null) {
             model.addAttribute("inputError", validationMessage);
             return "recommend";
@@ -119,30 +128,15 @@ public class RecommendationPageController {
         return "recommend";
     }
 
-    private String validate(
-            Double latitude,
-            Double longitude,
-            Integer availableMinutes,
-            Integer stayMinutes,
-            Integer limit) {
-        if (latitude == null || !Double.isFinite(latitude)
-                || latitude < -90 || latitude > 90) {
-            return "선택한 출발지의 위도 정보가 올바르지 않습니다. 다시 검색해주세요.";
-        }
-        if (longitude == null || !Double.isFinite(longitude)
-                || longitude < -180 || longitude > 180) {
-            return "선택한 출발지의 경도 정보가 올바르지 않습니다. 다시 검색해주세요.";
-        }
-        if (availableMinutes == null || availableMinutes < 60 || availableMinutes > 720) {
-            return "사용 가능 시간을 확인해주세요.";
-        }
-        if (stayMinutes == null || stayMinutes < 30 || stayMinutes > 240) {
-            return "예상 체류시간을 확인해주세요.";
-        }
-        if (limit == null || limit < 1 || limit > 3) {
-            return "후보 탐색 수는 1개에서 3개 사이로 선택해주세요.";
-        }
-        return null;
+    private String validationMessage(ValidationError error) {
+        if (error == null) return null;
+        return switch (error) {
+            case LATITUDE -> "선택한 출발지의 위도 정보가 올바르지 않습니다. 다시 검색해주세요.";
+            case LONGITUDE -> "선택한 출발지의 경도 정보가 올바르지 않습니다. 다시 검색해주세요.";
+            case AVAILABLE_MINUTES -> "사용 가능 시간을 확인해주세요.";
+            case STAY_MINUTES -> "예상 체류시간을 확인해주세요.";
+            case CANDIDATE_LIMIT -> "후보 탐색 수는 1개에서 3개 사이로 선택해주세요.";
+        };
     }
 
     private Double parseDouble(String value) {

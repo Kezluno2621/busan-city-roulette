@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+/** 즐겨찾기 API의 오류를 응답으로 변환합니다. */
 @RestControllerAdvice(assignableTypes = PlaceFavoriteController.class)
 public class PlaceFavoriteApiExceptionHandler {
     @ExceptionHandler(PlaceNotFoundException.class)

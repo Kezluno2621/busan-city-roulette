@@ -1,6 +1,6 @@
 package com.cityroulette.controller;
 
-import com.cityroulette.dto.place.ApiErrorResponse;
+import com.cityroulette.dto.ApiErrorResponse;
 import com.cityroulette.service.BusResourceNotFoundException;
 import com.cityroulette.service.PlaceCoordinatesMissingException;
 import com.cityroulette.service.PlaceNotFoundException;

@@ -10,11 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * 공개 탐색 기능과 회원 전용 기능의 접근 정책, 로그인, 로그아웃, 비밀번호 인코더를 설정합니다.
- *
- * <p>CSRF 보호는 기본값을 유지하며 데이터 동기화 진입점은 관리자 권한을 요구합니다.</p>
- */
+/** 공개 경로와 회원·관리자 전용 경로를 구분하고 폼 로그인을 설정합니다. */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -25,6 +21,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // 넓은 경로 패턴보다 관리자 전용 규칙과 공개 코스 생성 예외를 먼저 평가합니다.
         http.authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.GET, "/dev/api-status").hasRole("ADMIN")
@@ -42,7 +39,6 @@ public class SecurityConfig {
                 .formLogin(login -> login.loginPage("/login")
                         .defaultSuccessUrl("/", false).failureUrl("/login?error").permitAll())
                 .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
-        // DB를 변경하는 관광지 동기화 API도 관리자 권한과 CSRF 토큰을 모두 요구합니다.
         return http.build();
     }
 }

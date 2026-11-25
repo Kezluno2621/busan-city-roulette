@@ -1,3 +1,4 @@
+/* 색상, 표면, 모서리와 그림자에 사용하는 공통 디자인 값입니다. */
 :root {
     color-scheme: light;
     --navy: #15324a;
@@ -1223,7 +1224,7 @@ select:focus-visible {
     }
 }
 
-/* Phase 5-B shared experience layer */
+/* 여러 화면에서 사용하는 공통 레이아웃과 상호작용 상태를 정리합니다. */
 html { scroll-behavior: smooth; }
 body { min-width: 320px; overflow-x: hidden; }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
@@ -1323,21 +1324,23 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .course-sequence { background: var(--blue); }
 .course-card > div { min-width: 0; }
 .course-save-panel { flex-wrap: wrap; }
-.course-delete-form { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.course-delete-form { display: grid; grid-template-columns: minmax(0, 1fr) max-content; align-items: center; gap: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 .course-delete-form p { margin: 0; color: var(--muted); }
 .danger-button { min-height: 44px; font-weight: 800; }
-.delete-confirm { max-width: 560px; }
-.delete-confirm-label { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-.delete-close-label { display: none; }
-.delete-confirm-toggle:checked + .delete-confirm-label .delete-open-label { display: none; }
-.delete-confirm-toggle:checked + .delete-confirm-label .delete-close-label { display: inline; }
-.delete-confirm-toggle:checked + .delete-confirm-label { color: var(--navy); background: var(--white); box-shadow: inset 0 0 0 1px var(--line); }
+.delete-confirm { min-width: 130px; }
+.delete-confirm-label { display: inline-flex; width: 100%; align-items: center; justify-content: center; white-space: nowrap; cursor: pointer; }
+.course-delete-form:has(.delete-confirm-toggle:checked) .course-delete-intro { display: none; }
+.course-delete-form:has(.delete-confirm-toggle:checked) .delete-confirm { grid-column: 1 / -1; width: 100%; }
+.delete-confirm-toggle:checked + .delete-confirm-label { display: none; }
 .delete-confirm-toggle:focus-visible + .delete-confirm-label { outline: 3px solid rgba(23,107,135,.22); outline-offset: 2px; }
-.confirm-dialog-panel { display: none; grid-template-columns: auto minmax(0,1fr) auto; gap: 14px; align-items: center; margin-top: 10px; padding: 16px; border: 1px solid #efc8c8; border-radius: 14px; color: var(--navy); background: #fff8f8; }
+.confirm-dialog-panel { display: none; grid-template-columns: auto minmax(0,1fr) max-content; gap: 14px; align-items: center; padding: 16px; border: 1px solid #efc8c8; border-radius: 14px; color: var(--navy); background: #fff8f8; }
 .delete-confirm-toggle:checked ~ .confirm-dialog-panel { display: grid; }
-.confirm-dialog-icon { display: grid; width: 46px; height: 46px; place-items: center; margin: 0 auto 12px; border-radius: 50%; color: var(--danger); background: #fff1f1; font-size: 1.3rem; font-weight: 900; }
+.confirm-dialog-icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; color: var(--danger); background: #fff1f1; font-size: 1.3rem; font-weight: 900; }
 .confirm-dialog-panel h3, .confirm-dialog-panel p { margin: 0; }
 .confirm-dialog-panel p { color: var(--muted); font-size: .86rem; }
+.confirm-dialog-actions { display: flex; align-items: center; gap: 8px; }
+.confirm-dialog-actions .secondary-button,
+.confirm-dialog-actions .danger-button { min-width: 88px; white-space: nowrap; cursor: pointer; }
 
 @keyframes loading-spin { to { transform: rotate(360deg); } }
 
@@ -1355,7 +1358,11 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
     .home-hero { padding: 58px 18px 50px; }
     .hero-actions { align-items: stretch; flex-direction: column; }
     .hero-actions .secondary-button { width: 100%; }
-    .member-promo, .site-footer, .course-delete-form { align-items: stretch; flex-direction: column; }
+    .member-promo, .site-footer { align-items: stretch; flex-direction: column; }
+    .course-delete-form { grid-template-columns: 1fr; align-items: stretch; }
+    .delete-confirm-label { width: 100%; }
+    .confirm-dialog-panel { grid-template-columns: auto minmax(0, 1fr); }
+    .confirm-dialog-actions { grid-column: 1 / -1; justify-content: flex-end; }
     .journey-steps { grid-template-columns: 1fr; }
     .journey-steps a { min-height: 48px; }
     .result-toolbar { align-items: flex-start; flex-direction: column; gap: 2px; }
@@ -1466,11 +1473,26 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .category-chips input:checked + span { border-color: #ef6c45; background: #fff0e9; color: #9a3412; font-weight: 700; }
 .category-chips input:focus-visible + span { outline: 3px solid rgba(21, 101, 192, .28); outline-offset: 2px; }
 
-.category-mode-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.category-mode-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
 .category-mode-options legend { grid-column: 1 / -1; }
-.category-mode-options label { display: flex; align-items: flex-start; gap: .55rem; min-width: 0; padding: .8rem; border: 1px solid #d7dee7; border-radius: .75rem; cursor: pointer; }
+.category-mode-options label {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    min-width: 0;
+    min-height: 92px;
+    align-items: center;
+    gap: .8rem;
+    padding: .9rem 1rem;
+    border: 1px solid #d7dee7;
+    border-radius: .85rem;
+    background: #fff;
+    cursor: pointer;
+}
+.category-mode-options input { width: 20px; height: 20px; margin: 0; accent-color: #1565c0; }
 .category-mode-options label:has(input:checked) { border-color: #ef6c45; background: #fff8f4; }
-.category-mode-options span { line-height: 1.45; word-break: keep-all; }
+.category-mode-options span { display: grid; gap: .2rem; min-width: 0; line-height: 1.35; word-break: keep-all; }
+.category-mode-options strong { color: var(--navy); font-size: .96rem; }
+.category-mode-options small { color: var(--muted); font-size: .82rem; line-height: 1.45; }
 
 @media (max-width: 700px) {
     .feature-choice-grid { grid-template-columns: 1fr; gap: .8rem; }
@@ -1861,9 +1883,9 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
 /* 4. 로그인 여부에 따라 저장 또는 로그인 행동을 강조한다. */
 .course-save-banner {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(250px, 1fr) minmax(430px, .95fr);
     align-items: center;
-    justify-content: space-between;
     gap: 1.5rem;
     margin-top: 1.25rem;
     padding: 1.2rem 1.3rem;
@@ -1886,16 +1908,16 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 }
 
 .course-save-actions {
-    display: flex;
-    min-width: min(100%, 470px);
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) max-content;
+    min-width: 0;
     align-items: end;
     gap: .7rem;
 }
 
 .course-save-actions label {
     display: grid;
-    min-width: 220px;
-    flex: 1;
+    min-width: 0;
     gap: .3rem;
     color: var(--muted);
     font-size: .78rem;
@@ -1903,12 +1925,21 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 }
 
 .course-save-actions input {
+    width: 100%;
     min-height: 46px;
 }
 
+.course-save-actions .primary-button {
+    min-width: 150px;
+    min-height: 46px;
+    white-space: nowrap;
+}
+
 .course-save-actions [data-course-save-status] {
-    flex-basis: 100%;
+    grid-column: 1 / -1;
     margin: 0;
+    color: var(--course-accent);
+    line-height: 1.5;
 }
 
 /* 5. 지도는 위치 관계를 보여주는 별도 정보 영역으로 구분한다. */
@@ -1959,7 +1990,7 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
     .course-save-banner,
     .course-save-actions {
         align-items: stretch;
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
 
     .course-save-actions {
@@ -1969,6 +2000,10 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
     .course-save-actions label {
         min-width: 0;
+    }
+
+    .course-save-actions .primary-button {
+        width: 100%;
     }
 }
 

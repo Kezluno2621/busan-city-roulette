@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/** TourAPI 관광 데이터의 명시적 수집 작업을 실행합니다. */
 @Component
 @ConditionalOnProperty(name = "tour.import.enabled", havingValue = "true")
 public class TourismCollectorRunner implements ApplicationRunner {

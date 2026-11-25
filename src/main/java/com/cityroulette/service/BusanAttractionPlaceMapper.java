@@ -4,6 +4,9 @@ import com.cityroulette.dto.importing.BusanAttractionItem;
 import com.cityroulette.dto.importing.NormalizedPlace;
 import org.springframework.stereotype.Component;
 
+/**
+ * 외부 또는 상위 계층의 값을 내부에서 사용하는 형식으로 변환합니다.
+ */
 @Component
 public class BusanAttractionPlaceMapper implements ProviderPlaceMapper<BusanAttractionItem> {
     private static final String OPEN_LICENSE = "공공데이터포털 이용허락범위 제한 없음";

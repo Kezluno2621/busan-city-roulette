@@ -2,6 +2,9 @@ package com.cityroulette.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * 외부 API 연결 환경의 설정을 한곳에 바인딩합니다. 호출 클라이언트는 필요한 공급자 설정만 꺼내 사용합니다.
+ */
 @ConfigurationProperties(prefix = "external.api")
 public class ExternalApiProperties {
     private final Credential tour = new Credential();

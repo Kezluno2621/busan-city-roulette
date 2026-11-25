@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.*;
 
+/** 개발 환경에서 정적 교통 데이터의 적재 상태를 검증합니다. */
 @Component
 @Profile("dev")
 @ConditionalOnProperty(name="runtime.verification.enabled",havingValue="true")

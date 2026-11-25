@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 회원 저장 코스의 저장 구조를 표현하는 JPA 엔티티입니다. 식별자와 컬럼 매핑을 정의합니다.
+ */
 @Entity
 @Table(name = "saved_courses")
 public class SavedCourse {

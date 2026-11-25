@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/** 회원의 장소 즐겨찾기를 등록·조회·삭제합니다. */
 @RestController
 @RequestMapping("/api/favorites")
 @Validated

@@ -13,6 +13,9 @@ import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDateTime;
 
+/**
+ * 공급자별 장소 원천의 저장 구조를 표현하는 JPA 엔티티입니다. 식별자와 컬럼 매핑을 정의합니다.
+ */
 @Entity
 @Table(name = "place_sources", uniqueConstraints = @UniqueConstraint(
         name = "uk_place_sources_provider_external", columnNames = {"provider", "external_id"}))

@@ -10,6 +10,9 @@ import jakarta.validation.constraints.Size;
 import com.cityroulette.dto.recommendation.CategorySelectionMode;
 import java.util.List;
 
+/**
+ * 룰렛 코스 생성 입력입니다. 선택 모드, 출발지, 장소 개수와 랜덤 시드 등 서버가 해석할 조건을 전달합니다.
+ */
 public record CourseGenerationRequest(
         Long originPlaceId,
         @DecimalMin("-90.0") @DecimalMax("90.0") Double originLatitude,

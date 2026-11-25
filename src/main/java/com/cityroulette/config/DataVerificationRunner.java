@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+/** 명시적으로 켠 경우 적재 데이터의 상태를 확인합니다. */
 @Component
 @ConditionalOnProperty(name="data.verification.enabled",havingValue="true")
 public class DataVerificationRunner implements ApplicationRunner {

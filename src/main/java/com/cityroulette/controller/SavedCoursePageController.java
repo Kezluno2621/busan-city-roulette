@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 화면 요청을 받고 Service의 결과와 함께 Thymeleaf에 전달할 뷰를 선택합니다.
+ */
 @Controller
 @RequestMapping("/my/courses")
 public class SavedCoursePageController {

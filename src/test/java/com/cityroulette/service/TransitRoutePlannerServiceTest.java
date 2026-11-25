@@ -4,7 +4,6 @@ import com.cityroulette.domain.*;
 import com.cityroulette.dto.bus.*;
 import com.cityroulette.repository.*;
 import java.math.BigDecimal;
-import java.util.List;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -75,6 +75,7 @@ function initializeCourseFeature(feature) {
      * 입력값을 기존 코스 생성 API 형식으로 변환하고 결과를 렌더링한다.
      * 실행 중 버튼을 잠가 애니메이션 도중 중복 요청이 발생하지 않게 한다.
      */
+    /** 폼을 제출하면 서버가 선정한 장소를 받아 애니메이션과 결과 지도에 연결한다. */
     function bindCourseGeneration() {
         form.addEventListener("submit", async event => {
             event.preventDefault();
@@ -139,6 +140,7 @@ function initializeCourseFeature(feature) {
     }
 
     /** 서버가 발급한 일회성 토큰을 사용해 로그인 회원의 코스를 저장한다. */
+    /** 서버의 저장 토큰과 코스 제목으로 로그인 회원의 저장 요청을 보낸다. */
     function bindCourseSave() {
         saveButton?.addEventListener("click", async () => {
             const title = saveTitle?.value.trim();
@@ -281,6 +283,7 @@ function initializeCourseFeature(feature) {
      * 모션 감소 설정이 켜져 있으면 반복 애니메이션을 생략하고 결과만 표시한다.
      * 애니메이션이 끝나도 서버가 반환한 순서와 장소는 바뀌지 않는다.
      */
+    /** 서버가 반환한 순서를 그대로 연출하며, 동작 감소 설정을 확인한다. */
     async function animateSelection(places) {
         if (!places.length) {
             return;
@@ -678,7 +681,7 @@ function initializeCourseFeature(feature) {
                 fillOpacity: 1
             })
                 .addTo(map)
-                .bindPopup(payload.origin.name || "출발지");
+                .bindPopup(createTextElement("span", "", payload.origin.name || "출발지"));
         }
 
         payload.places.forEach(place => {

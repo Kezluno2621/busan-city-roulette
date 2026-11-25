@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 검색 조건에 맞는 장소 목록과 개별 장소 정보를 제공합니다. */
 @RestController
 @RequestMapping("/api/places")
 @Validated

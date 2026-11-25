@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 회원의 비밀번호 해시와 역할을 Spring Security 인증 정보로 변환합니다. */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;

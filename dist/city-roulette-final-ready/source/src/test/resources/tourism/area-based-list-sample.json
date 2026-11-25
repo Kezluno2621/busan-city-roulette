@@ -1,0 +1,61 @@
+{
+  "response": {
+    "header": {
+      "resultCode": "0000",
+      "resultMsg": "OK"
+    },
+    "body": {
+      "items": {
+        "item": [
+          {
+            "addr1": "부산광역시 영도구 동삼동",
+            "addr2": "632-3",
+            "contentid": "3017435",
+            "contenttypeid": "12",
+            "createdtime": "20230915120000",
+            "firstimage": "https://example.com/jungni.jpg",
+            "firstimage2": "https://example.com/jungni-thumbnail.jpg",
+            "cpyrhtDivCd": "Type3",
+            "mapx": "129.0643000000",
+            "mapy": "35.0692000000",
+            "mlevel": "6",
+            "modifiedtime": "20260915120000",
+            "tel": "",
+            "title": "중리노을전망대",
+            "zipcode": "49113",
+            "lDongRegnCd": "26",
+            "lDongSignguCd": "200",
+            "lclsSystm1": "VE",
+            "lclsSystm2": "VE01",
+            "lclsSystm3": "VE010100",
+            "areacode": "",
+            "sigungucode": "",
+            "cat1": "",
+            "cat2": "",
+            "cat3": ""
+          },
+          {
+            "addr1": "부산광역시 사하구 감내2로 203",
+            "addr2": "",
+            "contentid": "126508",
+            "contenttypeid": "12",
+            "firstimage": "https://example.com/gamcheon.jpg",
+            "firstimage2": "https://example.com/gamcheon-thumbnail.jpg",
+            "cpyrhtDivCd": "Type3",
+            "mapx": "129.0106000000",
+            "mapy": "35.0975000000",
+            "title": "감천문화마을",
+            "lDongRegnCd": "26",
+            "lDongSignguCd": "380",
+            "lclsSystm1": "VE",
+            "lclsSystm2": "VE01",
+            "lclsSystm3": "VE010100"
+          }
+        ]
+      },
+      "numOfRows": 10,
+      "pageNo": 1,
+      "totalCount": 351
+    }
+  }
+}

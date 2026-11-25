@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/** 동일 좌표, 실제 두 지점의 거리 범위와 출발·도착의 대칭성을 검증합니다. */
 class DistanceCalculatorTest {
 
     private static final double GAMCHEON_LATITUDE = 35.0974606978;

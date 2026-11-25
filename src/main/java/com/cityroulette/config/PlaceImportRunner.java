@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+/** 설정한 공급자의 장소 수집과 적재를 실행합니다. */
 @Component
 @ConditionalOnProperty(name = "place.import.enabled", havingValue = "true")
 public class PlaceImportRunner implements ApplicationRunner {

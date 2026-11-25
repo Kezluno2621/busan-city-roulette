@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
+/**
+ * 노선과 정류장의 정차 순서를 조회합니다. 여러 노선 또는 정류장에 필요한 관계를 묶어 조회하는 쿼리를 제공합니다.
+ */
 public interface BusRouteStopRepository extends JpaRepository<BusRouteStop,Long> {
     Optional<BusRouteStop> findByBusRouteIdAndStopSequence(Long routeId,int sequence);
     List<BusRouteStop> findByBusRouteIdOrderByStopSequence(Long routeId);

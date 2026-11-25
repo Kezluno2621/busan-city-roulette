@@ -1,3 +1,4 @@
+<!--/* 즉흥 룰렛과 맞춤 코스 화면입니다. 브라우저 스크립트가 서버의 추천·코스 응답으로 결과 영역을 갱신합니다. */-->
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
@@ -133,9 +134,18 @@
                 </fieldset>
                 <fieldset class="category-mode-options">
                     <legend>선택한 카테고리를 어떻게 반영할까요?</legend>
-                    <label><input type="radio" name="categoryMode" value="PREFERRED" checked><span><strong>선호</strong> 점수를 높이고 다른 유형도 조합</span></label>
-                    <label><input type="radio" name="categoryMode" value="REQUIRED"><span><strong>필수 포함</strong> 선택 유형을 최소 한 곳씩 시도</span></label>
-                    <label><input type="radio" name="categoryMode" value="ONLY"><span><strong>선택한 유형만</strong> 다른 유형 제외</span></label>
+                    <label>
+                        <input type="radio" name="categoryMode" value="PREFERRED" checked>
+                        <span><strong>선호 카테고리</strong><small>점수를 높이고 다른 유형도 함께 조합</small></span>
+                    </label>
+                    <label>
+                        <input type="radio" name="categoryMode" value="REQUIRED">
+                        <span><strong>필수 포함</strong><small>선택한 유형을 최소 한 곳씩 포함</small></span>
+                    </label>
+                    <label>
+                        <input type="radio" name="categoryMode" value="ONLY">
+                        <span><strong>선택한 유형만</strong><small>선택하지 않은 다른 유형은 제외</small></span>
+                    </label>
                 </fieldset>
                 <div class="field-row three-columns">
                     <label><span>희망 지역</span><select name="district">

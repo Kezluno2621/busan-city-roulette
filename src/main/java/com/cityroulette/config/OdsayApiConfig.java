@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 
+/** ODsay 경로 조회에 사용할 HTTP 클라이언트를 구성합니다. */
 @Configuration
 public class OdsayApiConfig {
 
