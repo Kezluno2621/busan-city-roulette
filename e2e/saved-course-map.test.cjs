@@ -5,7 +5,7 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const script = fs.readFileSync(path.join(
-    __dirname, "../src/main/resources/static/js/saved-course-map.js"
+    __dirname, "../src/main/resources/static/js/course/saved-map.js"
 ), "utf8");
 
 function renderMap(origin, places, leafletAvailable = true) {

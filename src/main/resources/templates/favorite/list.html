@@ -1,0 +1,46 @@
+<!--/* 현재 회원의 즐겨찾기 목록을 표시하며 장소 상세로 연결합니다. */-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 즐겨찾기 - City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script th:src="@{/js/place/explorer.js}" defer></script>
+</head>
+
+<body>
+    <main class="my-page">
+        <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+        <header class="page-heading">
+            <div>
+                <p class="eyebrow">MY FAVORITE PLACES</p>
+                <h1>내 즐겨찾기</h1>
+                <p>마음에 든 부산 여행지를 한곳에서 다시 확인하세요.</p>
+            </div><a class="primary-button" th:href="@{/places}">여행지 더 찾기</a>
+        </header>
+        <section class="trip-empty-card" th:if="${favorites.content.isEmpty()}">
+            <div class="empty-icon">☆</div>
+            <h2>저장한 즐겨찾기가 없습니다.</h2>
+            <p>여행지 목록이나 상세 화면에서 마음에 드는 장소를 저장해보세요.</p>
+        </section>
+        <section class="place-card-grid" th:unless="${favorites.content.isEmpty()}">
+            <article class="place-card" th:each="favorite : ${favorites.content}" data-favorite-card><a class="place-card-image" th:href="@{/places/{id}(id=${favorite.placeId})}"><img th:src="${favorite.imageUrl != null and #strings.startsWith(favorite.imageUrl, 'http') ? favorite.imageUrl : '/images/place-placeholder.svg'}" th:alt="${favorite.placeName + ' 대표 이미지'}" data-image-fallback></a>
+                <div class="place-card-body">
+                    <div class="place-card-meta"><span class="category-chip" th:text="${favorite.category}">관광지</span><span th:text="${favorite.district ?: '구·군 정보 없음'}">구·군</span></div>
+                    <h2><a th:href="@{/places/{id}(id=${favorite.placeId})}" th:text="${favorite.placeName}">장소명</a></h2>
+                    <p th:text="${favorite.address ?: '주소 정보가 없습니다.'}">주소</p>
+                    <div class="place-card-actions"><a class="text-link" th:href="@{/places/{id}(id=${favorite.placeId})}">상세 보기 →</a><button type="button" class="favorite-button is-favorite" data-favorite-button data-remove-card="true" th:attr="data-place-id=${favorite.placeId}" aria-pressed="true">★ 저장됨</button></div>
+                    <p class="favorite-feedback" data-favorite-feedback role="status" aria-live="polite"></p>
+                </div>
+            </article>
+        </section>
+        <nav class="pagination" th:if="${favorites.totalPages > 1}" aria-label="즐겨찾기 페이지"><a th:if="${!favorites.first}" th:href="@{/my/favorites(page=${favorites.page - 1})}">이전</a><span th:text="${favorites.page + 1 + ' / ' + favorites.totalPages}">1 / 1</span><a th:if="${!favorites.last}" th:href="@{/my/favorites(page=${favorites.page + 1})}">다음</a></nav>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </main>
+</body>
+
+</html>

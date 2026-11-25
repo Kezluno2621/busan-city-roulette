@@ -1,0 +1,58 @@
+<!--/* 공개 홈 화면입니다. 장소 탐색과 독립된 두 코스 생성 기능으로 이동할 수 있습니다. */-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/common/main.js}" defer></script>
+</head>
+
+<body>
+    <main class="home-page">
+        <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+        <section class="hero home-hero">
+            <p class="eyebrow">BUSAN RANDOM TRIP</p>
+            <h1><span>부산 여행,</span><br>고민 대신 룰렛</h1>
+            <p>공공데이터로 여행지를 탐색하고, 취향에 맞는 장소를 골라 나만의 즉흥 코스를 만들어보세요.</p>
+            <div class="hero-actions">
+                <a class="primary-button" th:href="@{/recommend}">추천 시작하기 <span aria-hidden="true">→</span></a>
+                <a class="secondary-button" th:href="@{/places}">여행지 둘러보기</a>
+            </div>
+            <ul class="hero-proof" aria-label="서비스 특징">
+                <li>부산 공공데이터 기반</li>
+                <li>취향 조건 추천</li>
+                <li>회원 코스 저장</li>
+            </ul>
+        </section>
+
+        <section class="feature-grid" aria-label="주요 기능">
+            <article><span class="feature-icon" aria-hidden="true">⌖</span>
+                <h2>여행지 탐색</h2>
+                <p>지역과 카테고리로 부산의 관광지·맛집·문화시설을 찾아보세요.</p><a th:href="@{/places}">장소 둘러보기 →</a>
+            </article>
+            <article><span class="feature-icon" aria-hidden="true">↻</span>
+                <h2>즉흥 룰렛</h2>
+                <p>복잡한 조건 없이 1~5개 장소를 빠르고 다양하게 뽑아보세요.</p><a th:href="@{/recommend#instant-roulette}">바로 뽑기 →</a>
+            </article>
+            <article><span class="feature-icon" aria-hidden="true">✦</span>
+                <h2>맞춤 코스 추천</h2>
+                <p>출발지와 선호 조건을 반영해 다양한 유형의 코스를 만드세요.</p><a th:href="@{/recommend#personalized-course}">맞춤 추천 받기 →</a>
+            </article>
+        </section>
+        <section class="member-promo">
+            <div>
+                <p class="eyebrow">KEEP YOUR TRIP</p>
+                <h2>마음에 든 여행을 잊지 마세요</h2>
+                <p>로그인하면 장소 즐겨찾기와 룰렛 코스를 저장해 언제든 다시 볼 수 있어요.</p>
+            </div>
+            <a class="secondary-button" th:if="${currentMember == null}" th:href="@{/signup}">무료로 시작하기</a>
+            <a class="secondary-button" th:if="${currentMember != null}" th:href="@{/my}">내 여행 보기</a>
+        </section>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </main>
+</body>
+
+</html>

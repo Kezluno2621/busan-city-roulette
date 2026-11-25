@@ -39,6 +39,11 @@
 
 ## 4. Architecture
 
+Java 소스는 기능별 `domain/{member,place,transport,recommendation,course,favorite,trip}`을
+중심으로 배치합니다. 각 기능에는 필요한 MVC·JPA 계층을 둡니다. `integration`은 외부 API,
+`ingestion`은 공공데이터 변환·적재, `global`은 보안과 공통 유틸리티를 담당합니다.
+화면은 `templates` 아래 같은 기능 이름에서 찾을 수 있습니다. [프로젝트 구조](docs/PROJECT_STRUCTURE.md)
+
 ```mermaid
 flowchart LR
     U[Browser] --> SEC[Spring Security]

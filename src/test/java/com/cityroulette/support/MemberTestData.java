@@ -1,6 +1,6 @@
 package com.cityroulette.support;
 
-import com.cityroulette.dto.member.MemberSignupRequest;
+import com.cityroulette.domain.member.dto.MemberSignupRequest;
 
 /**
  * 회원 테스트에서 공통으로 사용할 테스트용 데이터를 제공합니다.

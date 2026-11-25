@@ -1,0 +1,42 @@
+<!--/* 검색 조건과 페이지별 장소 목록을 서버 모델에서 받아 장소 카드와 페이지 이동 링크를 생성합니다. */-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 여행지 찾기 | City Roulette</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+    <script th:src="@{/js/place/explorer.js}" defer></script>
+</head>
+<body>
+<main class="explorer-page">
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <header class="explorer-heading">
+        <p class="eyebrow">BUSAN PLACE EXPLORER</p><h1>부산 여행지 찾기</h1>
+        <p>공공데이터로 모은 관광지와 음식점, 문화시설을 조건별로 살펴보세요.</p>
+    </header>
+    <form class="place-filter" method="get" th:action="@{/places}" aria-label="여행지 검색 필터">
+        <label><span>키워드</span><input type="search" name="keyword" maxlength="100" th:value="${keyword}" placeholder="장소명 검색"></label>
+        <label><span>카테고리</span><select name="category"><option value="">전체 카테고리</option><option th:each="item:${categories}" th:value="${item}" th:text="${item}" th:selected="${item == category}"></option></select></label>
+        <label><span>구·군</span><select name="district"><option value="">부산 전체</option><option th:each="item:${districts}" th:value="${item}" th:text="${item}" th:selected="${item == district}"></option></select></label>
+        <div class="filter-actions"><button class="primary-button" type="submit">검색</button><a class="secondary-button" th:href="@{/places}">초기화</a></div>
+    </form>
+    <div class="result-toolbar"><div class="result-summary" role="status"><strong th:text="${#numbers.formatInteger(result.totalElements, 0, 'COMMA')}">0</strong>개의 장소를 찾았습니다.<span th:if="${keyword != null and !keyword.isBlank()}" th:text="${' · ‘' + keyword + '’ 검색'}"></span></div><span class="result-page" th:if="${result.totalPages > 0}" th:text="${result.page + 1 + ' / ' + result.totalPages + ' 페이지'}">1 / 1 페이지</span></div>
+    <section class="place-card-grid" th:if="${!result.content.isEmpty()}" aria-label="여행지 검색 결과">
+        <article class="place-card" th:each="place:${result.content}">
+            <a class="place-card-image" th:href="@{/places/{id}(id=${place.id})}">
+                <img th:src="${displayableImagePlaceIds.contains(place.id) and place.imageUrl != null and #strings.startsWith(place.imageUrl, 'http') ? place.imageUrl : '/images/place-placeholder.svg'}" th:alt="${place.name + ' 대표 이미지'}" loading="lazy" data-image-fallback>
+            </a>
+            <div class="place-card-body"><div class="place-card-meta"><span class="category-chip" th:text="${place.category}">관광지</span><span th:text="${place.district ?: '구·군 정보 없음'}">해운대구</span></div><h2><a th:href="@{/places/{id}(id=${place.id})}" th:text="${place.name}">장소명</a></h2><p th:text="${place.address ?: '주소 정보가 없습니다.'}">주소</p><div class="place-card-actions"><a class="text-link" th:href="@{/places/{id}(id=${place.id})}">상세 보기 <span aria-hidden="true">→</span></a><button th:if="${currentMember != null}" type="button" class="favorite-button" data-favorite-button th:attr="data-place-id=${place.id},aria-pressed=${favoritePlaceIds.contains(place.id)}" th:classappend="${favoritePlaceIds.contains(place.id)} ? ' is-favorite'" th:text="${favoritePlaceIds.contains(place.id)} ? '★ 저장됨' : '☆ 즐겨찾기'">☆ 즐겨찾기</button><a th:unless="${currentMember != null}" class="favorite-login-link" th:href="@{/login}">☆ 로그인 후 저장</a></div><p class="favorite-feedback" data-favorite-feedback role="status" aria-live="polite"></p></div>
+        </article>
+    </section>
+    <section class="empty-state" th:if="${result.content.isEmpty()}"><h2>조건에 맞는 장소가 없습니다</h2><p>검색어나 필터를 바꾸거나 전체 목록으로 돌아가 보세요.</p><a class="secondary-button" th:href="@{/places}">필터 초기화</a></section>
+    <nav class="pagination" th:if="${result.totalPages > 1}" aria-label="검색 결과 페이지">
+        <a th:if="${!result.first}" th:href="@{/places(keyword=${keyword},category=${category},district=${district},page=${result.page - 1},size=${result.size})}" aria-label="이전 페이지">이전</a>
+        <a th:each="number:${pages}" th:href="@{/places(keyword=${keyword},category=${category},district=${district},page=${number},size=${result.size})}" th:text="${number + 1}" th:classappend="${number == result.page} ? 'is-current'" th:attr="aria-current=${number == result.page ? 'page' : null}">1</a>
+        <a th:if="${!result.last}" th:href="@{/places(keyword=${keyword},category=${category},district=${district},page=${result.page + 1},size=${result.size})}" aria-label="다음 페이지">다음</a>
+    </nav>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</main>
+</body></html>

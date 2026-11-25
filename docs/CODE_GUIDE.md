@@ -17,6 +17,6 @@
 
 Repository의 `findBy...` 선언은 Spring Data JPA가 메서드 이름을 해석한다. `@Query`를 붙인 쿼리는 선언된 내용을 사용하며, `nativeQuery`가 설정된 경우 실제 SQL이다. `Optional`은 조회 결과가 없을 수 있음을 표현한다. 서비스에서 빈 결과를 화면의 빈 상태로 반환할지, 예외로 변환할지 결정한다. `@Transactional`이 붙은 쓰기 메서드는 관련 DB 작업을 한 트랜잭션으로 묶는다.
 
-`templates/recommend.html`은 입력과 결과 영역을 제공하고, `recommendation-engine.js`와 `course-roulette.js`는 폼 이벤트, 비동기 요청, 카드와 지도 표시를 맡는다. 코스 애니메이션은 서버에서 이미 정한 장소를 사용한다. `style.css`의 반응형 규칙은 화면 폭에 따라 입력과 카드 배치를 바꾼다.
+`templates/recommendation/index.html`은 추천 입력과 결과 영역을 제공한다. `js/common/main.js`는 출발지 검색에, `js/course/roulette.js`는 코스 생성 요청·결과 카드·지도에 사용한다. 코스 애니메이션은 서버가 정한 방문 장소를 표시한다. `style.css`의 반응형 규칙은 화면 폭에 따라 폼과 카드 배치를 조정한다.
 
 더 자세한 파일 목록은 [소스 색인](code-study/08-source-index.md), 발표 질문은 [코드 답변 가이드](presentation/evaluation-based-code-defense-guide.md)를 참고한다.

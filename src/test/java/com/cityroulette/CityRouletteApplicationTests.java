@@ -33,7 +33,7 @@ class CityRouletteApplicationTests {
     void homeRendersIndexTemplate() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("home/index"))
                 .andExpect(model().attribute("title", "City Roulette"))
                 .andExpect(content().string(containsString("부산 여행,")))
                 .andExpect(content().string(containsString("공공데이터로 여행지를 탐색")))
